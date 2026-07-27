@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Times New Roman', Times, serif;
+    background-color: #F9F6F0; /* Japandi Warm Beige */
+    color: #2C2C2C; /* Soft Charcoal */
+  }
+}
+
+/* Hide scrollbar globally */
+::-webkit-scrollbar {
+  display: none;
+}
+html {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}

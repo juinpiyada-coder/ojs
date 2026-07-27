@@ -40,32 +40,32 @@ const Header = () => {
         <div className="flex justify-between items-center">
           
           {/* Logo / Journal Title */}
-          <div className="flex-shrink-0 flex items-center">
-            <Link to="/" className="text-3xl font-bold text-[#2C2C2C] tracking-tight uppercase hover:opacity-80 transition-opacity" onClick={closeMobileMenu}>
+          <div className="flex-shrink-0 flex items-center mr-6 xl:mr-10">
+            <Link to="/" className="text-xl md:text-2xl xl:text-3xl font-extrabold text-[#2C2C2C] tracking-tight uppercase hover:opacity-80 transition-opacity" onClick={closeMobileMenu}>
               The literary scientist
             </Link>
           </div>
           
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex space-x-6 lg:space-x-8">
-            <Link to="/" className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors border-b-2 border-transparent hover:border-[#8E7C68] pb-1 font-semibold text-[1.05rem]">Home</Link>
-            <Link to="/about" className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors border-b-2 border-transparent hover:border-[#8E7C68] pb-1 font-semibold text-[1.05rem]">About Us</Link>
-            <Link to="/editorial-board" className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors border-b-2 border-transparent hover:border-[#8E7C68] pb-1 font-semibold text-[1.05rem]">Editorial Board</Link>
-            <Link to="/call-for-papers" className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors border-b-2 border-transparent hover:border-[#8E7C68] pb-1 font-semibold text-[1.05rem]">Call For Papers</Link>
-            <Link to="/submission" className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors border-b-2 border-transparent hover:border-[#8E7C68] pb-1 font-semibold text-[1.05rem]">Submission</Link>
-            <Link to="/team" className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors border-b-2 border-transparent hover:border-[#8E7C68] pb-1 font-semibold text-[1.05rem]">Our Team</Link>
-            <Link to="/contact" className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors border-b-2 border-transparent hover:border-[#8E7C68] pb-1 font-semibold text-[1.05rem]">Contact Us</Link>
+          <nav className="hidden xl:flex space-x-5 xl:space-x-7">
+            <Link to="/" className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors border-b-2 border-transparent hover:border-[#8E7C68] pb-1 font-semibold text-[0.95rem] xl:text-[1.05rem]">Home</Link>
+            <Link to="/about" className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors border-b-2 border-transparent hover:border-[#8E7C68] pb-1 font-semibold text-[0.95rem] xl:text-[1.05rem]">About Us</Link>
+            <Link to="/editorial-board" className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors border-b-2 border-transparent hover:border-[#8E7C68] pb-1 font-semibold text-[0.95rem] xl:text-[1.05rem]">Editorial Board</Link>
+            <Link to="/call-for-papers" className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors border-b-2 border-transparent hover:border-[#8E7C68] pb-1 font-semibold text-[0.95rem] xl:text-[1.05rem]">Call For Papers</Link>
+            <Link to="/submission" className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors border-b-2 border-transparent hover:border-[#8E7C68] pb-1 font-semibold text-[0.95rem] xl:text-[1.05rem]">Submission</Link>
+            <Link to="/team" className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors border-b-2 border-transparent hover:border-[#8E7C68] pb-1 font-semibold text-[0.95rem] xl:text-[1.05rem]">Our Team</Link>
+            <Link to="/contact" className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors border-b-2 border-transparent hover:border-[#8E7C68] pb-1 font-semibold text-[0.95rem] xl:text-[1.05rem]">Contact Us</Link>
           </nav>
 
           {/* Login Button */}
-          <div className="hidden lg:flex items-center">
+          <div className="hidden xl:flex items-center ml-4">
             <Link to="/login" className="px-6 py-2.5 bg-white border border-[#E5E0D8] text-[#2C2C2C] rounded shadow-sm hover:bg-[#F9F6F0] hover:shadow transition-all font-bold tracking-wide">
               Login
             </Link>
           </div>
           
           {/* Mobile Menu Button (Hamburger) */}
-          <div className="lg:hidden flex items-center">
+          <div className="xl:hidden flex items-center">
             <button 
               className="text-[#2C2C2C] focus:outline-none" 
               onClick={toggleMobileMenu}
@@ -88,7 +88,7 @@ const Header = () => {
 
       {/* Mobile Navigation Dropdown */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden bg-white border-t border-[#E5E0D8] absolute w-full shadow-lg left-0">
+        <div className="xl:hidden bg-white border-t border-[#E5E0D8] absolute w-full shadow-lg left-0">
           <nav className="flex flex-col px-6 py-4 space-y-4">
             <Link to="/" className="text-[#2C2C2C] font-semibold text-[1.1rem]" onClick={closeMobileMenu}>Home</Link>
             <Link to="/about" className="text-[#2C2C2C] font-semibold text-[1.1rem]" onClick={closeMobileMenu}>About Us</Link>

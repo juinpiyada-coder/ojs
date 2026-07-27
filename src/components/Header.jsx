@@ -1,7 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const Header = () => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-[#E5E0D8] shadow-sm">
       {/* Top Bar for ISSN and Social Links */}
@@ -31,7 +41,7 @@ const Header = () => {
           
           {/* Logo / Journal Title */}
           <div className="flex-shrink-0 flex items-center">
-            <Link to="/" className="text-3xl font-bold text-[#2C2C2C] tracking-tight uppercase hover:opacity-80 transition-opacity">
+            <Link to="/" className="text-3xl font-bold text-[#2C2C2C] tracking-tight uppercase hover:opacity-80 transition-opacity" onClick={closeMobileMenu}>
               OJS Portal
             </Link>
           </div>
@@ -56,15 +66,45 @@ const Header = () => {
           
           {/* Mobile Menu Button (Hamburger) */}
           <div className="lg:hidden flex items-center">
-            <button className="text-[#2C2C2C] focus:outline-none">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
-              </svg>
+            <button 
+              className="text-[#2C2C2C] focus:outline-none" 
+              onClick={toggleMobileMenu}
+              aria-label="Toggle menu"
+            >
+              {isMobileMenuOpen ? (
+                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              ) : (
+                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+              )}
             </button>
           </div>
 
         </div>
       </div>
+
+      {/* Mobile Navigation Dropdown */}
+      {isMobileMenuOpen && (
+        <div className="lg:hidden bg-white border-t border-[#E5E0D8] absolute w-full shadow-lg left-0">
+          <nav className="flex flex-col px-6 py-4 space-y-4">
+            <Link to="/" className="text-[#2C2C2C] font-semibold text-[1.1rem]" onClick={closeMobileMenu}>Home</Link>
+            <Link to="/about" className="text-[#2C2C2C] font-semibold text-[1.1rem]" onClick={closeMobileMenu}>About Us</Link>
+            <Link to="/editorial-board" className="text-[#2C2C2C] font-semibold text-[1.1rem]" onClick={closeMobileMenu}>Editorial Board</Link>
+            <Link to="/call-for-papers" className="text-[#2C2C2C] font-semibold text-[1.1rem]" onClick={closeMobileMenu}>Call For Papers</Link>
+            <Link to="/submission" className="text-[#2C2C2C] font-semibold text-[1.1rem]" onClick={closeMobileMenu}>Submission</Link>
+            <Link to="/team" className="text-[#2C2C2C] font-semibold text-[1.1rem]" onClick={closeMobileMenu}>Our Team</Link>
+            <Link to="/contact" className="text-[#2C2C2C] font-semibold text-[1.1rem]" onClick={closeMobileMenu}>Contact Us</Link>
+            <div className="pt-4 border-t border-[#E5E0D8]">
+              <Link to="/login" className="block text-center w-full px-6 py-3 bg-[#2C2C2C] text-white rounded font-bold tracking-wide" onClick={closeMobileMenu}>
+                Login
+              </Link>
+            </div>
+          </nav>
+        </div>
+      )}
     </header>
   );
 };

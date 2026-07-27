@@ -18,7 +18,7 @@ const Header = () => {
       <div className="w-full bg-white border-b border-[#F0EBE1] text-[#5C5446] py-1.5">
         <div className="max-w-7xl mx-auto px-4 flex justify-between items-center text-xs md:text-sm">
           <div className="font-semibold tracking-wider flex items-center">
-            <span className="opacity-75 mr-2">ISSN:</span> 3048-7366
+            <span className="opacity-75 mr-2">ISSN:</span> 3048-7366 (online)
           </div>
           <div className="flex space-x-4 items-center">
             <span className="opacity-75 uppercase tracking-widest hidden sm:inline text-[10px]">Share:</span>

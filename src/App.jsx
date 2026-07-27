@@ -5,6 +5,7 @@ import Header from './components/Header';
 import Home from './pages/Home';
 import About from './pages/About';
 import EditorialBoard from './pages/EditorialBoard';
+import EditorProfile from './pages/EditorProfile';
 import CallForPapers from './pages/CallForPapers';
 import Submission from './pages/Submission';
 import Team from './pages/Team';
@@ -41,6 +42,7 @@ function App() {
         } />
         <Route path="/about" element={<div className="min-h-screen flex flex-col bg-[#F9F6F0] text-[#2C2C2C]"><Header /><About /><Footer /></div>} />
         <Route path="/editorial-board" element={<div className="min-h-screen flex flex-col bg-[#F9F6F0] text-[#2C2C2C]"><Header /><EditorialBoard /><Footer /></div>} />
+        <Route path="/editor/:id" element={<div className="min-h-screen flex flex-col bg-[#F9F6F0] text-[#2C2C2C]"><Header /><EditorProfile /><Footer /></div>} />
         <Route path="/call-for-papers" element={<div className="min-h-screen flex flex-col bg-[#F9F6F0] text-[#2C2C2C]"><Header /><CallForPapers /><Footer /></div>} />
         <Route path="/submission" element={<div className="min-h-screen flex flex-col bg-[#F9F6F0] text-[#2C2C2C]"><Header /><Submission /><Footer /></div>} />
         <Route path="/team" element={<div className="min-h-screen flex flex-col bg-[#F9F6F0] text-[#2C2C2C]"><Header /><Team /><Footer /></div>} />

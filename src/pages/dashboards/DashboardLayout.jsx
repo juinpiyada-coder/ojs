@@ -1,8 +1,45 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
+import { FaHome, FaUser, FaUsers, FaCog, FaPaintBrush, FaClipboardList, FaBullhorn, FaSignOutAlt, FaFileAlt } from 'react-icons/fa';
+import { apiFetch } from '../../utils/api';
 
 const DashboardLayout = ({ title }) => {
   const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem('user')) || {};
+  const isAdmin = user.role_name === 'Admin';
+  
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const getDashboardPrefix = () => {
+    switch (user.role_name) {
+      case 'Admin': return '/admin/dashboard';
+      case 'Editor': return '/editor/dashboard';
+      case 'Assistant Editor': return '/assistant-editor/dashboard';
+      case 'Author': return '/user/dashboard';
+      default: return '/user/dashboard';
+    }
+  };
+  const dashPrefix = getDashboardPrefix();
+
+  const [brand, setBrand] = useState({
+    journal_title: 'OJS',
+    admin_dash_bg_hex: '#2C2C2C', // Default Sidebar
+    admin_dash_accent_hex: '#8E7C68' // Default Accent
+  });
+
+  useEffect(() => {
+    const fetchBranding = async () => {
+      try {
+        const res = await apiFetch('/branding');
+        if (res.data && res.data.length > 0) {
+          setBrand(res.data[0]);
+        }
+      } catch (err) {
+        console.error('Failed to fetch branding context', err);
+      }
+    };
+    fetchBranding();
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -10,35 +47,96 @@ const DashboardLayout = ({ title }) => {
     navigate('/login');
   };
 
+  // Helper styles based on branding
+  const sidebarStyle = { backgroundColor: brand.admin_dash_bg_hex };
+  const accentColor = brand.admin_dash_accent_hex;
+
+  // We can inject a quick style tag to handle hover states for links if needed,
+  // or just use inline style for simple elements. 
+  // Let's use CSS variables on the wrapping div.
   return (
-    <div className="min-h-screen flex bg-[#F9F6F0] font-sans">
+    <div 
+      className="min-h-screen flex bg-[#F9F6F0] font-sans relative"
+      style={{
+        '--brand-sidebar-bg': brand.admin_dash_bg_hex,
+        '--brand-accent': brand.admin_dash_accent_hex
+      }}
+    >
+      <style>{`
+        .brand-sidebar { background-color: var(--brand-sidebar-bg) !important; }
+        .brand-link:hover { color: #F9F6F0 !important; background-color: rgba(255,255,255,0.1) !important; }
+        .brand-link.active { background-color: #FAF9F6 !important; color: #2C2C2C !important; }
+        .brand-text-accent { color: var(--brand-accent) !important; }
+      `}</style>
       
-      {/* Sidebar - Soft Charcoal */}
-      <aside className="w-64 bg-[#2C2C2C] text-[#F9F6F0] flex flex-col shadow-2xl z-20 transition-all duration-300">
-        <div className="p-6 flex items-center justify-center border-b border-[#3A3A3A]">
-          <Link to="/" className="text-3xl font-bold tracking-tight uppercase hover:text-[#8E7C68] transition-colors duration-300">
-            OJS
+      {/* Mobile Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-sm"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+      
+      {/* Sidebar */}
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 text-[#F9F6F0] flex flex-col shadow-2xl transition-transform duration-300 md:relative md:translate-x-0 brand-sidebar ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="p-6 flex items-center justify-center border-b border-white/10">
+          <Link to="/" className="text-3xl font-bold tracking-tight uppercase hover:opacity-80 transition-opacity duration-300">
+            {brand.journal_title.substring(0, 15)}
           </Link>
         </div>
         
-        <nav className="flex-1 px-4 py-8 space-y-3">
-          <Link to="#" className="flex items-center px-4 py-3 bg-[#FAF9F6] text-[#2C2C2C] font-bold rounded-lg shadow-sm transition-all duration-300 hover:shadow-md">
-            <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-            Overview
+        <nav className="flex-1 px-4 py-8 space-y-3 overflow-y-auto">
+          <Link to={dashPrefix} className="flex items-center px-4 py-3 bg-[#FAF9F6] text-[#2C2C2C] font-bold rounded-lg shadow-sm transition-all duration-300 hover:shadow-md">
+            <FaHome className="w-5 h-5 mr-3" />
+            Dashboard
           </Link>
-          <Link to="#" className="flex items-center px-4 py-3 text-[#A89F91] hover:text-[#F9F6F0] hover:bg-[#3A3A3A] font-semibold rounded-lg transition-all duration-300">
-            <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-            Manuscripts
+          <Link to={`${dashPrefix}/profile`} className="brand-link flex items-center px-4 py-3 text-[#A89F91] font-semibold rounded-lg transition-all duration-300">
+            <FaUser className="w-5 h-5 mr-3" />
+            My Profile
           </Link>
-          <Link to="#" className="flex items-center px-4 py-3 text-[#A89F91] hover:text-[#F9F6F0] hover:bg-[#3A3A3A] font-semibold rounded-lg transition-all duration-300">
-            <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-            Settings
-          </Link>
+          
+          {isAdmin && (
+            <>
+              <div className="pt-4 pb-2">
+                <p className="px-4 text-xs font-bold brand-text-accent uppercase tracking-wider">--- CONTENT MANAGEMENT ---</p>
+              </div>
+              
+              <Link to="/admin/dashboard/submissions" className="brand-link flex items-center px-4 py-3 text-[#A89F91] font-semibold rounded-lg transition-all duration-300">
+                <FaFileAlt className="w-5 h-5 mr-3" />
+                Paper Submissions
+              </Link>
+
+              <div className="pt-4 pb-2">
+                <p className="px-4 text-xs font-bold brand-text-accent uppercase tracking-wider">--- SYSTEM MANAGEMENT ---</p>
+              </div>
+              
+              <Link to="/admin/dashboard/users" className="brand-link flex items-center px-4 py-3 text-[#A89F91] font-semibold rounded-lg transition-all duration-300">
+                <FaUsers className="w-5 h-5 mr-3" />
+                User Management
+              </Link>
+              <Link to="/admin/dashboard/settings" className="brand-link flex items-center px-4 py-3 text-[#A89F91] font-semibold rounded-lg transition-all duration-300">
+                <FaCog className="w-5 h-5 mr-3" />
+                System Settings
+              </Link>
+              <Link to="/admin/dashboard/branding" className="brand-link flex items-center px-4 py-3 text-[#A89F91] font-semibold rounded-lg transition-all duration-300">
+                <FaPaintBrush className="w-5 h-5 mr-3" />
+                Branding & UI
+              </Link>
+              <Link to="/admin/dashboard/audit-logs" className="brand-link flex items-center px-4 py-3 text-[#A89F91] font-semibold rounded-lg transition-all duration-300">
+                <FaClipboardList className="w-5 h-5 mr-3" />
+                Audit Logs
+              </Link>
+              <Link to="/admin/dashboard/announcements" className="brand-link flex items-center px-4 py-3 text-[#A89F91] font-semibold rounded-lg transition-all duration-300">
+                <FaBullhorn className="w-5 h-5 mr-3" />
+                Announcements
+              </Link>
+            </>
+          )}
         </nav>
         
-        <div className="p-4 border-t border-[#3A3A3A] mt-auto">
-          <button onClick={handleLogout} className="flex items-center w-full px-4 py-3 text-[#A89F91] hover:text-[#F9F6F0] hover:bg-[#3A3A3A] rounded-lg transition-all duration-300 font-bold group">
-            <svg className="w-5 h-5 mr-3 group-hover:-translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+        <div className="p-4 border-t border-white/10 mt-auto">
+          <button onClick={handleLogout} className="flex items-center w-full px-4 py-3 text-[#A89F91] hover:text-[#F9F6F0] hover:bg-white/10 rounded-lg transition-all duration-300 font-bold group">
+            <FaSignOutAlt className="w-5 h-5 mr-3 group-hover:-translate-x-1 transition-transform duration-300" />
             Logout
           </button>
         </div>
@@ -48,23 +146,38 @@ const DashboardLayout = ({ title }) => {
       <main className="flex-1 flex flex-col min-h-0 overflow-hidden relative">
         
         {/* Top Header */}
-        <header className="bg-white/80 backdrop-blur-md shadow-[0_4px_24px_-4px_rgba(44,44,44,0.05)] border-b border-[#E5E0D8] h-20 flex items-center justify-between px-8 shrink-0 z-10 transition-all duration-300">
-          <h1 className="text-[1.6rem] font-bold text-[#2C2C2C] tracking-tight">{title}</h1>
+        <header className="bg-white/80 backdrop-blur-md shadow-[0_4px_24px_-4px_rgba(44,44,44,0.05)] border-b border-[#E5E0D8] h-20 flex items-center justify-between px-4 sm:px-8 shrink-0 z-10 transition-all duration-300">
+          <div className="flex items-center">
+            <button 
+              className="md:hidden mr-4 p-2 text-[#2C2C2C] hover:bg-black/5 rounded-lg transition-colors"
+              onClick={() => setIsMobileMenuOpen(true)}
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+            <h1 className="text-xl sm:text-[1.6rem] font-bold text-[#2C2C2C] tracking-tight truncate max-w-[200px] sm:max-w-none">{title}</h1>
+          </div>
           <div className="flex items-center space-x-5">
             <div className="text-right hidden sm:block">
-               <p className="text-sm font-bold text-[#2C2C2C]">System Admin</p>
-               <p className="text-xs font-semibold text-[#8E7C68]">admin@ojs.local</p>
+               <p className="text-sm font-bold text-[#2C2C2C]">{user.display_name || 'System Admin'}</p>
+               <p className="text-xs font-semibold brand-text-accent">{user.email || 'admin@ojs.local'}</p>
             </div>
-            <div className="w-12 h-12 bg-[#2C2C2C] rounded-full flex items-center justify-center text-[#F9F6F0] font-bold shadow-md border-2 border-white hover:scale-105 transition-transform cursor-pointer">
-              SA
-            </div>
+            {user.avatar_url ? (
+              <img src={user.avatar_url} alt="Profile" className="w-12 h-12 rounded-full object-cover shadow-md border-2 border-white hover:scale-105 transition-transform cursor-pointer" />
+            ) : (
+              <div className="w-12 h-12 rounded-full flex items-center justify-center text-[#F9F6F0] font-bold shadow-md border-2 border-white hover:scale-105 transition-transform cursor-pointer brand-sidebar">
+                {(user.display_name || 'SA').substring(0, 2).toUpperCase()}
+              </div>
+            )}
           </div>
         </header>
 
         {/* Dashboard Content */}
-        <div className="flex-1 overflow-auto p-8 relative z-0">
+        <div className="flex-1 overflow-auto p-4 sm:p-8 relative z-0">
            {/* Subtle background decoration */}
-           <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#8E7C68] opacity-[0.03] rounded-full blur-3xl -z-10 transform translate-x-1/3 -translate-y-1/3 pointer-events-none"></div>
+           <div 
+             className="absolute top-0 right-0 w-[600px] h-[600px] opacity-[0.03] rounded-full blur-3xl -z-10 transform translate-x-1/3 -translate-y-1/3 pointer-events-none"
+             style={{ backgroundColor: brand.admin_dash_accent_hex }}
+           ></div>
            <Outlet />
         </div>
       </main>

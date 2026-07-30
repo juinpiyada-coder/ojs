@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
 const Register = () => {
+  const [title, setTitle] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -16,10 +17,11 @@ const Register = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:9090/api/auth/signup', {
+      const fullDisplayName = title ? `${title} ${displayName}` : displayName;
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ display_name: displayName, email, password })
+        body: JSON.stringify({ display_name: fullDisplayName, email, password })
       });
       
       const data = await response.json();
@@ -55,17 +57,34 @@ const Register = () => {
         )}
 
         <form onSubmit={handleRegister} className="space-y-6">
-          <div>
-            <label className="block text-[1.05rem] font-bold text-[#2C2C2C] mb-1" htmlFor="displayName">Full Name</label>
-            <input
-              id="displayName"
-              type="text"
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
-              className="w-full px-4 py-3 bg-[#FAF9F6] border border-[#E5E0D8] rounded focus:outline-none focus:ring-1 focus:ring-[#8E7C68] focus:border-[#8E7C68] transition-all text-[1.1rem]"
-              placeholder="Jane Doe"
-              required
-            />
+          <div className="flex gap-4">
+            <div className="w-1/3">
+              <label className="block text-[1.05rem] font-bold text-[#2C2C2C] mb-1" htmlFor="title">Title</label>
+              <select
+                id="title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="w-full px-4 py-3 bg-[#FAF9F6] border border-[#E5E0D8] rounded focus:outline-none focus:ring-1 focus:ring-[#8E7C68] focus:border-[#8E7C68] transition-all text-[1.1rem]"
+              >
+                <option value="">None</option>
+                <option value="Mr.">Mr.</option>
+                <option value="Ms.">Ms.</option>
+                <option value="Dr.">Dr.</option>
+                <option value="Prof.">Prof.</option>
+              </select>
+            </div>
+            <div className="w-2/3">
+              <label className="block text-[1.05rem] font-bold text-[#2C2C2C] mb-1" htmlFor="displayName">Full Name</label>
+              <input
+                id="displayName"
+                type="text"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                className="w-full px-4 py-3 bg-[#FAF9F6] border border-[#E5E0D8] rounded focus:outline-none focus:ring-1 focus:ring-[#8E7C68] focus:border-[#8E7C68] transition-all text-[1.1rem]"
+                placeholder="Jane Doe"
+                required
+              />
+            </div>
           </div>
 
           <div>

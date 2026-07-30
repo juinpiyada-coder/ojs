@@ -18,7 +18,8 @@ const AssistantEditorDashboard = () => {
         <div className="px-6 py-5 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
           <h3 className="font-bold text-gray-800">Screening Queue</h3>
         </div>
-        <table className="min-w-full divide-y divide-gray-200">
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-white">
             <tr>
               <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Manuscript ID</th>
@@ -37,7 +38,8 @@ const AssistantEditorDashboard = () => {
               </td>
             </tr>
           </tbody>
-        </table>
+          </table>
+        </div>
       </div>
     </div>
   );

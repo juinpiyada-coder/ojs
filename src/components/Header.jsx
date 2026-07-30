@@ -3,14 +3,84 @@ import { Link } from 'react-router-dom';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [openMobileDropdown, setOpenMobileDropdown] = useState(null);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
+    setOpenMobileDropdown(null);
   };
 
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
+    setOpenMobileDropdown(null);
   };
+
+  const toggleMobileDropdown = (dropdown) => {
+    setOpenMobileDropdown(openMobileDropdown === dropdown ? null : dropdown);
+  };
+
+  const SHOW_NEW_DESIGN = false; // Hidden at this moment as requested
+
+  if (SHOW_NEW_DESIGN) {
+    return (
+      <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-[#E5E0D8] shadow-sm">
+        <div className="w-full bg-white border-b border-[#F0EBE1] text-[#5C5446] py-1.5">
+          <div className="max-w-7xl mx-auto px-4 flex justify-between items-center text-xs md:text-sm">
+            <div className="font-semibold tracking-wider flex items-center">
+              <span className="opacity-75 mr-2">ISSN:</span> 3048-7366 (online)
+            </div>
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex justify-between items-center">
+            
+            {/* Logo */}
+            <div className="flex-shrink-0 flex items-center mr-4 lg:mr-8">
+              <Link to="/" className="text-xl lg:text-2xl font-extrabold text-[#2C2C2C] tracking-tight uppercase hover:opacity-80 transition-opacity">
+                The literary scientist
+              </Link>
+            </div>
+            
+            {/* Desktop Navigation */}
+            <nav className="hidden lg:flex space-x-5 items-center text-[#5C5446] font-semibold text-[0.95rem]">
+              <Link to="/" className="hover:text-[#2C2C2C] transition-colors">Home</Link>
+              <Link to="/about" className="hover:text-[#2C2C2C] transition-colors">About</Link>
+              <Link to="/current-issue" className="hover:text-[#2C2C2C] transition-colors">Current Issue</Link>
+              <Link to="/archive" className="hover:text-[#2C2C2C] transition-colors">Archive</Link>
+              <Link to="/issues" className="hover:text-[#2C2C2C] transition-colors">Articles</Link>
+              <Link to="/author-guidelines" className="hover:text-[#2C2C2C] transition-colors">Authors</Link>
+              <Link to="/become-reviewer" className="hover:text-[#2C2C2C] transition-colors">Reviewers</Link>
+              <Link to="/special-collections" className="hover:text-[#2C2C2C] transition-colors">Special Issues</Link>
+              <Link to="/news" className="hover:text-[#2C2C2C] transition-colors">News</Link>
+              <Link to="/search" className="hover:text-[#2C2C2C] transition-colors" aria-label="Search">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+              </Link>
+            </nav>
+
+            {/* Auth Buttons */}
+            <div className="hidden lg:flex items-center space-x-3 ml-2">
+              <Link to="/start-submission" className="px-5 py-2 bg-red-600 text-white rounded shadow hover:bg-red-700 transition-all font-bold tracking-wide text-sm">
+                Submit
+              </Link>
+              <Link to="/login" className="text-[#5C5446] hover:text-[#2C2C2C] font-semibold text-[0.95rem] transition-colors">
+                Login
+              </Link>
+            </div>
+            
+            {/* Mobile Toggle */}
+            <div className="lg:hidden flex items-center">
+              <button className="text-[#2C2C2C] p-2" onClick={toggleMobileMenu}>
+                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-[#E5E0D8] shadow-sm">
@@ -36,38 +106,84 @@ const Header = () => {
       </div>
 
       {/* Main Navigation Bar */}
-      <div className="max-w-7xl mx-auto px-4 py-5">
+      <div className="max-w-7xl mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
           
           {/* Logo / Journal Title */}
-          <div className="flex-shrink-0 flex items-center mr-6 xl:mr-10">
-            <Link to="/" className="text-xl md:text-2xl xl:text-3xl font-extrabold text-[#2C2C2C] tracking-tight uppercase hover:opacity-80 transition-opacity" onClick={closeMobileMenu}>
+          <div className="flex-shrink-0 flex items-center mr-4 lg:mr-8 max-w-[200px] sm:max-w-none">
+            <Link to="/" className="text-lg sm:text-xl lg:text-2xl font-extrabold text-[#2C2C2C] tracking-tight uppercase hover:opacity-80 transition-opacity leading-tight" onClick={closeMobileMenu}>
               The literary scientist
             </Link>
           </div>
           
           {/* Desktop Navigation Links */}
-          <nav className="hidden xl:flex space-x-5 xl:space-x-7">
-            <Link to="/" className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors border-b-2 border-transparent hover:border-[#8E7C68] pb-1 font-semibold text-[0.95rem] xl:text-[1.05rem]">Home</Link>
-            <Link to="/about" className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors border-b-2 border-transparent hover:border-[#8E7C68] pb-1 font-semibold text-[0.95rem] xl:text-[1.05rem]">About Us</Link>
-            <Link to="/editorial-board" className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors border-b-2 border-transparent hover:border-[#8E7C68] pb-1 font-semibold text-[0.95rem] xl:text-[1.05rem]">Editorial Board</Link>
-            <Link to="/call-for-papers" className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors border-b-2 border-transparent hover:border-[#8E7C68] pb-1 font-semibold text-[0.95rem] xl:text-[1.05rem]">Call For Papers</Link>
-            <Link to="/submission" className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors border-b-2 border-transparent hover:border-[#8E7C68] pb-1 font-semibold text-[0.95rem] xl:text-[1.05rem]">Submission</Link>
-            <Link to="/team" className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors border-b-2 border-transparent hover:border-[#8E7C68] pb-1 font-semibold text-[0.95rem] xl:text-[1.05rem]">Our Team</Link>
-            <Link to="/contact" className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors border-b-2 border-transparent hover:border-[#8E7C68] pb-1 font-semibold text-[0.95rem] xl:text-[1.05rem]">Contact Us</Link>
+          <nav className="hidden lg:flex space-x-4 lg:space-x-6 items-center">
+            
+            <Link to="/" className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors py-2 font-semibold text-[0.95rem]">Home</Link>
+
+            {/* Articles Dropdown */}
+            <div className="relative group cursor-pointer py-2">
+              <span className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors font-semibold text-[0.95rem] flex items-center">
+                Articles
+                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+              </span>
+              <div className="absolute left-0 mt-2 w-48 bg-white border border-[#E5E0D8] rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                <Link to="/issues" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Issues</Link>
+                <Link to="/special-collections" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Special Collections</Link>
+              </div>
+            </div>
+
+            {/* Submissions Dropdown */}
+            <div className="relative group cursor-pointer py-2">
+              <span className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors font-semibold text-[0.95rem] flex items-center">
+                Submissions
+                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+              </span>
+              <div className="absolute left-0 mt-2 w-64 bg-white border border-[#E5E0D8] rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                <Link to="/author-guidelines" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Author Guidelines</Link>
+                <Link to="/anonymous-review" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Ensuring An Anonymous Review</Link>
+                <Link to="/start-submission" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C] font-semibold text-blue-600">Start Submission</Link>
+                <Link to="/glossa-special-collections" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Glossa Special Collections</Link>
+              </div>
+            </div>
+
+            <Link to="/journal-policies" className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors py-2 font-semibold text-[0.95rem]">Journal Policies</Link>
+            <Link to="/publisher-policies" className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors py-2 font-semibold text-[0.95rem]">Publisher Policies</Link>
+
+            {/* About Dropdown */}
+            <div className="relative group cursor-pointer py-2">
+              <span className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors font-semibold text-[0.95rem] flex items-center">
+                About
+                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+              </span>
+              <div className="absolute left-0 mt-2 w-48 bg-white border border-[#E5E0D8] rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                <Link to="/team" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Editorial Team</Link>
+                <Link to="/become-reviewer" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Become A Reviewer</Link>
+                <Link to="/contact" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Contact</Link>
+                <Link to="/governance" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Governance</Link>
+              </div>
+            </div>
+            
+            {/* Search Icon */}
+            <Link to="/search" className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors py-2" aria-label="Search">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </Link>
           </nav>
 
-          {/* Login Button */}
-          <div className="hidden xl:flex items-center ml-4">
-            <Link to="/login" className="px-6 py-2.5 bg-white border border-[#E5E0D8] text-[#2C2C2C] rounded shadow-sm hover:bg-[#F9F6F0] hover:shadow transition-all font-bold tracking-wide">
+          {/* Auth Buttons */}
+          <div className="hidden lg:flex items-center space-x-3 ml-2">
+            <Link to="/register" className="text-[#5C5446] hover:text-[#2C2C2C] font-semibold text-[0.95rem] transition-colors">
+              Register
+            </Link>
+            <Link to="/login" className="px-5 py-2 bg-white border border-[#E5E0D8] text-[#2C2C2C] rounded shadow-sm hover:bg-[#F9F6F0] hover:shadow transition-all font-bold tracking-wide text-sm">
               Login
             </Link>
           </div>
           
           {/* Mobile Menu Button (Hamburger) */}
-          <div className="xl:hidden flex items-center">
+          <div className="lg:hidden flex items-center">
             <button 
-              className="text-[#2C2C2C] focus:outline-none" 
+              className="text-[#2C2C2C] focus:outline-none p-2" 
               onClick={toggleMobileMenu}
               aria-label="Toggle menu"
             >
@@ -86,18 +202,72 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Mobile Navigation Dropdown */}
+      {/* Mobile Navigation Menu */}
       {isMobileMenuOpen && (
-        <div className="xl:hidden bg-white border-t border-[#E5E0D8] absolute w-full shadow-lg left-0">
-          <nav className="flex flex-col px-6 py-4 space-y-4">
-            <Link to="/" className="text-[#2C2C2C] font-semibold text-[1.1rem]" onClick={closeMobileMenu}>Home</Link>
-            <Link to="/about" className="text-[#2C2C2C] font-semibold text-[1.1rem]" onClick={closeMobileMenu}>About Us</Link>
-            <Link to="/editorial-board" className="text-[#2C2C2C] font-semibold text-[1.1rem]" onClick={closeMobileMenu}>Editorial Board</Link>
-            <Link to="/call-for-papers" className="text-[#2C2C2C] font-semibold text-[1.1rem]" onClick={closeMobileMenu}>Call For Papers</Link>
-            <Link to="/submission" className="text-[#2C2C2C] font-semibold text-[1.1rem]" onClick={closeMobileMenu}>Submission</Link>
-            <Link to="/team" className="text-[#2C2C2C] font-semibold text-[1.1rem]" onClick={closeMobileMenu}>Our Team</Link>
-            <Link to="/contact" className="text-[#2C2C2C] font-semibold text-[1.1rem]" onClick={closeMobileMenu}>Contact Us</Link>
-            <div className="pt-4 border-t border-[#E5E0D8]">
+        <div className="lg:hidden bg-white border-t border-[#E5E0D8] absolute w-full shadow-xl max-h-[80vh] overflow-y-auto left-0 z-50">
+          <nav className="flex flex-col px-4 py-2 space-y-1">
+            
+            {/* Search (Mobile) */}
+            <Link to="/search" className="flex items-center text-[#2C2C2C] font-semibold text-[1.1rem] py-3 border-b border-[#F0EBE1]" onClick={closeMobileMenu}>
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+              Search
+            </Link>
+
+            <Link to="/" className="text-[#2C2C2C] font-semibold text-[1.1rem] py-3 border-b border-[#F0EBE1]" onClick={closeMobileMenu}>Home</Link>
+
+            {/* Articles */}
+            <div>
+              <button onClick={() => toggleMobileDropdown('articles')} className="w-full flex justify-between items-center text-[#2C2C2C] font-semibold text-[1.1rem] py-3 border-b border-[#F0EBE1]">
+                Articles
+                <svg className={`w-5 h-5 transform transition-transform ${openMobileDropdown === 'articles' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+              </button>
+              {openMobileDropdown === 'articles' && (
+                <div className="bg-[#F9F6F0] pl-6 py-2 flex flex-col space-y-3">
+                  <Link to="/issues" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Issues</Link>
+                  <Link to="/special-collections" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Special Collections</Link>
+                </div>
+              )}
+            </div>
+
+            {/* Submissions */}
+            <div>
+              <button onClick={() => toggleMobileDropdown('submissions')} className="w-full flex justify-between items-center text-[#2C2C2C] font-semibold text-[1.1rem] py-3 border-b border-[#F0EBE1]">
+                Submissions
+                <svg className={`w-5 h-5 transform transition-transform ${openMobileDropdown === 'submissions' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+              </button>
+              {openMobileDropdown === 'submissions' && (
+                <div className="bg-[#F9F6F0] pl-6 py-2 flex flex-col space-y-3">
+                  <Link to="/author-guidelines" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Author Guidelines</Link>
+                  <Link to="/anonymous-review" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Ensuring An Anonymous Review</Link>
+                  <Link to="/start-submission" className="text-blue-600 font-semibold" onClick={closeMobileMenu}>Start Submission</Link>
+                  <Link to="/glossa-special-collections" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Glossa Special Collections</Link>
+                </div>
+              )}
+            </div>
+
+            <Link to="/journal-policies" className="text-[#2C2C2C] font-semibold text-[1.1rem] py-3 border-b border-[#F0EBE1]" onClick={closeMobileMenu}>Journal Policies</Link>
+            <Link to="/publisher-policies" className="text-[#2C2C2C] font-semibold text-[1.1rem] py-3 border-b border-[#F0EBE1]" onClick={closeMobileMenu}>Publisher Policies</Link>
+
+            {/* About */}
+            <div>
+              <button onClick={() => toggleMobileDropdown('about')} className="w-full flex justify-between items-center text-[#2C2C2C] font-semibold text-[1.1rem] py-3 border-b border-[#F0EBE1]">
+                About
+                <svg className={`w-5 h-5 transform transition-transform ${openMobileDropdown === 'about' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+              </button>
+              {openMobileDropdown === 'about' && (
+                <div className="bg-[#F9F6F0] pl-6 py-2 flex flex-col space-y-3">
+                  <Link to="/team" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Editorial Team</Link>
+                  <Link to="/become-reviewer" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Become A Reviewer</Link>
+                  <Link to="/contact" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Contact</Link>
+                  <Link to="/governance" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Governance</Link>
+                </div>
+              )}
+            </div>
+
+            <div className="pt-4 pb-6 flex flex-col space-y-3">
+              <Link to="/register" className="block text-center w-full px-6 py-3 bg-white border border-[#2C2C2C] text-[#2C2C2C] rounded font-bold tracking-wide" onClick={closeMobileMenu}>
+                Register
+              </Link>
               <Link to="/login" className="block text-center w-full px-6 py-3 bg-[#2C2C2C] text-white rounded font-bold tracking-wide" onClick={closeMobileMenu}>
                 Login
               </Link>
@@ -110,3 +280,4 @@ const Header = () => {
 };
 
 export default Header;
+

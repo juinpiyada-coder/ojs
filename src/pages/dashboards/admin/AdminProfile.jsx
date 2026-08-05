@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { apiFetch } from '../../../utils/api';
+import { apiFetch, resolveImageUrl } from '../../../utils/api';
 import { toast } from 'react-toastify';
 
 const AdminProfile = () => {
@@ -64,13 +64,15 @@ const AdminProfile = () => {
       // Refetch to get the updated avatar_url and update local storage
       const res = await apiFetch(`/users?id=${currentUser.user_id}`);
       if (res.data) {
+        setProfile({ ...res.data, password: '' });
+        setFile(null);
         localStorage.setItem('user', JSON.stringify(res.data));
       }
       
       toast.success('Profile updated successfully!');
       
       // Reload page to reflect avatar in header
-      setTimeout(() => window.location.reload(), 1000);
+      setTimeout(() => window.location.reload(), 800);
       
     } catch (err) {
       toast.error('Failed to update profile: ' + err.message);
@@ -86,8 +88,10 @@ const AdminProfile = () => {
       <form onSubmit={handleSubmit} className="space-y-6">
         
         <div className="flex items-center space-x-6 mb-6">
-          {profile.avatar_url ? (
-            <img src={profile.avatar_url} alt="Avatar" className="w-24 h-24 rounded-full object-cover shadow-sm border border-[#E5E0D8]" />
+          {file ? (
+            <img src={URL.createObjectURL(file)} alt="Avatar Preview" className="w-24 h-24 rounded-full object-cover shadow-sm border-2 border-[#8E7C68]" />
+          ) : profile.avatar_url ? (
+            <img src={resolveImageUrl(profile.avatar_url)} alt="Avatar" className="w-24 h-24 rounded-full object-cover shadow-sm border border-[#E5E0D8]" />
           ) : (
             <div className="w-24 h-24 rounded-full flex items-center justify-center bg-[#F9F6F0] text-[#2C2C2C] text-2xl font-bold shadow-sm border border-[#E5E0D8]">
               {(profile.display_name || 'U').substring(0, 2).toUpperCase()}

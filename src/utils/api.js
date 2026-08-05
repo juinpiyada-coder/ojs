@@ -46,3 +46,30 @@ export const apiFetch = async (endpoint, options = {}) => {
     throw error;
   }
 };
+
+/**
+ * Resolves media/file URLs to point to the active API server host and handles URL encoding for spaces
+ * @param {string} url - The URL string from backend
+ */
+export const resolveFileUrl = (url) => {
+  if (!url) return '';
+  const baseUrl = API_URL.replace(/\/api\/?$/, '');
+  let finalUrl = url;
+  
+  // If url contains /s3_img/, normalize domain/port to match current configured API host
+  const s3Index = url.indexOf('/s3_img/');
+  if (s3Index !== -1) {
+    finalUrl = `${baseUrl}${url.substring(s3Index)}`;
+  } else if (url.startsWith('/')) {
+    finalUrl = `${baseUrl}${url}`;
+  }
+
+  // Ensure special characters and spaces are properly URL encoded without double encoding
+  try {
+    return encodeURI(decodeURI(finalUrl));
+  } catch (e) {
+    return finalUrl;
+  }
+};
+
+export const resolveImageUrl = resolveFileUrl;

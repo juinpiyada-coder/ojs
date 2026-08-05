@@ -1,14 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet, Link, useNavigate } from 'react-router-dom';
+import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { FaHome, FaUser, FaUsers, FaCog, FaPaintBrush, FaClipboardList, FaBullhorn, FaSignOutAlt, FaFileAlt } from 'react-icons/fa';
-import { apiFetch } from '../../utils/api';
+import { apiFetch, resolveImageUrl } from '../../utils/api';
 
 const DashboardLayout = ({ title }) => {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem('user')) || {};
+  const location = useLocation();
+  const [user, setUser] = useState(() => JSON.parse(localStorage.getItem('user')) || {});
   const isAdmin = user.role_name === 'Admin';
   
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const storedUser = JSON.parse(localStorage.getItem('user')) || {};
+        if (!storedUser.user_id) return;
+        const res = await apiFetch(`/users?id=${storedUser.user_id}`);
+        if (res && res.data) {
+          setUser(res.data);
+          localStorage.setItem('user', JSON.stringify(res.data));
+        }
+      } catch (err) {
+        console.error('Failed to refresh user profile:', err);
+      }
+    };
+    fetchUserProfile();
+  }, [location.pathname]);
 
   const getDashboardPrefix = () => {
     switch (user.role_name) {
@@ -162,9 +180,17 @@ const DashboardLayout = ({ title }) => {
                <p className="text-xs font-semibold brand-text-accent">{user.email || 'admin@ojs.local'}</p>
             </div>
             {user.avatar_url ? (
-              <img src={user.avatar_url} alt="Profile" className="w-12 h-12 rounded-full object-cover shadow-md border-2 border-white hover:scale-105 transition-transform cursor-pointer" />
+              <img 
+                src={resolveImageUrl(user.avatar_url)} 
+                alt="Profile" 
+                onClick={() => navigate(`${dashPrefix}/profile`)}
+                className="w-12 h-12 rounded-full object-cover shadow-md border-2 border-white hover:scale-105 transition-transform cursor-pointer" 
+              />
             ) : (
-              <div className="w-12 h-12 rounded-full flex items-center justify-center text-[#F9F6F0] font-bold shadow-md border-2 border-white hover:scale-105 transition-transform cursor-pointer brand-sidebar">
+              <div 
+                onClick={() => navigate(`${dashPrefix}/profile`)}
+                className="w-12 h-12 rounded-full flex items-center justify-center text-[#F9F6F0] font-bold shadow-md border-2 border-white hover:scale-105 transition-transform cursor-pointer brand-sidebar"
+              >
                 {(user.display_name || 'SA').substring(0, 2).toUpperCase()}
               </div>
             )}

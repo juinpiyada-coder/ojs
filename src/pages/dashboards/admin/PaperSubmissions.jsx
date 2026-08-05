@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { apiFetch } from '../../../utils/api';
+import { apiFetch, resolveFileUrl } from '../../../utils/api';
 import { toast } from 'react-toastify';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 
@@ -255,7 +255,7 @@ const PaperSubmissions = () => {
                 <td className="py-4 px-6 text-[#5C5446] text-sm">{article.editor_name || 'Unassigned'}</td>
                 <td className="py-4 px-6 text-center">
                   {article.manuscript_url ? (
-                    <button onClick={() => setViewingDocUrl(article.manuscript_url)} className="text-blue-600 hover:text-blue-800 font-bold text-sm underline flex items-center justify-center gap-1 mx-auto">
+                    <button onClick={() => setViewingDocUrl(resolveFileUrl(article.manuscript_url))} className="text-blue-600 hover:text-blue-800 font-bold text-sm underline flex items-center justify-center gap-1 mx-auto">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                       View
                     </button>
@@ -366,7 +366,7 @@ const PaperSubmissions = () => {
                       <div className="text-sm text-[#8E7C68] border border-[#E5E0D8] px-3 py-2 rounded-lg bg-[#FAF9F6] flex items-center gap-2">
                         <span>Current:</span> 
                         {formData.manuscript_url ? (
-                          <button type="button" onClick={() => setViewingDocUrl(formData.manuscript_url)} className="text-blue-600 font-bold underline">Download / View</button>
+                          <button type="button" onClick={() => setViewingDocUrl(resolveFileUrl(formData.manuscript_url))} className="text-blue-600 font-bold underline">Download / View</button>
                         ) : (
                           <span className="italic">Doc ID {formData.manuscript_pdf_id}</span>
                         )}

@@ -128,7 +128,9 @@ const Header = () => {
                 <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
               </span>
               <div className="absolute left-0 mt-2 w-48 bg-white border border-[#E5E0D8] rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                <Link to="/issues" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Issues</Link>
+                <Link to="/current-issue" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Current Issue</Link>
+                <Link to="/issues" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">All Issues</Link>
+                <Link to="/archive" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Archive</Link>
                 <Link to="/special-collections" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Special Collections</Link>
               </div>
             </div>
@@ -141,14 +143,28 @@ const Header = () => {
               </span>
               <div className="absolute left-0 mt-2 w-64 bg-white border border-[#E5E0D8] rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                 <Link to="/author-guidelines" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Author Guidelines</Link>
+                <Link to="/template" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Manuscript Template</Link>
                 <Link to="/anonymous-review" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Ensuring An Anonymous Review</Link>
-                <Link to="/start-submission" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C] font-semibold text-blue-600">Start Submission</Link>
                 <Link to="/glossa-special-collections" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Glossa Special Collections</Link>
+                <Link to="/start-submission" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C] font-semibold text-blue-600">Start Submission</Link>
               </div>
             </div>
 
-            <Link to="/journal-policies" className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors py-2 font-semibold text-[0.95rem]">Journal Policies</Link>
-            <Link to="/publisher-policies" className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors py-2 font-semibold text-[0.95rem]">Publisher Policies</Link>
+            {/* Policies Dropdown */}
+            <div className="relative group cursor-pointer py-2">
+              <span className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors font-semibold text-[0.95rem] flex items-center">
+                Policies & Ethics
+                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+              </span>
+              <div className="absolute left-0 mt-2 w-56 bg-white border border-[#E5E0D8] rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                <Link to="/journal-policies" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Journal Policies</Link>
+                <Link to="/publisher-policies" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Publisher Policies</Link>
+                <Link to="/ethics" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Ethics & Malpractice</Link>
+                <Link to="/privacy-policy" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Privacy Policy</Link>
+                <Link to="/terms-of-use" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Terms of Use</Link>
+                <Link to="/accessibility" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Accessibility</Link>
+              </div>
+            </div>
 
             {/* About Dropdown */}
             <div className="relative group cursor-pointer py-2">
@@ -156,11 +172,13 @@ const Header = () => {
                 About
                 <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
               </span>
-              <div className="absolute left-0 mt-2 w-48 bg-white border border-[#E5E0D8] rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+              <div className="absolute left-0 mt-2 w-52 bg-white border border-[#E5E0D8] rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                <Link to="/about" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Aim & Scope</Link>
+                <Link to="/editorial-board" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Editorial Board</Link>
                 <Link to="/team" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Editorial Team</Link>
                 <Link to="/become-reviewer" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Become A Reviewer</Link>
-                <Link to="/contact" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Contact</Link>
                 <Link to="/governance" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Governance</Link>
+                <Link to="/contact" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Contact</Link>
               </div>
             </div>
             
@@ -223,7 +241,9 @@ const Header = () => {
               </button>
               {openMobileDropdown === 'articles' && (
                 <div className="bg-[#F9F6F0] pl-6 py-2 flex flex-col space-y-3">
-                  <Link to="/issues" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Issues</Link>
+                  <Link to="/current-issue" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Current Issue</Link>
+                  <Link to="/issues" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>All Issues</Link>
+                  <Link to="/archive" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Archive</Link>
                   <Link to="/special-collections" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Special Collections</Link>
                 </div>
               )}
@@ -238,15 +258,31 @@ const Header = () => {
               {openMobileDropdown === 'submissions' && (
                 <div className="bg-[#F9F6F0] pl-6 py-2 flex flex-col space-y-3">
                   <Link to="/author-guidelines" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Author Guidelines</Link>
+                  <Link to="/template" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Manuscript Template</Link>
                   <Link to="/anonymous-review" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Ensuring An Anonymous Review</Link>
-                  <Link to="/start-submission" className="text-blue-600 font-semibold" onClick={closeMobileMenu}>Start Submission</Link>
                   <Link to="/glossa-special-collections" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Glossa Special Collections</Link>
+                  <Link to="/start-submission" className="text-blue-600 font-semibold" onClick={closeMobileMenu}>Start Submission</Link>
                 </div>
               )}
             </div>
 
-            <Link to="/journal-policies" className="text-[#2C2C2C] font-semibold text-[1.1rem] py-3 border-b border-[#F0EBE1]" onClick={closeMobileMenu}>Journal Policies</Link>
-            <Link to="/publisher-policies" className="text-[#2C2C2C] font-semibold text-[1.1rem] py-3 border-b border-[#F0EBE1]" onClick={closeMobileMenu}>Publisher Policies</Link>
+            {/* Policies & Ethics */}
+            <div>
+              <button onClick={() => toggleMobileDropdown('policies')} className="w-full flex justify-between items-center text-[#2C2C2C] font-semibold text-[1.1rem] py-3 border-b border-[#F0EBE1]">
+                Policies & Ethics
+                <svg className={`w-5 h-5 transform transition-transform ${openMobileDropdown === 'policies' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+              </button>
+              {openMobileDropdown === 'policies' && (
+                <div className="bg-[#F9F6F0] pl-6 py-2 flex flex-col space-y-3">
+                  <Link to="/journal-policies" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Journal Policies</Link>
+                  <Link to="/publisher-policies" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Publisher Policies</Link>
+                  <Link to="/ethics" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Ethics & Malpractice</Link>
+                  <Link to="/privacy-policy" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Privacy Policy</Link>
+                  <Link to="/terms-of-use" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Terms of Use</Link>
+                  <Link to="/accessibility" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Accessibility</Link>
+                </div>
+              )}
+            </div>
 
             {/* About */}
             <div>
@@ -256,10 +292,12 @@ const Header = () => {
               </button>
               {openMobileDropdown === 'about' && (
                 <div className="bg-[#F9F6F0] pl-6 py-2 flex flex-col space-y-3">
+                  <Link to="/about" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Aim & Scope</Link>
+                  <Link to="/editorial-board" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Editorial Board</Link>
                   <Link to="/team" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Editorial Team</Link>
                   <Link to="/become-reviewer" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Become A Reviewer</Link>
-                  <Link to="/contact" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Contact</Link>
                   <Link to="/governance" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Governance</Link>
+                  <Link to="/contact" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Contact</Link>
                 </div>
               )}
             </div>

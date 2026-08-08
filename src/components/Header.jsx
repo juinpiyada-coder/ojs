@@ -175,7 +175,7 @@ const Header = () => {
               <div className="absolute left-0 mt-2 w-52 bg-white border border-[#E5E0D8] rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                 <Link to="/about" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Aim & Scope</Link>
                 <Link to="/editorial-board" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Editorial Board</Link>
-                <Link to="/team" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Editorial Team</Link>
+                <Link to="/team" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Our Team</Link>
                 <Link to="/become-reviewer" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Become A Reviewer</Link>
                 <Link to="/governance" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Governance</Link>
                 <Link to="/contact" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Contact</Link>
@@ -294,7 +294,7 @@ const Header = () => {
                 <div className="bg-[#F9F6F0] pl-6 py-2 flex flex-col space-y-3">
                   <Link to="/about" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Aim & Scope</Link>
                   <Link to="/editorial-board" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Editorial Board</Link>
-                  <Link to="/team" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Editorial Team</Link>
+                  <Link to="/team" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Our Team</Link>
                   <Link to="/become-reviewer" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Become A Reviewer</Link>
                   <Link to="/governance" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Governance</Link>
                   <Link to="/contact" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Contact</Link>

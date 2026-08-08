@@ -37,8 +37,8 @@ const Header = () => {
             
             {/* Logo */}
             <div className="flex-shrink-0 flex items-center mr-4 lg:mr-8">
-              <Link to="/" className="text-xl lg:text-2xl font-extrabold text-[#2C2C2C] tracking-tight uppercase hover:opacity-80 transition-opacity">
-                The literary scientist
+              <Link to="/" className="hover:opacity-80 transition-opacity block h-10 md:h-12 w-[160px] md:w-[200px] lg:w-[240px] overflow-hidden flex items-center justify-center">
+                <img src="/logo.svg" alt="The literary scientist" className="w-full h-auto" />
               </Link>
             </div>
             
@@ -110,9 +110,9 @@ const Header = () => {
         <div className="flex justify-between items-center">
           
           {/* Logo / Journal Title */}
-          <div className="flex-shrink-0 flex items-center mr-4 lg:mr-8 max-w-[200px] sm:max-w-none">
-            <Link to="/" className="text-lg sm:text-xl lg:text-2xl font-extrabold text-[#2C2C2C] tracking-tight uppercase hover:opacity-80 transition-opacity leading-tight" onClick={closeMobileMenu}>
-              The literary scientist
+          <div className="flex-shrink-0 flex items-center mr-4 lg:mr-8">
+            <Link to="/" className="hover:opacity-80 transition-opacity block h-10 md:h-12 w-[160px] md:w-[200px] lg:w-[240px] overflow-hidden flex items-center justify-center" onClick={closeMobileMenu}>
+              <img src="/logo.svg" alt="The literary scientist" className="w-full h-auto" />
             </Link>
           </div>
           

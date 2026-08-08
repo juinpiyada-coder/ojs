@@ -168,10 +168,10 @@ const Header = () => {
 
             {/* About Dropdown */}
             <div className="relative group cursor-pointer py-2">
-              <span className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors font-semibold text-[0.95rem] flex items-center">
+              <Link to="/about" className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors font-semibold text-[0.95rem] flex items-center">
                 About
                 <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
-              </span>
+              </Link>
               <div className="absolute left-0 mt-2 w-52 bg-white border border-[#E5E0D8] rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                 <Link to="/about" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Aim & Scope</Link>
                 <Link to="/editorial-board" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Editorial Board</Link>

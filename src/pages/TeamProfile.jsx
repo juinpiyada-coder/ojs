@@ -71,10 +71,13 @@ const TeamProfile = () => {
               {/* Bio & Details */}
               <div className="flex-grow space-y-6">
                 <div>
-                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#1E2530] font-serif leading-tight mb-2">
-                    {member.role}
+                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#1E2530] font-serif leading-tight mb-2">
+                    {member.name}
                   </h1>
-                  <p className="text-sm font-semibold text-[#8E7C68] uppercase tracking-wide">
+                  <p className="text-base sm:text-lg font-bold text-[#8E7C68] font-serif">
+                    {member.role}
+                  </p>
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mt-0.5">
                     {member.department}
                   </p>
                 </div>

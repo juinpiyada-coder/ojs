@@ -12,6 +12,7 @@ import EditorProfile from './pages/EditorProfile';
 import CallForPapers from './pages/CallForPapers';
 import Submission from './pages/Submission';
 import Team from './pages/Team';
+import TeamProfile from './pages/TeamProfile';
 import Contact from './pages/Contact';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -80,6 +81,7 @@ function App() {
         <Route path="/call-for-papers" element={<div className="min-h-screen flex flex-col bg-[#F9F6F0] text-[#2C2C2C]"><Header /><CallForPapers /><Footer /></div>} />
         <Route path="/submission" element={<div className="min-h-screen flex flex-col bg-[#F9F6F0] text-[#2C2C2C]"><Header /><Submission /><Footer /></div>} />
         <Route path="/team" element={<div className="min-h-screen flex flex-col bg-[#F9F6F0] text-[#2C2C2C]"><Header /><Team /><Footer /></div>} />
+        <Route path="/team/:id" element={<div className="min-h-screen flex flex-col bg-[#F9F6F0] text-[#2C2C2C]"><Header /><TeamProfile /><Footer /></div>} />
         <Route path="/contact" element={<div className="min-h-screen flex flex-col bg-[#F9F6F0] text-[#2C2C2C]"><Header /><Contact /><Footer /></div>} />
         
         {/* New Public Pages */}

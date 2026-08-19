@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { AuthProvider } from './context/AuthContext';
 
 import Header from './components/Header';
 import Home from './pages/Home';
@@ -56,6 +57,7 @@ import PaperSubmissions from './pages/dashboards/admin/PaperSubmissions';
 
 function App() {
   return (
+    <AuthProvider>
     <BrowserRouter>
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />
       {/* 
@@ -137,6 +139,7 @@ function App() {
         
       </Routes>
     </BrowserRouter>
+    </AuthProvider>
   );
 }
 

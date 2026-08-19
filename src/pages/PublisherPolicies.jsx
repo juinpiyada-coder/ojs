@@ -1,7 +1,9 @@
 import React from 'react';
+import AnimatedSection from '../components/AnimatedSection';
 
 const PublisherPolicies = () => {
   return (
+    <AnimatedSection animation="fade-up">
     <div className="flex-grow bg-[#F9F6F0] py-24 px-4">
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center mb-10">
@@ -17,6 +19,7 @@ const PublisherPolicies = () => {
         </div>
       </div>
     </div>
+    </AnimatedSection>
   );
 };
 

@@ -1,10 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import AnimatedSection from '../components/AnimatedSection';
 
 const CurrentIssue = () => {
   return (
     <main className="flex-grow bg-[#F9F6F0]">
       {/* Hero Section */}
+      <AnimatedSection animation="fade-up">
       <section className="bg-[#1E2530] text-[#F9F6F0] py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 uppercase">Current Issue</h1>
@@ -13,8 +15,10 @@ const CurrentIssue = () => {
           </p>
         </div>
       </section>
+      </AnimatedSection>
 
       {/* Content Section */}
+      <AnimatedSection animation="fade-up">
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="bg-white p-16 rounded shadow-sm border border-[#E5E0D8]">
@@ -29,6 +33,7 @@ const CurrentIssue = () => {
           </div>
         </div>
       </section>
+      </AnimatedSection>
     </main>
   );
 };

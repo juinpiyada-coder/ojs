@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openMobileDropdown, setOpenMobileDropdown] = useState(null);
+  const { user, logout, isAuthenticated } = useAuth();
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -190,12 +192,35 @@ const Header = () => {
 
           {/* Auth Buttons */}
           <div className="hidden lg:flex items-center space-x-3 ml-2">
-            <Link to="/register" className="text-[#5C5446] hover:text-[#2C2C2C] font-semibold text-[0.95rem] transition-colors">
-              Register
-            </Link>
-            <Link to="/login" className="px-5 py-2 bg-white border border-[#E5E0D8] text-[#2C2C2C] rounded shadow-sm hover:bg-[#F9F6F0] hover:shadow transition-all font-bold tracking-wide text-sm">
-              Login
-            </Link>
+            {isAuthenticated ? (
+              <>
+                <Link to="/user/dashboard" className="flex items-center gap-2 text-[#5C5446] hover:text-[#2C2C2C] font-semibold text-[0.95rem] transition-colors">
+                  {user?.photoURL ? (
+                    <img src={user.photoURL} alt={user.displayName} className="w-7 h-7 rounded-full object-cover" />
+                  ) : (
+                    <div className="w-7 h-7 rounded-full bg-[#8E7C68] text-white flex items-center justify-center text-xs font-bold">
+                      {user?.displayName?.charAt(0) || user?.email?.charAt(0) || 'U'}
+                    </div>
+                  )}
+                  <span className="hidden xl:inline">{user?.displayName || user?.email?.split('@')[0]}</span>
+                </Link>
+                <button
+                  onClick={logout}
+                  className="text-[#5C5446] hover:text-red-600 font-semibold text-[0.95rem] transition-colors"
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/register" className="text-[#5C5446] hover:text-[#2C2C2C] font-semibold text-[0.95rem] transition-colors">
+                  Register
+                </Link>
+                <Link to="/login" className="px-5 py-2 bg-white border border-[#E5E0D8] text-[#2C2C2C] rounded shadow-sm hover:bg-[#F9F6F0] hover:shadow transition-all font-bold tracking-wide text-sm">
+                  Login
+                </Link>
+              </>
+            )}
           </div>
           
           {/* Mobile Menu Button (Hamburger) */}
@@ -303,12 +328,35 @@ const Header = () => {
             </div>
 
             <div className="pt-4 pb-6 flex flex-col space-y-3">
-              <Link to="/register" className="block text-center w-full px-6 py-3 bg-white border border-[#2C2C2C] text-[#2C2C2C] rounded font-bold tracking-wide" onClick={closeMobileMenu}>
-                Register
-              </Link>
-              <Link to="/login" className="block text-center w-full px-6 py-3 bg-[#2C2C2C] text-white rounded font-bold tracking-wide" onClick={closeMobileMenu}>
-                Login
-              </Link>
+              {isAuthenticated ? (
+                <>
+                  <div className="flex items-center justify-center gap-2 px-6 py-3 bg-[#FAF9F6] border border-[#E5E0D8] rounded">
+                    {user?.photoURL ? (
+                      <img src={user.photoURL} alt={user.displayName} className="w-6 h-6 rounded-full object-cover" />
+                    ) : (
+                      <div className="w-6 h-6 rounded-full bg-[#8E7C68] text-white flex items-center justify-center text-xs font-bold">
+                        {user?.displayName?.charAt(0) || user?.email?.charAt(0) || 'U'}
+                      </div>
+                    )}
+                    <span className="text-[#2C2C2C] font-semibold text-sm">{user?.displayName || user?.email}</span>
+                  </div>
+                  <Link to="/user/dashboard" className="block text-center w-full px-6 py-3 bg-[#2C2C2C] text-white rounded font-bold tracking-wide" onClick={closeMobileMenu}>
+                    Dashboard
+                  </Link>
+                  <button onClick={() => { logout(); closeMobileMenu(); }} className="block text-center w-full px-6 py-3 bg-white border border-red-300 text-red-600 rounded font-bold tracking-wide">
+                    Sign Out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link to="/register" className="block text-center w-full px-6 py-3 bg-white border border-[#2C2C2C] text-[#2C2C2C] rounded font-bold tracking-wide" onClick={closeMobileMenu}>
+                    Register
+                  </Link>
+                  <Link to="/login" className="block text-center w-full px-6 py-3 bg-[#2C2C2C] text-white rounded font-bold tracking-wide" onClick={closeMobileMenu}>
+                    Login
+                  </Link>
+                </>
+              )}
             </div>
           </nav>
         </div>

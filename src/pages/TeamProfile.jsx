@@ -53,12 +53,23 @@ const TeamProfile = () => {
               
               {/* Perfectly Circular Photo */}
               <div className="flex-shrink-0 mx-auto md:mx-0 text-center">
-                <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-full overflow-hidden bg-[#FAF7F2] border-4 border-[#E5E0D8] shadow-xl p-1 mx-auto">
-                  <img
-                    src={member.image}
-                    alt={member.role}
-                    className="w-full h-full object-cover object-top rounded-full"
-                  />
+                <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-full overflow-hidden bg-[#FAF7F2] border-4 border-[#E5E0D8] shadow-xl p-1 mx-auto flex items-center justify-center">
+                  {member.image ? (
+                    <img
+                      src={member.image}
+                      alt={member.name}
+                      className="w-full h-full object-cover rounded-full"
+                      style={{ objectPosition: member.imagePosition || '50% 15%' }}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=1E2530&color=F9F6F0&size=256&bold=true`;
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full rounded-full bg-[#1E2530] text-[#F9F6F0] flex items-center justify-center text-3xl font-bold font-serif shadow-inner">
+                      {member.name.split(' ').filter(Boolean).map(n => n[0]).slice(0, 2).join('')}
+                    </div>
+                  )}
                 </div>
 
                 <div className="mt-4">
@@ -77,15 +88,17 @@ const TeamProfile = () => {
                   <p className="text-base sm:text-lg font-bold text-[#8E7C68] font-serif">
                     {member.role}
                   </p>
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mt-0.5">
-                    {member.department}
-                  </p>
+                  {member.department && (
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mt-0.5">
+                      {member.department}
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-3 text-sm text-[#5C5446] font-serif">
                   <div className="flex items-start gap-2.5">
                     <FaUniversity className="text-[#8E7C68] text-base flex-shrink-0 mt-0.5" />
-                    <span><strong>{member.institution}</strong> • {member.department}</span>
+                    <span><strong>{member.institution}</strong>{member.department ? ` • ${member.department}` : ''}</span>
                   </div>
 
                   <div className="flex items-start gap-2.5">

@@ -15,17 +15,29 @@ import {
   FaExternalLinkAlt,
   FaSearch,
   FaFeatherAlt,
-  FaBookOpen
+  FaBookOpen,
+  FaLaptopCode
 } from 'react-icons/fa';
 
 const Team = () => {
   const [activePhoto, setActivePhoto] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const cofounders = teamMembers.filter((m) => m.category === 'cofounder');
-  const managingEditors = teamMembers.filter((m) => m.category === 'managing');
-  const associateEditors = teamMembers.filter((m) => m.category === 'associate');
-  const assistantEditors = teamMembers.filter((m) => m.category === 'assistant');
+  const cofounders = teamMembers.filter((m) =>
+    Array.isArray(m.category) ? m.category.includes('cofounder') : m.category === 'cofounder'
+  );
+  const managingEditors = teamMembers.filter((m) =>
+    Array.isArray(m.category) ? m.category.includes('managing') : m.category === 'managing'
+  );
+  const associateEditors = teamMembers.filter((m) =>
+    Array.isArray(m.category) ? m.category.includes('associate') : m.category === 'associate'
+  );
+  const assistantEditors = teamMembers.filter((m) =>
+    Array.isArray(m.category) ? m.category.includes('assistant') : m.category === 'assistant'
+  );
+  const technicalTeam = teamMembers.filter((m) =>
+    Array.isArray(m.category) ? m.category.includes('technical') : m.category === 'technical'
+  );
 
   const filteredMembers = teamMembers.filter((m) =>
     m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -33,73 +45,92 @@ const Team = () => {
     m.department.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const renderMemberCard = (member) => (
-    <div
-      key={member.id}
-      className="bg-white border-2 border-[#E5E0D8] hover:border-[#8E7C68] rounded-3xl p-7 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
-    >
-      <div>
-        {/* Circular Portrait Photo */}
-        <div className="relative mb-6 flex justify-center">
-          <div
-            onClick={() => setActivePhoto(member)}
-            className="cursor-pointer relative w-36 h-36 sm:w-40 sm:h-40 rounded-full overflow-hidden bg-[#FAF7F2] border-4 border-[#E5E0D8] group-hover:border-[#8E7C68] shadow-lg transition-all group-hover:scale-105 p-1"
-          >
-            <img
-              src={member.image}
-              alt={member.name}
-              className="w-full h-full object-cover object-top rounded-full"
-              loading="lazy"
-            />
-            <div className="absolute inset-0 rounded-full bg-[#1E2530]/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-bold gap-1">
-              <FaExpandAlt className="text-[10px]" /> Enlarge
+  const renderMemberCard = (member, section = '') => {
+    const isTechSection = section === 'technical';
+    const displayRole = (isTechSection && member.technicalRole) ? member.technicalRole : member.role;
+    const displayBadge = (isTechSection && member.technicalBadge) ? member.technicalBadge : member.badge;
+
+    return (
+      <div
+        key={`${member.id}-${section || 'all'}`}
+        className="bg-white border-2 border-[#E5E0D8] hover:border-[#8E7C68] rounded-3xl p-7 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
+      >
+        <div>
+          {/* Circular Portrait Photo */}
+          <div className="relative mb-6 flex justify-center">
+            <div
+              onClick={() => setActivePhoto({ ...member, role: displayRole, badge: displayBadge })}
+              className="cursor-pointer relative w-36 h-36 sm:w-40 sm:h-40 rounded-full overflow-hidden bg-[#FAF7F2] border-4 border-[#E5E0D8] group-hover:border-[#8E7C68] shadow-lg transition-all group-hover:scale-105 p-1 flex items-center justify-center"
+            >
+              {member.image ? (
+                <img
+                  src={member.image}
+                  alt={member.name}
+                  className="w-full h-full object-cover rounded-full"
+                  style={{ objectPosition: member.imagePosition || '50% 15%' }}
+                  loading="lazy"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=1E2530&color=F9F6F0&size=256&bold=true`;
+                  }}
+                />
+              ) : (
+                <div className="w-full h-full rounded-full bg-[#1E2530] text-[#F9F6F0] flex items-center justify-center text-2xl font-bold font-serif shadow-inner">
+                  {member.name.split(' ').filter(Boolean).map(n => n[0]).slice(0, 2).join('')}
+                </div>
+              )}
+              <div className="absolute inset-0 rounded-full bg-[#1E2530]/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-bold gap-1">
+                <FaExpandAlt className="text-[10px]" /> Enlarge
+              </div>
             </div>
           </div>
+
+          {/* Real Name & Role Badge */}
+          <div className="text-center space-y-2 mb-4">
+            <span className="inline-block px-3 py-0.5 bg-[#FAF7F2] border border-[#E5E0D8] text-[#8E7C68] rounded-full text-[11px] font-bold uppercase tracking-wider shadow-xs">
+              {displayBadge}
+            </span>
+            <h3 className="text-2xl font-extrabold text-[#1E2530] font-serif leading-snug group-hover:text-[#8E7C68] transition-colors">
+              <Link to={`/team/${member.id}`}>
+                {member.name}
+              </Link>
+            </h3>
+            <p className="text-xs font-semibold text-[#8E7C68] font-serif">
+              {displayRole}
+            </p>
+            {member.department && (
+              <p className="text-[11px] text-gray-500">
+                {member.department}
+              </p>
+            )}
+          </div>
+
+          {/* Description */}
+          <p className="text-xs sm:text-sm text-[#5C5446] font-serif leading-relaxed text-center mb-6">
+            {member.description}
+          </p>
         </div>
 
-        {/* Real Name & Role Badge */}
-        <div className="text-center space-y-2 mb-4">
-          <span className="inline-block px-3 py-0.5 bg-[#FAF7F2] border border-[#E5E0D8] text-[#8E7C68] rounded-full text-[11px] font-bold uppercase tracking-wider shadow-xs">
-            {member.badge}
-          </span>
-          <h3 className="text-2xl font-extrabold text-[#1E2530] font-serif leading-snug group-hover:text-[#8E7C68] transition-colors">
-            <Link to={`/team/${member.id}`}>
-              {member.name}
-            </Link>
-          </h3>
-          <p className="text-xs font-semibold text-[#8E7C68] font-serif">
-            {member.role}
-          </p>
-          <p className="text-[11px] text-gray-500">
-            {member.department}
-          </p>
+        {/* Card Footer */}
+        <div className="pt-4 border-t border-[#E5E0D8] flex items-center justify-between text-xs">
+          <a
+            href={`mailto:${member.email}`}
+            className="text-[#5C5446] hover:text-[#8E7C68] font-semibold inline-flex items-center gap-1.5 transition-colors"
+            title={member.email}
+          >
+            <FaEnvelope className="text-[#8E7C68]" /> Email
+          </a>
+
+          <Link
+            to={`/team/${member.id}`}
+            className="inline-flex items-center gap-1 font-bold text-[#1E2530] hover:text-[#8E7C68] transition-colors"
+          >
+            View Profile <FaExternalLinkAlt className="text-[10px]" />
+          </Link>
         </div>
-
-        {/* Description */}
-        <p className="text-xs sm:text-sm text-[#5C5446] font-serif leading-relaxed text-center mb-6">
-          {member.description}
-        </p>
       </div>
-
-      {/* Card Footer */}
-      <div className="pt-4 border-t border-[#E5E0D8] flex items-center justify-between text-xs">
-        <a
-          href={`mailto:${member.email}`}
-          className="text-[#5C5446] hover:text-[#8E7C68] font-semibold inline-flex items-center gap-1.5 transition-colors"
-          title={member.email}
-        >
-          <FaEnvelope className="text-[#8E7C68]" /> Email
-        </a>
-
-        <Link
-          to={`/team/${member.id}`}
-          className="inline-flex items-center gap-1 font-bold text-[#1E2530] hover:text-[#8E7C68] transition-colors"
-        >
-          View Profile <FaExternalLinkAlt className="text-[10px]" />
-        </Link>
-      </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="flex-grow bg-[#F9F6F0] text-[#2C2C2C] py-16 md:py-24 px-4">
@@ -183,7 +214,7 @@ const Team = () => {
 
               <AnimatedSection animation="fade-up" delay={200}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                  {cofounders.map(renderMemberCard)}
+                  {cofounders.map((m) => renderMemberCard(m, 'cofounder'))}
                 </div>
               </AnimatedSection>
             </div>
@@ -204,7 +235,7 @@ const Team = () => {
 
               <AnimatedSection animation="fade-up" delay={200}>
                 <div className="max-w-md mx-auto">
-                  {managingEditors.map(renderMemberCard)}
+                  {managingEditors.map((m) => renderMemberCard(m, 'managing'))}
                 </div>
               </AnimatedSection>
             </div>
@@ -225,7 +256,7 @@ const Team = () => {
 
               <AnimatedSection animation="fade-up" delay={200}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                  {associateEditors.map(renderMemberCard)}
+                  {associateEditors.map((m) => renderMemberCard(m, 'associate'))}
                 </div>
               </AnimatedSection>
             </div>
@@ -246,7 +277,28 @@ const Team = () => {
 
               <AnimatedSection animation="fade-up" delay={200}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                  {assistantEditors.map(renderMemberCard)}
+                  {assistantEditors.map((m) => renderMemberCard(m, 'assistant'))}
+                </div>
+              </AnimatedSection>
+            </div>
+
+            {/* 5. Technical Team & Support Section */}
+            <div className="space-y-8">
+              <AnimatedSection animation="fade-up" delay={100}>
+                <div className="flex items-center justify-between pb-3 border-b border-[#E5E0D8]">
+                  <div>
+                    <span className="text-xs font-bold text-[#8E7C68] uppercase tracking-wider block">Systems Infrastructure & IT Operations</span>
+                    <h2 className="text-2xl sm:text-3xl font-bold text-[#1E2530] font-serif flex items-center gap-2">
+                      <FaLaptopCode className="text-[#8E7C68] text-xl" /> Technical Team & Support
+                    </h2>
+                  </div>
+                  <span className="text-xs font-semibold text-gray-500">{technicalTeam.length} Members</span>
+                </div>
+              </AnimatedSection>
+
+              <AnimatedSection animation="fade-up" delay={200}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                  {technicalTeam.map((m) => renderMemberCard(m, 'technical'))}
                 </div>
               </AnimatedSection>
             </div>
@@ -300,12 +352,23 @@ const Team = () => {
             </div>
 
             <div className="p-8 bg-neutral-950 flex flex-col items-center justify-center">
-              <div className="w-48 h-48 sm:w-56 sm:h-56 rounded-full overflow-hidden border-4 border-[#8E7C68] shadow-2xl bg-[#FAF7F2] p-1">
-                <img
-                  src={activePhoto.image}
-                  alt={activePhoto.name}
-                  className="w-full h-full object-cover object-top rounded-full"
-                />
+              <div className="w-48 h-48 sm:w-56 sm:h-56 rounded-full overflow-hidden border-4 border-[#8E7C68] shadow-2xl bg-[#FAF7F2] p-1 flex items-center justify-center">
+                {activePhoto.image ? (
+                  <img
+                    src={activePhoto.image}
+                    alt={activePhoto.name}
+                    className="w-full h-full object-cover rounded-full"
+                    style={{ objectPosition: activePhoto.imagePosition || '50% 15%' }}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(activePhoto.name)}&background=1E2530&color=F9F6F0&size=256&bold=true`;
+                    }}
+                  />
+                ) : (
+                  <div className="w-full h-full rounded-full bg-[#1E2530] text-[#F9F6F0] flex items-center justify-center text-3xl font-bold font-serif shadow-inner">
+                    {activePhoto.name.split(' ').filter(Boolean).map(n => n[0]).slice(0, 2).join('')}
+                  </div>
+                )}
               </div>
             </div>
 

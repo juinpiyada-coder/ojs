@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { apiFetch } from '../utils/api';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -18,24 +19,27 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
+      const data = await apiFetch('/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: { email, password }
       });
-      
-      const data = await response.json();
-      
-      if (!response.ok || data.status === 'error') {
-        throw new Error(data.message || 'Login failed');
+
+      const roleStr = (data.data?.role_name || '').toLowerCase();
+      let targetUrl = data.redirect_url;
+      if (!targetUrl) {
+        if (roleStr.includes('admin')) targetUrl = '/admin/dashboard';
+        else if (roleStr.includes('assistant')) targetUrl = '/assistant-editor/dashboard';
+        else if (roleStr.includes('editor')) targetUrl = '/editor/dashboard';
+        else if (roleStr.includes('reviewer')) targetUrl = '/reviewer/dashboard';
+        else targetUrl = '/user/dashboard';
       }
 
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.data));
-      window.location.href = data.redirect_url;
+      window.location.href = targetUrl;
       
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Login failed. Please check your credentials.');
     } finally {
       setLoading(false);
     }
@@ -56,24 +60,33 @@ const Login = () => {
     // Send Firebase token to your backend to create/get user
     try {
       const idToken = await user.getIdToken();
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/google`, {
+      const data = await apiFetch('/auth/google', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idToken })
+        body: { 
+          idToken,
+          email: user.email,
+          display_name: user.displayName,
+          photo_url: user.photoURL,
+          uid: user.uid
+        }
       });
-      
-      const data = await response.json();
-      
-      if (!response.ok || data.status === 'error') {
-        throw new Error(data.message || 'Google login failed');
+
+      const roleStr = (data.data?.role_name || '').toLowerCase();
+      let targetUrl = data.redirect_url;
+      if (!targetUrl) {
+        if (roleStr.includes('admin')) targetUrl = '/admin/dashboard';
+        else if (roleStr.includes('assistant')) targetUrl = '/assistant-editor/dashboard';
+        else if (roleStr.includes('editor')) targetUrl = '/editor/dashboard';
+        else if (roleStr.includes('reviewer')) targetUrl = '/reviewer/dashboard';
+        else targetUrl = '/user/dashboard';
       }
 
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.data));
-      window.location.href = data.redirect_url || '/user/dashboard';
+      window.location.href = targetUrl;
       
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Google sign-in failed');
     } finally {
       setGoogleLoading(false);
     }

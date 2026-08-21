@@ -1,0 +1,65 @@
+# ==============================================================================
+# Open Journal System (OJS) - Robots.txt for Search Engines & Googlebot
+# ==============================================================================
+
+User-agent: *
+Allow: /
+Allow: /about
+Allow: /editorial-board
+Allow: /editor/*
+Allow: /call-for-papers
+Allow: /submission
+Allow: /team
+Allow: /team/*
+Allow: /contact
+Allow: /issues
+Allow: /special-collections
+Allow: /author-guidelines
+Allow: /anonymous-review
+Allow: /glossa-special-collections
+Allow: /journal-policies
+Allow: /publisher-policies
+Allow: /become-reviewer
+Allow: /governance
+Allow: /search
+Allow: /ethics
+Allow: /template
+Allow: /current-issue
+Allow: /archive
+Allow: /privacy-policy
+Allow: /terms-of-use
+Allow: /accessibility
+Allow: /journals/*
+Allow: /storage/*
+Allow: /manuscripts/pdf/*
+
+# Disallow private user dashboards and administrative backends from search results
+Disallow: /admin/
+Disallow: /editor/dashboard
+Disallow: /assistant-editor/
+Disallow: /reviewer/
+Disallow: /user/
+Disallow: /api/
+
+# Google Scholar Crawler Optimization
+User-agent: Googlebot
+Allow: /
+
+User-agent: Google-Scholar
+Allow: /
+Allow: /archive
+Allow: /current-issue
+Allow: /storage/pdf/
+Allow: /manuscripts/pdf/
+
+User-agent: Googlebot-Image
+Allow: /logo.png
+Allow: /favicon.svg
+Allow: /storage/
+Allow: /s3_img/
+Allow: /Editorial-Board/
+Allow: /Team Members/
+
+# Sitemaps
+Sitemap: https://theliteraryscientist.com/sitemap.xml
+Sitemap: https://proxy.literaria-ajournaloftheenglishdepartmentwbsu.org/api/sitemap.xml

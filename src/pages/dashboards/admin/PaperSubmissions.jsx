@@ -1,32 +1,104 @@
 import React, { useState, useEffect } from 'react';
 import { apiFetch, resolveFileUrl } from '../../../utils/api';
 import { toast } from 'react-toastify';
-import { FaEdit, FaTrash } from 'react-icons/fa';
+import { 
+  FaEdit, 
+  FaTrash, 
+  FaBookOpen, 
+  FaUserCheck, 
+  FaUserShield, 
+  FaFilePdf, 
+  FaSearch, 
+  FaCheckCircle, 
+  FaClock, 
+  FaShieldAlt, 
+  FaUpload, 
+  FaDownload, 
+  FaTimes,
+  FaLayerGroup,
+  FaHistory,
+  FaPlusCircle,
+  FaFileAlt,
+  FaFileExcel,
+  FaCopy
+} from 'react-icons/fa';
+import AutoAssignRedactorModal from '../../../components/AutoAssignRedactorModal';
+import { exportToCsv, copyTableToClipboard } from '../../../utils/excelExport';
+
+const statusSteps = [
+  { key: 'submission', label: '1. Submission', statuses: ['incomplete', 'submitted'] },
+  { key: 'review', label: '2. Peer Review', statuses: ['under_review', 'in_review'] },
+  { key: 'copyediting', label: '3. Copyediting / Proofing', statuses: ['copyediting'] },
+  { key: 'decision', label: '4. Decision / Accepted', statuses: ['accepted', 'rejected'] },
+  { key: 'published', label: '5. Published', statuses: ['published'] }
+];
+
+const getStepIndex = (status) => {
+  switch (status) {
+    case 'incomplete': return 0;
+    case 'submitted': return 0;
+    case 'under_review':
+    case 'in_review': return 1;
+    case 'copyediting': return 2;
+    case 'accepted': return 3;
+    case 'rejected': return 3;
+    case 'published': return 4;
+    default: return 0;
+  }
+};
 
 const PaperSubmissions = () => {
   const [articles, setArticles] = useState([]);
   const [users, setUsers] = useState([]);
+  const [volumes, setVolumes] = useState([]);
+  const [issues, setIssues] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Form State
+  // Search & Filter
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL');
+
+  // New / Edit Basic Submission Modal
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     article_id: '',
     title: '',
     abstract: '',
+    keywords: '',
     author_user_id: '',
     assigned_editor_id: '',
+    issue_id: '',
+    page_range: '',
     manuscript_pdf_id: '',
     status: 'submitted',
     doi: ''
   });
-  
-  // File State
   const [selectedFile, setSelectedFile] = useState(null);
-  const [viewingDocUrl, setViewingDocUrl] = useState(null);
-  
   const [isEditing, setIsEditing] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
+
+  // Manage Workflow & Assignment Modal
+  const [managingArticle, setManagingArticle] = useState(null);
+  const [workflowData, setWorkflowData] = useState({
+    status: 'submitted',
+    assigned_editor_id: '',
+    editor_notes: '',
+    copyedit_notes: '',
+    volume_id: '',
+    issue_id: '',
+    doi: '',
+    page_range: '',
+    reviewer_user_id: '',
+    review_due_date: '',
+    copyeditFile: null
+  });
+  const [workflowLoading, setWorkflowLoading] = useState(false);
+
+  // File Viewer Modal
+  const [viewingDocUrl, setViewingDocUrl] = useState(null);
+  const [redactorArticle, setRedactorArticle] = useState(null);
+
+  const user = JSON.parse(localStorage.getItem('user')) || {};
 
   useEffect(() => {
     fetchData();
@@ -35,12 +107,16 @@ const PaperSubmissions = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [articlesData, usersData] = await Promise.all([
+      const [articlesData, usersData, volumesData, issuesData] = await Promise.all([
         apiFetch('/articles'),
-        apiFetch('/users')
+        apiFetch('/users'),
+        apiFetch('/volumes?with_issues=true'),
+        apiFetch('/issues')
       ]);
       setArticles(articlesData.data || []);
       setUsers(usersData.data || []);
+      setVolumes(volumesData.data || []);
+      setIssues(issuesData.data || []);
     } catch (err) {
       toast.error('Failed to load data: ' + err.message);
     } finally {
@@ -48,6 +124,15 @@ const PaperSubmissions = () => {
     }
   };
 
+  // Filtered lists of editors and reviewers
+  const editorUsers = users.filter(u => 
+    ['editor', 'assistant editor', 'admin'].includes(u.role_name?.toLowerCase())
+  );
+  const reviewerUsers = users.filter(u => 
+    ['reviewer', 'editor', 'assistant editor', 'admin'].includes(u.role_name?.toLowerCase())
+  );
+
+  // 1. Basic New / Edit Modal
   const openModal = (article = null) => {
     setSelectedFile(null);
     if (article) {
@@ -56,8 +141,11 @@ const PaperSubmissions = () => {
         article_id: article.article_id,
         title: article.title,
         abstract: article.abstract,
+        keywords: article.keywords || '',
         author_user_id: article.author_user_id,
         assigned_editor_id: article.assigned_editor_id || '',
+        issue_id: article.issue_id || '',
+        page_range: article.page_range || '',
         manuscript_pdf_id: article.manuscript_pdf_id || '',
         manuscript_url: article.manuscript_url || '',
         status: article.status || 'submitted',
@@ -69,8 +157,11 @@ const PaperSubmissions = () => {
         article_id: '',
         title: '',
         abstract: '',
+        keywords: '',
         author_user_id: users.length > 0 ? users[0].user_id : '',
         assigned_editor_id: '',
+        issue_id: '',
+        page_range: '',
         manuscript_pdf_id: '',
         status: 'submitted',
         doi: ''
@@ -94,12 +185,11 @@ const PaperSubmissions = () => {
     let finalPdfId = formData.manuscript_pdf_id;
 
     try {
-      // 1. If there's a new file selected, upload it via /api/docs first to get a doc_id
       if (selectedFile) {
-        // We use FormData to send the physical file
         const docPayload = new FormData();
         docPayload.append('uploaded_by', formData.author_user_id || users[0]?.user_id || 1);
         docPayload.append('file', selectedFile);
+        docPayload.append('folder', 'manuscripts');
         
         const docRes = await apiFetch('/docs', {
           method: 'POST',
@@ -109,7 +199,6 @@ const PaperSubmissions = () => {
         finalPdfId = docRes.data.doc_id;
       }
       
-      // Validation
       if (!finalPdfId) {
         toast.error('A manuscript document is required.');
         setFormLoading(false);
@@ -122,9 +211,10 @@ const PaperSubmissions = () => {
       };
       
       if (!payload.assigned_editor_id) delete payload.assigned_editor_id;
+      if (!payload.issue_id) delete payload.issue_id;
+      if (!payload.page_range) delete payload.page_range;
       if (!payload.doi) delete payload.doi;
 
-      // 2. Save the Article
       if (isEditing) {
         await apiFetch(`/articles?id=${formData.article_id}`, {
           method: 'PUT',
@@ -148,6 +238,103 @@ const PaperSubmissions = () => {
     }
   };
 
+  // 2. Manage Workflow & Assignment Modal
+  const openWorkflowModal = (article) => {
+    setManagingArticle(article);
+    setWorkflowData({
+      status: article.status || 'submitted',
+      assigned_editor_id: article.assigned_editor_id || '',
+      editor_notes: article.editor_notes || '',
+      copyedit_notes: article.copyedit_notes || '',
+      volume_id: article.volume_id || '',
+      issue_id: article.issue_id || '',
+      doi: article.doi || '',
+      page_range: article.page_range || '',
+      reviewer_user_id: '',
+      review_due_date: '',
+      copyeditFile: null
+    });
+  };
+
+  const handleSaveWorkflow = async (e) => {
+    e.preventDefault();
+    if (!managingArticle) return;
+
+    setWorkflowLoading(true);
+    try {
+      let copyeditDocId = managingArticle.copyedit_doc_id;
+
+      // 1. Upload copyedit document if provided
+      if (workflowData.copyeditFile) {
+        const uploadForm = new FormData();
+        uploadForm.append('file', workflowData.copyeditFile);
+        uploadForm.append('uploaded_by', user.user_id || 1);
+        uploadForm.append('folder', 'copyediting');
+
+        const uploadRes = await apiFetch('/docs', {
+          method: 'POST',
+          body: uploadForm
+        });
+        if (uploadRes && uploadRes.data?.doc_id) {
+          copyeditDocId = uploadRes.data.doc_id;
+        }
+      }
+
+      // 2. Patch Article with Assigned Editor, Status, Notes, Volume/Issue, DOI
+      const payload = {
+        status: workflowData.status,
+        assigned_editor_id: workflowData.assigned_editor_id ? parseInt(workflowData.assigned_editor_id) : null,
+        editor_notes: workflowData.editor_notes,
+        copyedit_notes: workflowData.copyedit_notes,
+        copyedit_doc_id: copyeditDocId,
+        issue_id: workflowData.issue_id ? parseInt(workflowData.issue_id) : null,
+        doi: workflowData.doi ? workflowData.doi.trim() : null,
+        page_range: workflowData.page_range ? workflowData.page_range.trim() : null
+      };
+
+      await apiFetch(`/articles?id=${managingArticle.article_id}`, {
+        method: 'PATCH',
+        body: payload
+      });
+
+      // 3. Assign Reviewer if selected
+      if (workflowData.reviewer_user_id) {
+        await apiFetch('/reviews', {
+          method: 'POST',
+          body: {
+            article_id: managingArticle.article_id,
+            reviewer_user_id: parseInt(workflowData.reviewer_user_id),
+            due_date: workflowData.review_due_date || null,
+            status: 'assigned'
+          }
+        });
+        toast.success('Peer reviewer assigned successfully!');
+      }
+
+      toast.success('Paper status, editor, and review assignments updated!');
+      setManagingArticle(null);
+      await fetchData();
+    } catch (err) {
+      toast.error(err.message || 'Failed to update workflow');
+    } finally {
+      setWorkflowLoading(false);
+    }
+  };
+
+  const handleDeleteReview = async (reviewId) => {
+    if (!window.confirm('Are you sure you want to remove this reviewer assignment?')) return;
+    try {
+      await apiFetch(`/reviews?id=${reviewId}`, { method: 'DELETE' });
+      toast.success('Reviewer assignment removed');
+      await fetchData();
+      // Refresh current managing article modal
+      const refreshedArt = (await apiFetch(`/articles?id=${managingArticle.article_id}`)).data;
+      setManagingArticle(refreshedArt);
+    } catch (err) {
+      toast.error('Failed to remove review: ' + err.message);
+    }
+  };
+
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this submission?')) {
       try {
@@ -167,7 +354,6 @@ const PaperSubmissions = () => {
 
   const renderFileViewer = () => {
     if (!viewingDocUrl) return null;
-    
     const ext = getFileExtension(viewingDocUrl);
     
     if (ext === 'pdf') {
@@ -178,165 +364,800 @@ const PaperSubmissions = () => {
           <img src={viewingDocUrl} alt="Document" className="max-w-full max-h-full object-contain shadow-lg" />
         </div>
       );
-    } else if (['doc', 'docx'].includes(ext)) {
-      return (
-        <div className="w-full h-full flex flex-col items-center justify-center p-8 text-center">
-          <div className="w-24 h-24 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mb-6 shadow-sm">
-            <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-          </div>
-          <h4 className="text-2xl font-bold text-[#2C2C2C] mb-2">Word Document</h4>
-          <p className="text-[#5C5446] max-w-md mb-8">
-            Live preview for Office documents is unavailable on local servers. Please download the file to view its contents.
-          </p>
-          <a href={viewingDocUrl} download target="_blank" rel="noreferrer" className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-md hover:shadow-lg">
-            Download File
-          </a>
-        </div>
-      );
     } else {
       return (
         <div className="w-full h-full flex flex-col items-center justify-center p-8 text-center">
-          <p className="text-[#5C5446] mb-4">No preview available for this file type.</p>
-          <a href={viewingDocUrl} download target="_blank" rel="noreferrer" className="px-6 py-3 bg-[#2C2C2C] text-white font-bold rounded-xl">
-            Download
+          <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mb-4 shadow-sm">
+            <FaFileAlt className="w-10 h-10" />
+          </div>
+          <h4 className="text-xl font-bold text-gray-900 mb-2">Download Document</h4>
+          <p className="text-gray-600 max-w-md mb-6 text-xs">
+            Live preview is unavailable for this document type. Please download the file to inspect.
+          </p>
+          <a href={viewingDocUrl} download target="_blank" rel="noreferrer" className="px-6 py-2.5 bg-gray-900 hover:bg-gray-800 text-white font-bold rounded-xl transition-all shadow text-xs">
+            Download File
           </a>
         </div>
       );
     }
   };
 
-  if (loading && articles.length === 0) return <div className="p-8 text-[#8E7C68] font-bold">Loading submissions...</div>;
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case 'published':
+        return <span className="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 text-[11px] font-bold rounded-full uppercase tracking-wider">Published</span>;
+      case 'accepted':
+        return <span className="px-2.5 py-0.5 bg-green-100 text-green-800 text-[11px] font-bold rounded-full uppercase tracking-wider">Accepted</span>;
+      case 'copyediting':
+        return <span className="px-2.5 py-0.5 bg-purple-100 text-purple-800 text-[11px] font-bold rounded-full uppercase tracking-wider">Copyediting</span>;
+      case 'under_review':
+      case 'in_review':
+        return <span className="px-2.5 py-0.5 bg-blue-100 text-blue-800 text-[11px] font-bold rounded-full uppercase tracking-wider">Under Review</span>;
+      case 'rejected':
+        return <span className="px-2.5 py-0.5 bg-red-100 text-red-800 text-[11px] font-bold rounded-full uppercase tracking-wider">Declined</span>;
+      case 'incomplete':
+        return <span className="px-2.5 py-0.5 bg-orange-100 text-orange-800 text-[11px] font-bold rounded-full uppercase tracking-wider">Incomplete</span>;
+      case 'submitted':
+      default:
+        return <span className="px-2.5 py-0.5 bg-amber-100 text-amber-900 text-[11px] font-bold rounded-full uppercase tracking-wider">Submitted</span>;
+    }
+  };
+
+  // Filtered Articles
+  const filteredArticles = articles.filter(art => {
+    const matchesSearch = 
+      art.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      art.abstract?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      art.author_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      art.author_email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      art.editor_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      art.keywords?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (art.reviews && art.reviews.some(r => r.reviewer_name?.toLowerCase().includes(searchTerm.toLowerCase())));
+
+    if (statusFilter === 'ALL') return matchesSearch;
+    if (statusFilter === 'REVIEW') return matchesSearch && ['under_review', 'in_review'].includes(art.status);
+    return matchesSearch && art.status === statusFilter;
+  });
+
+  const availableIssuesInForm = workflowData.volume_id
+    ? issues.filter(i => String(i.volume_id) === String(workflowData.volume_id))
+    : issues;
 
   return (
-    <div className="bg-white p-8 rounded-2xl shadow-sm border border-[#E5E0D8]">
-      <div className="flex justify-between items-center mb-6">
+    <div className="space-y-8">
+      
+      {/* 1. Header & Actions */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 sm:p-8 rounded-xl border border-gray-200 shadow-xs">
         <div>
-          <h2 className="text-2xl font-bold text-[#2C2C2C]">Paper Submissions</h2>
-          <p className="text-[#8E7C68] text-sm mt-1">Manage manuscripts and review statuses</p>
+          <h2 className="text-3xl font-bold text-gray-900 font-sans tracking-tight">
+            Paper Submissions & Lifecycle Management
+          </h2>
+          <p className="text-gray-500 text-sm mt-1 font-medium">
+            Oversee all author submissions, assign Editors & Reviewers, monitor progress, and manage publications.
+          </p>
         </div>
         <button 
           onClick={() => openModal()}
-          className="px-5 py-2.5 bg-[#8E7C68] text-white rounded-lg font-bold hover:bg-[#7a6a57] transition-all shadow-sm hover:shadow"
+          className="px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white font-bold rounded-xl shadow hover:shadow-md transition-all flex items-center gap-2 shrink-0"
         >
-          + New Submission
+          <FaPlusCircle /> + New Submission
         </button>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-[#E5E0D8]">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-[#FAF9F6] border-b border-[#E5E0D8] text-[#5C5446] text-sm">
-              <th className="py-4 px-6 text-left font-bold text-[#8E7C68] uppercase text-xs tracking-wider">Title</th>
-              <th className="py-4 px-6 text-left font-bold text-[#8E7C68] uppercase text-xs tracking-wider">Submitted By</th>
-              <th className="py-4 px-6 text-left font-bold text-[#8E7C68] uppercase text-xs tracking-wider">Submission Date</th>
-              <th className="py-4 px-6 text-left font-bold text-[#8E7C68] uppercase text-xs tracking-wider">Editor</th>
-              <th className="py-4 px-6 font-bold uppercase tracking-wider text-center">Document</th>
-              <th className="py-4 px-6 font-bold uppercase tracking-wider text-center">Status</th>
-              <th className="py-4 px-6 font-bold uppercase tracking-wider text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-[#F0EBE1]">
-            {articles.map(article => (
-              <tr key={article.article_id} className="hover:bg-[#FAF9F6] transition-colors">
-                <td className="py-4 px-6">
-                  <p className="text-[#2C2C2C] font-bold truncate">{article.title}</p>
-                  <p className="text-xs text-[#8E7C68] mt-1 truncate">{article.abstract}</p>
-                </td>
-                <td className="py-4 px-6">
-                  <p className="text-[#5C5446] font-medium">{article.author_name || article.author_user_id}</p>
-                  {article.author_email && (
-                    <p className="text-xs text-[#8E7C68] mt-1">{article.author_email}</p>
-                  )}
-                </td>
-                <td className="py-4 px-6 text-[#5C5446] text-sm">
-                  {new Date(article.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
-                  <p className="text-xs text-[#8E7C68] mt-1">{new Date(article.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
-                </td>
-                <td className="py-4 px-6 text-[#5C5446] text-sm">{article.editor_name || 'Unassigned'}</td>
-                <td className="py-4 px-6 text-center">
-                  {article.manuscript_url ? (
-                    <button onClick={() => setViewingDocUrl(resolveFileUrl(article.manuscript_url))} className="text-blue-600 hover:text-blue-800 font-bold text-sm underline flex items-center justify-center gap-1 mx-auto">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                      View
-                    </button>
-                  ) : (
-                    <span className="text-[#8E7C68] text-xs italic">Missing</span>
-                  )}
-                </td>
-                <td className="py-4 px-6 text-center">
-                  <span className={`px-3 py-1 text-xs rounded-full font-bold uppercase tracking-wider
-                    ${article.status === 'published' ? 'bg-emerald-100 text-emerald-800' : 
-                      article.status === 'in_review' ? 'bg-blue-100 text-blue-800' : 
-                      article.status === 'rejected' ? 'bg-red-100 text-red-800' : 
-                      'bg-yellow-100 text-yellow-800'}`}>
-                    {article.status.replace('_', ' ')}
-                  </span>
-                </td>
-                <td className="py-4 px-6 text-right space-x-3 whitespace-nowrap">
-                  <button onClick={() => openModal(article)} className="text-blue-600 hover:text-blue-800 font-bold transition-colors inline-flex items-center gap-1"><FaEdit /> Edit</button>
-                  <button onClick={() => handleDelete(article.article_id)} className="text-red-500 hover:text-red-700 font-bold transition-colors inline-flex items-center gap-1"><FaTrash /> Delete</button>
-                </td>
-              </tr>
-            ))}
-            {articles.length === 0 && (
-              <tr>
-                <td colSpan="6" className="py-8 text-center text-[#8E7C68] font-medium">No submissions found.</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+      {/* 2. Status Summary KPI Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div 
+          onClick={() => setStatusFilter('ALL')}
+          className={`p-4 rounded-2xl border cursor-pointer transition-all ${statusFilter === 'ALL' ? 'bg-gray-900 text-white shadow-md' : 'bg-white border-gray-100 hover:border-gray-400'}`}
+        >
+          <p className="text-xs font-bold uppercase tracking-wider opacity-80">All Papers</p>
+          <p className="text-2xl font-bold mt-1">{articles.length}</p>
+        </div>
+
+        <div 
+          onClick={() => setStatusFilter('submitted')}
+          className={`p-4 rounded-2xl border cursor-pointer transition-all ${statusFilter === 'submitted' ? 'bg-amber-600 text-white shadow-md' : 'bg-white border-gray-100 hover:border-amber-400'}`}
+        >
+          <p className="text-xs font-bold uppercase tracking-wider opacity-80">Screening</p>
+          <p className="text-2xl font-bold mt-1 text-amber-700">
+            {articles.filter(a => a.status === 'submitted').length}
+          </p>
+        </div>
+
+        <div 
+          onClick={() => setStatusFilter('REVIEW')}
+          className={`p-4 rounded-2xl border cursor-pointer transition-all ${statusFilter === 'REVIEW' ? 'bg-blue-600 text-white shadow-md' : 'bg-white border-gray-100 hover:border-blue-400'}`}
+        >
+          <p className="text-xs font-bold uppercase tracking-wider opacity-80">Under Review</p>
+          <p className="text-2xl font-bold mt-1 text-blue-600">
+            {articles.filter(a => ['under_review', 'in_review'].includes(a.status)).length}
+          </p>
+        </div>
+
+        <div 
+          onClick={() => setStatusFilter('copyediting')}
+          className={`p-4 rounded-2xl border cursor-pointer transition-all ${statusFilter === 'copyediting' ? 'bg-purple-600 text-white shadow-md' : 'bg-white border-gray-100 hover:border-purple-400'}`}
+        >
+          <p className="text-xs font-bold uppercase tracking-wider opacity-80">Copyediting</p>
+          <p className="text-2xl font-bold mt-1 text-purple-600">
+            {articles.filter(a => a.status === 'copyediting').length}
+          </p>
+        </div>
+
+        <div 
+          onClick={() => setStatusFilter('accepted')}
+          className={`p-4 rounded-2xl border cursor-pointer transition-all ${statusFilter === 'accepted' ? 'bg-green-600 text-white shadow-md' : 'bg-white border-gray-100 hover:border-green-400'}`}
+        >
+          <p className="text-xs font-bold uppercase tracking-wider opacity-80">Accepted</p>
+          <p className="text-2xl font-bold mt-1 text-green-700">
+            {articles.filter(a => a.status === 'accepted').length}
+          </p>
+        </div>
+
+        <div 
+          onClick={() => setStatusFilter('published')}
+          className={`p-4 rounded-2xl border cursor-pointer transition-all ${statusFilter === 'published' ? 'bg-emerald-600 text-white shadow-md' : 'bg-white border-gray-100 hover:border-emerald-400'}`}
+        >
+          <p className="text-xs font-bold uppercase tracking-wider opacity-80">Published</p>
+          <p className="text-2xl font-bold mt-1 text-emerald-600">
+            {articles.filter(a => a.status === 'published').length}
+          </p>
+        </div>
       </div>
 
-      {/* Form Modal - Fixed Alignment */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 sm:p-6 overflow-y-auto">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl flex flex-col relative my-auto">
+      {/* 3. Search & Filter Bar */}
+      <div className="bg-white p-4 rounded-2xl border border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xs">
+        <div className="relative w-full sm:w-80">
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search by title, author, editor, reviewer, keyword..."
+            className="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
+          />
+          <FaSearch className="absolute left-3 top-3.5 text-gray-400 text-xs" />
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2 text-xs font-medium text-gray-500">
+          <span>Filter:</span>
+          {['ALL', 'submitted', 'under_review', 'copyediting', 'accepted', 'published', 'rejected'].map(st => (
+            <button
+              key={st}
+              onClick={() => setStatusFilter(st)}
+              className={`px-3 py-1.5 rounded-lg font-bold transition-all ${statusFilter === st ? 'bg-gray-900 text-white' : 'bg-gray-50 hover:bg-gray-100 text-gray-900'}`}
+            >
+              {st === 'ALL' ? 'All' : st.replace('_', ' ').toUpperCase()}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* 4. Submissions & Assignments Excel Spreadsheet Grid */}
+      <div className="bg-white border-2 border-slate-300 rounded-lg shadow-sm overflow-hidden flex flex-col font-sans">
+        
+        {/* Excel Green Ribbon Bar */}
+        <div className="bg-[#107C41] text-white px-4 py-2 flex flex-wrap items-center justify-between gap-3 select-none">
+          <div className="flex items-center gap-2.5">
+            <FaFileExcel className="text-white text-lg shrink-0" />
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-xs tracking-wider uppercase">OJS_Paper_Submissions_Master.xlsx</span>
+                <span className="bg-emerald-800/80 text-[10px] px-1.5 py-0.2 rounded font-mono">AutoSave: ON</span>
+              </div>
+              <p className="text-[10px] text-emerald-100 font-mono">Spreadsheet Output Grid • Live Database Sync</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              onClick={() => {
+                const rows = filteredArticles.map(a => ({
+                  'ID': a.article_id,
+                  'Title': a.title,
+                  'Author': a.author_name || a.author_user_id,
+                  'Editor': a.editor_name || 'Unassigned',
+                  'Volume': a.volume_number || '',
+                  'Issue': a.issue_number || '',
+                  'Status': a.status,
+                  'Keywords': a.keywords || ''
+                }));
+                exportToCsv('OJS_Submissions_Master', rows, ['ID', 'Title', 'Author', 'Editor', 'Volume', 'Issue', 'Status', 'Keywords']);
+                toast.success(`Exported ${rows.length} articles to CSV!`);
+              }}
+              className="px-3 py-1 bg-white/15 hover:bg-white/25 text-white rounded text-xs font-bold transition-all flex items-center gap-1.5 border border-white/20"
+            >
+              <FaFileExcel className="text-emerald-200" /> Export CSV / .xlsx
+            </button>
+            <button
+              onClick={() => {
+                const rows = filteredArticles.map(a => ({
+                  'ID': a.article_id,
+                  'Title': a.title,
+                  'Author': a.author_name || a.author_user_id,
+                  'Status': a.status
+                }));
+                copyTableToClipboard(rows, ['ID', 'Title', 'Author', 'Status']);
+                toast.info("Copied table rows to clipboard (TSV format)!");
+              }}
+              className="px-3 py-1 bg-white/15 hover:bg-white/25 text-white rounded text-xs font-bold transition-all flex items-center gap-1.5 border border-white/20"
+            >
+              <FaCopy className="text-emerald-200" /> Copy TSV
+            </button>
+          </div>
+        </div>
+
+        {/* Excel Formula / Filter Bar */}
+        <div className="bg-[#F8F9FA] border-b border-slate-300 px-3 py-1.5 flex items-center gap-2 text-xs font-mono text-slate-700 select-none">
+          <div className="bg-white border border-slate-300 px-2 py-0.5 rounded text-center w-14 font-bold text-slate-800 shadow-xs">
+            A1
+          </div>
+          <div className="text-slate-400 font-serif italic text-sm">fx</div>
+          <div className="flex-1 bg-white border border-slate-300 px-2.5 py-0.5 rounded text-slate-800 flex items-center justify-between">
+            <span className="truncate text-[11px] text-slate-600">
+              =FILTER(Manuscripts!A1:H{filteredArticles.length}, Status=="{statusFilter}"{searchTerm ? `, Search=="${searchTerm}"` : ''})
+            </span>
+            <span className="text-[10px] text-emerald-700 font-bold ml-2 shrink-0">
+              COUNT: {filteredArticles.length}
+            </span>
+          </div>
+        </div>
+
+        {/* Spreadsheet Data Grid */}
+        <div className="overflow-x-auto overflow-y-auto max-h-[650px] bg-slate-100">
+          <table className="w-full border-collapse text-left font-mono text-xs select-text">
+            <thead>
+              <tr className="bg-[#E9EDF4] border-b-2 border-slate-400 text-slate-700 sticky top-0 z-10 shadow-xs">
+                <th className="w-10 text-center py-1.5 px-2 font-bold text-[11px] border-r border-slate-300 bg-[#DCE2EC] text-slate-600 select-none">
+                  #
+                </th>
+                <th className="py-1.5 px-3 font-bold text-[11px] border-r border-slate-300 tracking-wider uppercase text-slate-800 max-w-xs">
+                  <span className="text-emerald-800 mr-1 font-bold text-[10px]">A</span> Manuscript Title & Topics
+                </th>
+                <th className="py-1.5 px-3 font-bold text-[11px] border-r border-slate-300 tracking-wider uppercase text-slate-800">
+                  <span className="text-emerald-800 mr-1 font-bold text-[10px]">B</span> Submitted By
+                </th>
+                <th className="py-1.5 px-3 font-bold text-[11px] border-r border-slate-300 tracking-wider uppercase text-slate-800">
+                  <span className="text-emerald-800 mr-1 font-bold text-[10px]">C</span> Assigned Editor
+                </th>
+                <th className="py-1.5 px-3 font-bold text-[11px] border-r border-slate-300 tracking-wider uppercase text-slate-800">
+                  <span className="text-emerald-800 mr-1 font-bold text-[10px]">D</span> Assigned Reviewer(s)
+                </th>
+                <th className="py-1.5 px-3 font-bold text-[11px] border-r border-slate-300 tracking-wider uppercase text-slate-800">
+                  <span className="text-emerald-800 mr-1 font-bold text-[10px]">E</span> Vol / Issue
+                </th>
+                <th className="py-1.5 px-3 font-bold text-[11px] border-r border-slate-300 tracking-wider uppercase text-slate-800 text-center">
+                  <span className="text-emerald-800 mr-1 font-bold text-[10px]">F</span> Manuscript
+                </th>
+                <th className="py-1.5 px-3 font-bold text-[11px] border-r border-slate-300 tracking-wider uppercase text-slate-800 text-center">
+                  <span className="text-emerald-800 mr-1 font-bold text-[10px]">G</span> Status
+                </th>
+                <th className="py-1.5 px-3 font-bold text-[11px] border-r border-slate-300 tracking-wider uppercase text-slate-800 text-right">
+                  <span className="text-emerald-800 mr-1 font-bold text-[10px]">H</span> Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-slate-200 text-xs">
+              {loading ? (
+                <tr>
+                  <td colSpan="9" className="py-12 text-center text-slate-500 font-mono">
+                    <div className="inline-flex items-center gap-2">
+                      <FaClock className="animate-spin text-emerald-600" />
+                      <span>Loading spreadsheet rows from database...</span>
+                    </div>
+                  </td>
+                </tr>
+              ) : filteredArticles.length === 0 ? (
+                <tr>
+                  <td colSpan="9" className="py-12 text-center text-slate-400 font-mono italic">
+                    No submissions matching filter criteria in spreadsheet.
+                  </td>
+                </tr>
+              ) : (
+                filteredArticles.map((article, rIdx) => (
+                  <tr key={article.article_id} className={`hover:bg-[#E8F0FE] transition-colors ${rIdx % 2 === 0 ? 'bg-white' : 'bg-[#FBFBFC]'}`}>
+                    
+                    {/* Row Index */}
+                    <td className="text-center py-2 px-2 font-bold text-[11px] border-r border-slate-300 bg-[#F0F3F7] text-slate-500 select-none border-b border-slate-200">
+                      {rIdx + 1}
+                    </td>
+
+                    {/* Title & Metadata */}
+                    <td className="py-2 px-3 border-r border-slate-200 border-b border-slate-200 max-w-xs font-sans">
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-mono font-bold text-[10px] text-slate-500 bg-slate-100 px-1 py-0.2 rounded border border-slate-200">#{article.article_id}</span>
+                        <p className="font-bold text-slate-900 truncate text-xs">{article.title}</p>
+                      </div>
+                      {article.keywords && (
+                        <div className="flex flex-wrap gap-1 mt-1 font-mono">
+                          {article.keywords.split(',').map((kw, i) => kw.trim() && (
+                            <span key={i} className="inline-block text-[9px] font-semibold bg-slate-100 text-slate-600 border border-slate-200 px-1.5 py-0.2 rounded">
+                              #{kw.trim()}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </td>
+
+                    {/* Submitted By */}
+                    <td className="py-2 px-3 border-r border-slate-200 border-b border-slate-200 font-sans">
+                      <p className="font-bold text-slate-800 text-xs">{article.author_name || `User #${article.author_user_id}`}</p>
+                      {article.author_email && (
+                        <p className="text-[10px] text-slate-500 font-mono mt-0.5">{article.author_email}</p>
+                      )}
+                    </td>
+
+                    {/* Assigned Editor */}
+                    <td className="py-2 px-3 border-r border-slate-200 border-b border-slate-200 text-xs font-sans">
+                      {article.editor_name ? (
+                        <div className="flex items-center gap-1.5 font-bold text-slate-900">
+                          <FaUserShield className="text-slate-500 text-xs flex-shrink-0" />
+                          <span>{article.editor_name}</span>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => openWorkflowModal(article)}
+                          className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-300 px-2 py-0.5 rounded transition-colors"
+                        >
+                          <FaUserShield className="text-[9px]" /> + Assign Editor
+                        </button>
+                      )}
+                    </td>
+
+                    {/* Assigned Reviewers */}
+                    <td className="py-2 px-3 border-r border-slate-200 border-b border-slate-200 text-xs font-sans">
+                      {article.reviews && article.reviews.length > 0 ? (
+                        <div className="space-y-1">
+                          {article.reviews.map((rev, rIdx2) => (
+                            <div key={rIdx2} className="flex items-center gap-1 font-medium text-slate-700 text-[11px]">
+                              <FaUserCheck className="text-blue-600 text-xs flex-shrink-0" />
+                              <span className="truncate max-w-[100px]">{rev.reviewer_name}:</span>
+                              <span className="font-bold uppercase text-[9px] bg-blue-50 text-blue-800 px-1 py-0.2 rounded border border-blue-200">
+                                {rev.recommendation}
+                              </span>
+                            </div>
+                          ))}
+                          <button
+                            onClick={() => openWorkflowModal(article)}
+                            className="text-[10px] font-bold text-blue-600 hover:underline block pt-0.5"
+                          >
+                            + Add Reviewer
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => openWorkflowModal(article)}
+                          className="inline-flex items-center gap-1 text-[10px] font-bold text-blue-800 bg-blue-50 hover:bg-blue-100 border border-blue-300 px-2 py-0.5 rounded transition-colors"
+                        >
+                          <FaUserCheck className="text-[9px]" /> + Assign Reviewer
+                        </button>
+                      )}
+                    </td>
+
+                    {/* Volume / Issue */}
+                    <td className="py-2 px-3 border-r border-slate-200 border-b border-slate-200 text-xs font-mono">
+                      {article.volume_number && article.issue_number ? (
+                        <div className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-slate-100 text-slate-800 rounded border border-slate-300 font-bold text-[11px]">
+                          <FaBookOpen className="text-slate-600 text-[9px]" />
+                          <span>Vol {article.volume_number}, Iss {article.issue_number}</span>
+                        </div>
+                      ) : (
+                        <span className="text-slate-400 italic text-[11px]">Unassigned</span>
+                      )}
+                    </td>
+
+                    {/* Document */}
+                    <td className="py-2 px-3 border-r border-slate-200 border-b border-slate-200 text-center font-sans">
+                      {article.manuscript_url ? (
+                        <button
+                          onClick={() => setViewingDocUrl(resolveFileUrl(article.manuscript_url))}
+                          className="text-blue-600 hover:text-blue-800 font-bold text-xs underline inline-flex items-center justify-center gap-1"
+                        >
+                          <FaFilePdf className="text-red-600" /> View
+                        </button>
+                      ) : (
+                        <span className="text-slate-400 text-[11px] italic">Missing</span>
+                      )}
+                    </td>
+
+                    {/* Status Badge */}
+                    <td className="py-2 px-3 border-r border-slate-200 border-b border-slate-200 text-center font-mono">
+                      {getStatusBadge(article.status)}
+                    </td>
+
+                    {/* Actions */}
+                    <td className="py-2 px-3 border-r border-slate-200 border-b border-slate-200 text-right space-x-1.5 whitespace-nowrap font-sans">
+                      <button
+                        onClick={() => setRedactorArticle(article)}
+                        className="inline-flex items-center gap-1 px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 rounded text-xs font-bold transition-all shadow-xs"
+                        title="Auto-Redact Author & Assign Reviewer"
+                      >
+                        <FaShieldAlt className="text-amber-700" /> Redact
+                      </button>
+                      <button
+                        onClick={() => openWorkflowModal(article)}
+                        className="inline-flex items-center gap-1 px-2 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded text-xs font-bold transition-all shadow-xs"
+                      >
+                        <FaHistory /> Workflow
+                      </button>
+                      <button
+                        onClick={() => openModal(article)}
+                        className="text-blue-600 hover:text-blue-800 font-bold text-xs inline-flex items-center gap-0.5 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200"
+                      >
+                        <FaEdit /> Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(article.article_id)}
+                        className="text-red-600 hover:text-red-800 font-bold text-xs inline-flex items-center gap-0.5 bg-red-50 px-1.5 py-0.5 rounded border border-red-200"
+                      >
+                        <FaTrash />
+                      </button>
+                    </td>
+
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Excel Bottom Status Bar */}
+        <div className="bg-[#F0F2F5] border-t-2 border-slate-300 px-3 py-1.5 flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-slate-600 select-none">
+          <div className="flex items-center gap-1">
+            <div className="bg-white border-t-2 border-t-emerald-600 border-x border-b border-slate-300 px-3 py-0.5 font-bold text-slate-900 rounded-t shadow-xs flex items-center gap-1.5">
+              <span>Sheet1 (Submissions)</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-4 text-slate-500 font-mono text-[10px]">
+            <span>READY</span>
+            <span>ROWS: <strong className="text-slate-800">{filteredArticles.length}</strong></span>
+            <span>FORMAT: <strong className="text-slate-800">SPREADSHEET_GRID</strong></span>
+            <span>ZOOM: <strong>100%</strong></span>
+          </div>
+        </div>
+
+      </div>
+
+      {/* 5. Manage Workflow, Assign Editor & Reviewers Modal */}
+      {managingArticle && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm overflow-y-auto">
+          <div className="bg-white rounded-xl max-w-3xl w-full p-6 sm:p-8 shadow-lg border border-gray-200 my-8 animate-scaleUp max-h-[92vh] overflow-y-auto">
             
-            {/* Modal Header */}
-            <div className="px-8 py-5 border-b border-[#E5E0D8] flex justify-between items-center bg-[#FAF9F6] rounded-t-2xl shrink-0">
-              <h3 className="text-xl font-bold text-[#2C2C2C]">{isEditing ? 'Edit Submission' : 'New Submission'}</h3>
-              <button onClick={closeModal} className="text-[#8E7C68] hover:text-[#2C2C2C] text-2xl font-light leading-none">×</button>
+            <div className="flex justify-between items-center pb-5 border-b border-gray-200">
+              <div>
+                <h3 className="text-2xl font-bold font-sans text-gray-900">
+                  Assign Roles, Manage Workflow & Status
+                </h3>
+                <p className="text-xs text-gray-500 mt-0.5 truncate max-w-xl">
+                  {managingArticle.title}
+                </p>
+              </div>
+              <button 
+                onClick={() => setManagingArticle(null)}
+                className="p-2 text-gray-400 hover:text-gray-900 rounded-full hover:bg-black/5"
+              >
+                <FaTimes className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveWorkflow} className="space-y-6 pt-5">
+              
+              {/* Change Lifecycle Status */}
+              <div className="bg-gray-50 p-5 rounded-2xl border border-gray-200 space-y-3">
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700">
+                  Paper Lifecycle Status *
+                </label>
+                <select
+                  value={workflowData.status}
+                  onChange={(e) => setWorkflowData({ ...workflowData, status: e.target.value })}
+                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-900 focus:outline-none focus:border-gray-400"
+                >
+                  <option value="incomplete">Incomplete Draft (Pending Author Files)</option>
+                  <option value="submitted">Submitted (Awaiting Editorial Screening)</option>
+                  <option value="under_review">Under Peer Review (Active Double-Blind Evaluation)</option>
+                  <option value="copyediting">Copyediting & Proofreading (Revising Typography / Formatting)</option>
+                  <option value="accepted">Accepted for Publication (Queued for Issue)</option>
+                  <option value="published">Published in Issue</option>
+                  <option value="rejected">Declined / Needs Major Revisions</option>
+                </select>
+              </div>
+
+              {/* Assign Editor */}
+              <div className="bg-amber-50/50 p-5 rounded-2xl border border-amber-200 space-y-3">
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-900">
+                  <FaUserShield /> Assign Managing Editor
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-amber-950 mb-1">Select Editor</label>
+                  <select
+                    value={workflowData.assigned_editor_id}
+                    onChange={(e) => setWorkflowData({ ...workflowData, assigned_editor_id: e.target.value })}
+                    className="w-full px-4 py-2.5 bg-white border border-amber-200 rounded-xl text-xs font-medium text-gray-900 focus:outline-none focus:border-amber-500"
+                  >
+                    <option value="">-- No Assigned Editor --</option>
+                    {editorUsers.map(e => (
+                      <option key={e.user_id} value={e.user_id}>
+                        {e.display_name} ({e.email}) [{e.role_name}]
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Assign Peer Reviewers */}
+              <div className="bg-blue-50/50 p-5 rounded-2xl border border-blue-200 space-y-4">
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-blue-900">
+                  <FaShieldAlt /> Assign Peer Reviewers
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-blue-950 mb-1">Select Reviewer</label>
+                    <select
+                      value={workflowData.reviewer_user_id}
+                      onChange={(e) => setWorkflowData({ ...workflowData, reviewer_user_id: e.target.value })}
+                      className="w-full px-4 py-2.5 bg-white border border-blue-200 rounded-xl text-xs font-medium text-gray-900 focus:outline-none focus:border-blue-500"
+                    >
+                      <option value="">-- No New Reviewer --</option>
+                      {reviewerUsers.map(r => (
+                        <option key={r.user_id} value={r.user_id}>
+                          {r.display_name} ({r.email}) [{r.role_name}]
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-blue-950 mb-1">Review Due Date</label>
+                    <input
+                      type="date"
+                      value={workflowData.review_due_date}
+                      onChange={(e) => setWorkflowData({ ...workflowData, review_due_date: e.target.value })}
+                      className="w-full px-4 py-2 bg-white border border-blue-200 rounded-xl text-xs text-gray-900"
+                    />
+                  </div>
+                </div>
+
+                {/* Currently Assigned Reviewers */}
+                {managingArticle.reviews && managingArticle.reviews.length > 0 && (
+                  <div className="pt-2 border-t border-blue-200 space-y-2">
+                    <span className="text-xs font-bold text-blue-950">Currently Assigned Reviewers:</span>
+                    {managingArticle.reviews.map((rev, idx) => (
+                      <div key={idx} className="bg-white p-3 rounded-xl border border-blue-100 text-xs flex justify-between items-center">
+                        <div>
+                          <strong className="text-blue-900">{rev.reviewer_name}</strong>
+                          <span className="text-gray-500 ml-2">Status: {rev.status}</span>
+                          <span className="font-bold uppercase text-[10px] bg-blue-100 text-blue-800 px-2 py-0.5 rounded ml-2">
+                            {rev.recommendation}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteReview(rev.review_id)}
+                          className="text-red-500 hover:text-red-700 font-bold text-xs"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Editorial Notes / Author Instructions */}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
+                  Editorial Notes & Author Feedback
+                </label>
+                <textarea
+                  rows="3"
+                  value={workflowData.editor_notes}
+                  onChange={(e) => setWorkflowData({ ...workflowData, editor_notes: e.target.value })}
+                  placeholder="Notes explaining editorial decisions, revision guidance, or scheduling..."
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-gray-400"
+                />
+              </div>
+
+              {/* Copyediting Section */}
+              <div className="bg-purple-50/50 p-5 rounded-2xl border border-purple-200 space-y-4">
+                <span className="text-xs font-bold uppercase tracking-wider text-purple-900 block">
+                  Copywriting, Proofreading & Formatted File
+                </span>
+
+                <div>
+                  <label className="block text-xs font-bold text-purple-950 mb-1">
+                    Copyediting Instructions
+                  </label>
+                  <textarea
+                    rows="2"
+                    value={workflowData.copyedit_notes}
+                    onChange={(e) => setWorkflowData({ ...workflowData, copyedit_notes: e.target.value })}
+                    placeholder="Details regarding stylistic changes, citations (APA format), typography..."
+                    className="w-full px-4 py-2 bg-white border border-purple-200 rounded-xl text-xs text-gray-900"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-purple-950 mb-1">
+                    Upload Copyedited File (.pdf, .doc, .docx)
+                  </label>
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx"
+                    onChange={(e) => setWorkflowData({ ...workflowData, copyeditFile: e.target.files[0] })}
+                    className="w-full text-xs text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-purple-200 file:text-purple-900 cursor-pointer"
+                  />
+                  {managingArticle.copyedit_url && (
+                    <p className="text-xs text-purple-800 mt-1">
+                      Current: <a href={resolveFileUrl(managingArticle.copyedit_url)} target="_blank" rel="noopener noreferrer" className="underline font-bold">Download Current Copyedited File</a>
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Assign Volume & Issue */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
+                    Target Volume
+                  </label>
+                  <select
+                    value={workflowData.volume_id}
+                    onChange={(e) => setWorkflowData({ ...workflowData, volume_id: e.target.value, issue_id: '' })}
+                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-medium text-gray-900"
+                  >
+                    <option value="">-- No Volume (Unassigned) --</option>
+                    {volumes.map(v => (
+                      <option key={v.volume_id} value={v.volume_id}>
+                        {v.volume_title || `Volume ${v.volume_number} (${v.publication_year})`}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
+                    Target Issue
+                  </label>
+                  <select
+                    value={workflowData.issue_id}
+                    onChange={(e) => setWorkflowData({ ...workflowData, issue_id: e.target.value })}
+                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-medium text-gray-900"
+                  >
+                    <option value="">-- No Issue (Unassigned) --</option>
+                    {availableIssuesInForm.map(i => (
+                      <option key={i.issue_id} value={i.issue_id}>
+                        {i.issue_title || `Issue ${i.issue_number}`}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* DOI and Page Range */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
+                    DOI
+                  </label>
+                  <input
+                    type="text"
+                    value={workflowData.doi}
+                    onChange={(e) => setWorkflowData({ ...workflowData, doi: e.target.value })}
+                    placeholder="10.xxxx/tls.2025.01"
+                    className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-900"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
+                    Page Range
+                  </label>
+                  <input
+                    type="text"
+                    value={workflowData.page_range}
+                    onChange={(e) => setWorkflowData({ ...workflowData, page_range: e.target.value })}
+                    placeholder="pp. 1-15"
+                    className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-900"
+                  />
+                </div>
+              </div>
+
+              {/* Footer CTA */}
+              <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                <button
+                  type="button"
+                  onClick={() => setManagingArticle(null)}
+                  className="px-5 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={workflowLoading}
+                  className="px-6 py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-xl text-xs font-bold transition-all shadow disabled:opacity-50"
+                >
+                  {workflowLoading ? 'Saving Workflow...' : 'Save Assignments & Update Status'}
+                </button>
+              </div>
+
+            </form>
+
+          </div>
+        </div>
+      )}
+
+      {/* 6. Basic Form Modal (Create / Edit Article) */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4 sm:p-6 overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-lg w-full max-w-3xl flex flex-col relative my-auto">
+            
+            <div className="px-8 py-5 border-b border-gray-200 flex justify-between items-center bg-gray-50 rounded-t-2xl shrink-0">
+              <h3 className="text-xl font-bold text-gray-900">{isEditing ? 'Edit Submission' : 'New Submission'}</h3>
+              <button onClick={closeModal} className="text-gray-500 hover:text-gray-900 text-2xl font-light leading-none">×</button>
             </div>
             
-            {/* Modal Body */}
             <div className="p-8">
               <form id="articleForm" onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <label className="block text-sm font-bold text-[#5C5446] mb-2">Title *</label>
-                  <input required type="text" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full px-4 py-3 border border-[#E5E0D8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#8E7C68]/30 focus:border-[#8E7C68] transition-all bg-[#FAF9F6] focus:bg-white" placeholder="Paper title..." />
+                  <label className="block text-sm font-bold text-gray-600 mb-2">Title *</label>
+                  <input required type="text" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400/30 focus:border-gray-400 transition-all bg-gray-50 focus:bg-white" placeholder="Paper title..." />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-bold text-[#5C5446] mb-2">Abstract *</label>
-                  <textarea required value={formData.abstract} onChange={e => setFormData({...formData, abstract: e.target.value})} rows="4" className="w-full px-4 py-3 border border-[#E5E0D8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#8E7C68]/30 focus:border-[#8E7C68] transition-all bg-[#FAF9F6] focus:bg-white" placeholder="Brief summary of the paper..." />
+                  <label className="block text-sm font-bold text-gray-600 mb-2">Abstract *</label>
+                  <textarea required value={formData.abstract} onChange={e => setFormData({...formData, abstract: e.target.value})} rows="4" className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400/30 focus:border-gray-400 transition-all bg-gray-50 focus:bg-white" placeholder="Brief summary of the paper..." />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-gray-600 mb-2">Keywords / Research Topics (Comma-separated)</label>
+                  <input type="text" value={formData.keywords} onChange={e => setFormData({...formData, keywords: e.target.value})} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400/30 focus:border-gray-400 transition-all bg-gray-50 focus:bg-white" placeholder="e.g. Comparative Literature, Digital Humanities, Cognitive Ecology" />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-bold text-[#5C5446] mb-2">Author *</label>
-                    <select required value={formData.author_user_id} onChange={e => setFormData({...formData, author_user_id: e.target.value})} className="w-full px-4 py-3 border border-[#E5E0D8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#8E7C68]/30 focus:border-[#8E7C68] bg-[#FAF9F6] focus:bg-white transition-all">
+                    <label className="block text-sm font-bold text-gray-600 mb-2">Author *</label>
+                    <select required value={formData.author_user_id} onChange={e => setFormData({...formData, author_user_id: e.target.value})} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400/30 focus:border-gray-400 bg-gray-50 focus:bg-white transition-all">
                       <option value="">Select Author</option>
                       {users.map(u => (
                         <option key={u.user_id} value={u.user_id}>{u.display_name} ({u.email})</option>
                       ))}
                     </select>
                   </div>
-                  
+
                   <div>
-                    <label className="block text-sm font-bold text-[#5C5446] mb-2">Assigned Editor</label>
-                    <select value={formData.assigned_editor_id} onChange={e => setFormData({...formData, assigned_editor_id: e.target.value})} className="w-full px-4 py-3 border border-[#E5E0D8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#8E7C68]/30 focus:border-[#8E7C68] bg-[#FAF9F6] focus:bg-white transition-all">
-                      <option value="">None</option>
-                      {users.filter(u => ['editor', 'admin'].includes(u.role_name?.toLowerCase())).map(u => (
-                        <option key={u.user_id} value={u.user_id}>{u.display_name}</option>
+                    <label className="block text-sm font-bold text-gray-600 mb-2">Assigned Editor</label>
+                    <select value={formData.assigned_editor_id} onChange={e => setFormData({...formData, assigned_editor_id: e.target.value})} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400/30 focus:border-gray-400 bg-gray-50 focus:bg-white transition-all">
+                      <option value="">Unassigned</option>
+                      {editorUsers.map(u => (
+                        <option key={u.user_id} value={u.user_id}>{u.display_name} ({u.email})</option>
                       ))}
                     </select>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-bold text-[#5C5446] mb-2">Status</label>
-                    <select value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})} className="w-full px-4 py-3 border border-[#E5E0D8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#8E7C68]/30 focus:border-[#8E7C68] bg-[#FAF9F6] focus:bg-white transition-all">
+                    <label className="block text-sm font-bold text-gray-600 mb-2">Issue / Volume</label>
+                    <select value={formData.issue_id} onChange={e => setFormData({...formData, issue_id: e.target.value})} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400/30 focus:border-gray-400 bg-gray-50 focus:bg-white transition-all">
+                      <option value="">Unassigned</option>
+                      {issues.map(iss => (
+                        <option key={iss.issue_id} value={iss.issue_id}>
+                          Volume {iss.volume_number || '?'}, Issue {iss.issue_number} ({iss.publication_year || iss.publication_date?.substring(0,4) || 'Current'}) {iss.issue_title ? `- ${iss.issue_title}` : ''}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-bold text-gray-600 mb-2">Page Range (Optional)</label>
+                    <input type="text" value={formData.page_range} onChange={e => setFormData({...formData, page_range: e.target.value})} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400/30 focus:border-gray-400 transition-all bg-gray-50 focus:bg-white" placeholder="e.g. pp. 1-15" />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-bold text-gray-600 mb-2">Status</label>
+                    <select value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400/30 focus:border-gray-400 bg-gray-50 focus:bg-white transition-all">
+                      <option value="incomplete">Incomplete Draft</option>
                       <option value="submitted">Submitted</option>
-                      <option value="in_review">In Review</option>
+                      <option value="under_review">Under Review</option>
+                      <option value="copyediting">Copyediting & Proofreading</option>
                       <option value="accepted">Accepted</option>
                       <option value="rejected">Rejected</option>
                       <option value="published">Published</option>
@@ -344,14 +1165,14 @@ const PaperSubmissions = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-bold text-[#5C5446] mb-2">DOI (Optional)</label>
-                    <input type="text" value={formData.doi} onChange={e => setFormData({...formData, doi: e.target.value})} className="w-full px-4 py-3 border border-[#E5E0D8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#8E7C68]/30 focus:border-[#8E7C68] transition-all bg-[#FAF9F6] focus:bg-white" placeholder="10.xxxx/xxxxx" />
+                    <label className="block text-sm font-bold text-gray-600 mb-2">DOI (Optional)</label>
+                    <input type="text" value={formData.doi} onChange={e => setFormData({...formData, doi: e.target.value})} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400/30 focus:border-gray-400 transition-all bg-gray-50 focus:bg-white" placeholder="10.xxxx/xxxxx" />
                   </div>
                 </div>
                 
                 {/* File Upload Section */}
                 <div className="pt-2">
-                  <label className="block text-sm font-bold text-[#5C5446] mb-2">
+                  <label className="block text-sm font-bold text-gray-600 mb-2">
                     Manuscript Document <span className="text-red-500">*</span>
                   </label>
                   
@@ -360,10 +1181,10 @@ const PaperSubmissions = () => {
                       type="file" 
                       accept=".doc,.docx,.pdf"
                       onChange={handleFileChange}
-                      className="w-full sm:w-auto text-sm text-[#5C5446] file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-[#E5E0D8] file:text-[#2C2C2C] hover:file:bg-[#D5D0C8] cursor-pointer" 
+                      className="w-full sm:w-auto text-sm text-gray-600 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-gray-200 file:text-gray-900 hover:file:bg-gray-300 cursor-pointer" 
                     />
                     {isEditing && !selectedFile && formData.manuscript_pdf_id && (
-                      <div className="text-sm text-[#8E7C68] border border-[#E5E0D8] px-3 py-2 rounded-lg bg-[#FAF9F6] flex items-center gap-2">
+                      <div className="text-sm text-gray-500 border border-gray-200 px-3 py-2 rounded-lg bg-gray-50 flex items-center gap-2">
                         <span>Current:</span> 
                         {formData.manuscript_url ? (
                           <button type="button" onClick={() => setViewingDocUrl(resolveFileUrl(formData.manuscript_url))} className="text-blue-600 font-bold underline">Download / View</button>
@@ -373,46 +1194,59 @@ const PaperSubmissions = () => {
                       </div>
                     )}
                   </div>
-                  <p className="text-xs text-[#8E7C68] mt-2">Accepted formats: .doc, .docx, .pdf</p>
+                  <p className="text-xs text-gray-500 mt-2">Accepted formats: .doc, .docx, .pdf</p>
                 </div>
               </form>
             </div>
 
-            {/* Modal Footer */}
-            <div className="px-8 py-5 border-t border-[#E5E0D8] bg-[#FAF9F6] rounded-b-2xl flex justify-end space-x-4 shrink-0">
-              <button type="button" onClick={closeModal} className="px-6 py-2.5 text-[#5C5446] hover:bg-[#E5E0D8] rounded-lg font-bold transition-colors">Cancel</button>
-              <button type="submit" form="articleForm" disabled={formLoading} className="px-8 py-2.5 bg-[#2C2C2C] text-white rounded-lg font-bold tracking-wide hover:bg-[#4A4A4A] transition-all shadow-md disabled:opacity-50 hover:shadow-lg">
-                {formLoading ? 'Saving...' : 'Save Submission'}
+            <div className="px-8 py-5 border-t border-gray-100 bg-gray-50 rounded-b-2xl flex justify-end space-x-4 shrink-0">
+              <button type="button" onClick={closeModal} className="px-6 py-2.5 text-gray-600 hover:bg-gray-200 rounded-lg font-bold transition-colors">Cancel</button>
+              <button type="submit" form="articleForm" disabled={formLoading} className="px-6 py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-lg font-bold transition-all shadow-sm hover:shadow disabled:opacity-50">
+                {formLoading ? 'Saving...' : isEditing ? 'Save Changes' : 'Create Submission'}
               </button>
             </div>
-            
+
           </div>
         </div>
       )}
 
-      {/* Fullscreen Document Viewer Modal */}
+      {/* 7. File Viewer Modal */}
       {viewingDocUrl && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[60] p-4 sm:p-8">
-          <div className="bg-[#FAF9F6] rounded-2xl shadow-2xl w-full h-full max-w-6xl flex flex-col relative overflow-hidden border border-[#E5E0D8]">
-            {/* Viewer Header */}
-            <div className="px-6 py-4 border-b border-[#E5E0D8] flex justify-between items-center bg-white shrink-0">
-              <h3 className="text-xl font-bold text-[#2C2C2C] flex items-center gap-2">
-                <svg className="w-6 h-6 text-[#8E7C68]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                Document Viewer
-              </h3>
-              <div className="flex items-center gap-4">
-                <a href={viewingDocUrl} download target="_blank" rel="noreferrer" className="px-4 py-2 bg-[#E5E0D8] hover:bg-[#D5D0C8] text-[#2C2C2C] font-bold rounded-lg transition-colors text-sm">Download File</a>
-                <button onClick={() => setViewingDocUrl(null)} className="text-[#8E7C68] hover:text-[#2C2C2C] text-3xl font-light leading-none transition-colors">×</button>
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-[100] p-4 sm:p-6 animate-fadeIn">
+          <div className="bg-white rounded-2xl shadow-lg w-full max-w-5xl h-[85vh] flex flex-col relative overflow-hidden border border-gray-200">
+            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gray-50 shrink-0">
+              <div className="flex items-center gap-2">
+                <span className="p-1.5 bg-gray-900/20 text-gray-500 rounded-lg">
+                  <FaFilePdf className="w-4 h-4" />
+                </span>
+                <h3 className="text-lg font-bold text-gray-900">Document Preview</h3>
               </div>
+              <button 
+                onClick={() => setViewingDocUrl(null)} 
+                className="text-gray-500 hover:text-gray-900 text-2xl font-light leading-none p-1 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                &times;
+              </button>
             </div>
             
-            {/* Viewer Body */}
-            <div className="flex-1 bg-[#E5E0D8] relative overflow-hidden">
+            <div className="flex-1 bg-gray-100 overflow-hidden relative">
               {renderFileViewer()}
             </div>
           </div>
         </div>
       )}
+
+      {/* 7. Automated Double-Blind Peer Reviewer Assignment & Redactor Modal */}
+      {redactorArticle && (
+        <AutoAssignRedactorModal
+          isOpen={!!redactorArticle}
+          onClose={() => setRedactorArticle(null)}
+          article={redactorArticle}
+          reviewers={users.filter(u => ['reviewer', 'editor', 'assistant editor', 'admin'].includes(u.role_name?.toLowerCase()))}
+          onAssigned={fetchData}
+        />
+      )}
+
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
-import { FaHome, FaUser, FaUsers, FaCog, FaPaintBrush, FaClipboardList, FaBullhorn, FaSignOutAlt, FaFileAlt } from 'react-icons/fa';
+import { FaHome, FaUser, FaUsers, FaCog, FaPaintBrush, FaClipboardList, FaBullhorn, FaSignOutAlt, FaFileAlt, FaLayerGroup, FaArchive } from 'react-icons/fa';
 import { apiFetch, resolveImageUrl } from '../../utils/api';
 
 const DashboardLayout = ({ title }) => {
@@ -29,20 +29,19 @@ const DashboardLayout = ({ title }) => {
   }, [location.pathname]);
 
   const getDashboardPrefix = () => {
-    switch (user.role_name) {
-      case 'Admin': return '/admin/dashboard';
-      case 'Editor': return '/editor/dashboard';
-      case 'Assistant Editor': return '/assistant-editor/dashboard';
-      case 'Author': return '/user/dashboard';
-      default: return '/user/dashboard';
-    }
+    const roleStr = (user.role_name || '').toLowerCase();
+    if (roleStr.includes('admin')) return '/admin/dashboard';
+    if (roleStr.includes('assistant')) return '/assistant-editor/dashboard';
+    if (roleStr.includes('editor')) return '/editor/dashboard';
+    if (roleStr.includes('reviewer')) return '/reviewer/dashboard';
+    return '/user/dashboard';
   };
   const dashPrefix = getDashboardPrefix();
 
   const [brand, setBrand] = useState({
     journal_title: 'OJS',
-    admin_dash_bg_hex: '#2C2C2C', // Default Sidebar
-    admin_dash_accent_hex: '#8E7C68' // Default Accent
+    admin_dash_bg_hex: '#FFFFFF',
+    admin_dash_accent_hex: '#8E7C68'
   });
 
   useEffect(() => {
@@ -65,16 +64,9 @@ const DashboardLayout = ({ title }) => {
     navigate('/login');
   };
 
-  // Helper styles based on branding
-  const sidebarStyle = { backgroundColor: brand.admin_dash_bg_hex };
-  const accentColor = brand.admin_dash_accent_hex;
-
-  // We can inject a quick style tag to handle hover states for links if needed,
-  // or just use inline style for simple elements. 
-  // Let's use CSS variables on the wrapping div.
   return (
     <div 
-      className="min-h-screen flex bg-[#F9F6F0] font-sans relative"
+      className="min-h-screen flex bg-white font-sans relative"
       style={{
         '--brand-sidebar-bg': brand.admin_dash_bg_hex,
         '--brand-accent': brand.admin_dash_accent_hex
@@ -82,132 +74,130 @@ const DashboardLayout = ({ title }) => {
     >
       <style>{`
         .brand-sidebar { background-color: var(--brand-sidebar-bg) !important; }
-        .brand-link:hover { color: #F9F6F0 !important; background-color: rgba(255,255,255,0.1) !important; }
-        .brand-link.active { background-color: #FAF9F6 !important; color: #2C2C2C !important; }
+        .brand-link:hover { background-color: #E5E7EB !important; color: #111827 !important; }
+        .brand-link.active { background-color: #E5E7EB !important; color: #111827 !important; font-weight: 600; }
         .brand-text-accent { color: var(--brand-accent) !important; }
       `}</style>
       
-      {/* Mobile Overlay */}
       {isMobileMenuOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-sm"
+          className="fixed inset-0 bg-black/30 z-40 md:hidden backdrop-blur-sm"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
       
-      {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 text-[#F9F6F0] flex flex-col shadow-2xl transition-transform duration-300 md:relative md:translate-x-0 brand-sidebar ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="p-6 flex items-center justify-center border-b border-white/10">
-          <Link to="/" className="text-3xl font-bold tracking-tight uppercase hover:opacity-80 transition-opacity duration-300">
-            {brand.journal_title.substring(0, 15)}
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#FAFAFA] border-r border-gray-200 flex flex-col transition-transform duration-300 md:relative md:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="px-5 py-5 flex items-center border-b border-gray-200">
+          <Link to="/" className="text-sm font-bold tracking-tight text-gray-900 hover:opacity-70 transition-opacity">
+            {brand.journal_title.substring(0, 20)}
           </Link>
         </div>
         
-        <nav className="flex-1 px-4 py-8 space-y-3 overflow-y-auto">
-          <Link to={dashPrefix} className="flex items-center px-4 py-3 bg-[#FAF9F6] text-[#2C2C2C] font-bold rounded-lg shadow-sm transition-all duration-300 hover:shadow-md">
-            <FaHome className="w-5 h-5 mr-3" />
+        <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
+          <Link to={dashPrefix} className="flex items-center px-3 py-2 bg-gray-200/70 text-gray-900 font-semibold text-sm rounded-md transition-all duration-150">
+            <FaHome className="w-4 h-4 mr-3 text-gray-500" />
             Dashboard
           </Link>
-          <Link to={`${dashPrefix}/profile`} className="brand-link flex items-center px-4 py-3 text-[#A89F91] font-semibold rounded-lg transition-all duration-300">
-            <FaUser className="w-5 h-5 mr-3" />
+          <Link to={`${dashPrefix}/profile`} className="brand-link flex items-center px-3 py-2 text-gray-600 font-medium text-sm rounded-md transition-all duration-150">
+            <FaUser className="w-4 h-4 mr-3 text-gray-400" />
             My Profile
           </Link>
           
           {isAdmin && (
             <>
-              <div className="pt-4 pb-2">
-                <p className="px-4 text-xs font-bold brand-text-accent uppercase tracking-wider">--- CONTENT MANAGEMENT ---</p>
+              <div className="pt-4 pb-1.5">
+                <p className="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Content</p>
               </div>
               
-              <Link to="/admin/dashboard/submissions" className="brand-link flex items-center px-4 py-3 text-[#A89F91] font-semibold rounded-lg transition-all duration-300">
-                <FaFileAlt className="w-5 h-5 mr-3" />
-                Paper Submissions
+              <Link to="/admin/dashboard/volumes-issues" className="brand-link flex items-center px-3 py-2 text-gray-600 font-medium text-sm rounded-md transition-all duration-150">
+                <FaLayerGroup className="w-4 h-4 mr-3 text-gray-400" />
+                Volumes & Issues
+              </Link>
+              
+              <Link to="/admin/dashboard/archives" className="brand-link flex items-center px-3 py-2 text-gray-600 font-medium text-sm rounded-md transition-all duration-150">
+                <FaArchive className="w-4 h-4 mr-3 text-gray-400" />
+                Archives
               </Link>
 
-              <div className="pt-4 pb-2">
-                <p className="px-4 text-xs font-bold brand-text-accent uppercase tracking-wider">--- SYSTEM MANAGEMENT ---</p>
+              <Link to="/admin/dashboard/submissions" className="brand-link flex items-center px-3 py-2 text-gray-600 font-medium text-sm rounded-md transition-all duration-150">
+                <FaFileAlt className="w-4 h-4 mr-3 text-gray-400" />
+                Submissions
+              </Link>
+
+              <div className="pt-4 pb-1.5">
+                <p className="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest">System</p>
               </div>
               
-              <Link to="/admin/dashboard/users" className="brand-link flex items-center px-4 py-3 text-[#A89F91] font-semibold rounded-lg transition-all duration-300">
-                <FaUsers className="w-5 h-5 mr-3" />
-                User Management
+              <Link to="/admin/dashboard/users" className="brand-link flex items-center px-3 py-2 text-gray-600 font-medium text-sm rounded-md transition-all duration-150">
+                <FaUsers className="w-4 h-4 mr-3 text-gray-400" />
+                Users
               </Link>
-              <Link to="/admin/dashboard/settings" className="brand-link flex items-center px-4 py-3 text-[#A89F91] font-semibold rounded-lg transition-all duration-300">
-                <FaCog className="w-5 h-5 mr-3" />
-                System Settings
+              <Link to="/admin/dashboard/settings" className="brand-link flex items-center px-3 py-2 text-gray-600 font-medium text-sm rounded-md transition-all duration-150">
+                <FaCog className="w-4 h-4 mr-3 text-gray-400" />
+                Settings
               </Link>
-              <Link to="/admin/dashboard/branding" className="brand-link flex items-center px-4 py-3 text-[#A89F91] font-semibold rounded-lg transition-all duration-300">
-                <FaPaintBrush className="w-5 h-5 mr-3" />
-                Branding & UI
+              <Link to="/admin/dashboard/branding" className="brand-link flex items-center px-3 py-2 text-gray-600 font-medium text-sm rounded-md transition-all duration-150">
+                <FaPaintBrush className="w-4 h-4 mr-3 text-gray-400" />
+                Branding
               </Link>
-              <Link to="/admin/dashboard/audit-logs" className="brand-link flex items-center px-4 py-3 text-[#A89F91] font-semibold rounded-lg transition-all duration-300">
-                <FaClipboardList className="w-5 h-5 mr-3" />
+              <Link to="/admin/dashboard/audit-logs" className="brand-link flex items-center px-3 py-2 text-gray-600 font-medium text-sm rounded-md transition-all duration-150">
+                <FaClipboardList className="w-4 h-4 mr-3 text-gray-400" />
                 Audit Logs
               </Link>
-              <Link to="/admin/dashboard/announcements" className="brand-link flex items-center px-4 py-3 text-[#A89F91] font-semibold rounded-lg transition-all duration-300">
-                <FaBullhorn className="w-5 h-5 mr-3" />
+              <Link to="/admin/dashboard/announcements" className="brand-link flex items-center px-3 py-2 text-gray-600 font-medium text-sm rounded-md transition-all duration-150">
+                <FaBullhorn className="w-4 h-4 mr-3 text-gray-400" />
                 Announcements
               </Link>
             </>
           )}
         </nav>
         
-        <div className="p-4 border-t border-white/10 mt-auto">
-          <button onClick={handleLogout} className="flex items-center w-full px-4 py-3 text-[#A89F91] hover:text-[#F9F6F0] hover:bg-white/10 rounded-lg transition-all duration-300 font-bold group">
-            <FaSignOutAlt className="w-5 h-5 mr-3 group-hover:-translate-x-1 transition-transform duration-300" />
+        <div className="p-3 border-t border-gray-200 mt-auto">
+          <button onClick={handleLogout} className="flex items-center w-full px-3 py-2 text-gray-500 hover:text-gray-900 hover:bg-gray-200/50 rounded-md transition-all duration-150 font-medium text-sm group">
+            <FaSignOutAlt className="w-4 h-4 mr-3 group-hover:-translate-x-0.5 transition-transform duration-150" />
             Logout
           </button>
         </div>
       </aside>
 
-      {/* Main Content Area */}
       <main className="flex-1 flex flex-col min-h-0 overflow-hidden relative">
-        
-        {/* Top Header */}
-        <header className="bg-white/80 backdrop-blur-md shadow-[0_4px_24px_-4px_rgba(44,44,44,0.05)] border-b border-[#E5E0D8] h-20 flex items-center justify-between px-4 sm:px-8 shrink-0 z-10 transition-all duration-300">
+        <header className="bg-white border-b border-gray-200 h-14 flex items-center justify-between px-4 sm:px-8 shrink-0 z-10">
           <div className="flex items-center">
             <button 
-              className="md:hidden mr-4 p-2 text-[#2C2C2C] hover:bg-black/5 rounded-lg transition-colors"
+              className="md:hidden mr-3 p-1.5 text-gray-500 hover:bg-gray-100 rounded-md transition-colors"
               onClick={() => setIsMobileMenuOpen(true)}
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </button>
-            <h1 className="text-xl sm:text-[1.6rem] font-bold text-[#2C2C2C] tracking-tight truncate max-w-[200px] sm:max-w-none">{title}</h1>
+            <h1 className="text-base font-semibold text-gray-900 tracking-tight truncate max-w-[200px] sm:max-w-none">{title}</h1>
           </div>
-          <div className="flex items-center space-x-5">
+          <div className="flex items-center space-x-3">
             <div className="text-right hidden sm:block">
-               <p className="text-sm font-bold text-[#2C2C2C]">{user.display_name || 'System Admin'}</p>
-               <p className="text-xs font-semibold brand-text-accent">{user.email || 'admin@ojs.local'}</p>
+               <p className="text-xs font-semibold text-gray-900">{user.display_name || 'User'}</p>
+               <p className="text-[10px] text-gray-400">{user.email || ''}</p>
             </div>
             {user.avatar_url ? (
               <img 
                 src={resolveImageUrl(user.avatar_url)} 
                 alt="Profile" 
                 onClick={() => navigate(`${dashPrefix}/profile`)}
-                className="w-12 h-12 rounded-full object-cover shadow-md border-2 border-white hover:scale-105 transition-transform cursor-pointer" 
+                className="w-8 h-8 rounded-full object-cover border border-gray-200 hover:opacity-80 transition-opacity cursor-pointer" 
               />
             ) : (
               <div 
                 onClick={() => navigate(`${dashPrefix}/profile`)}
-                className="w-12 h-12 rounded-full flex items-center justify-center text-[#F9F6F0] font-bold shadow-md border-2 border-white hover:scale-105 transition-transform cursor-pointer brand-sidebar"
+                className="w-8 h-8 rounded-full flex items-center justify-center bg-gray-900 text-white text-[10px] font-bold hover:opacity-80 transition-opacity cursor-pointer"
               >
-                {(user.display_name || 'SA').substring(0, 2).toUpperCase()}
+                {(user.display_name || 'U').substring(0, 2).toUpperCase()}
               </div>
             )}
           </div>
         </header>
 
-        {/* Dashboard Content */}
-        <div className="flex-1 overflow-auto p-4 sm:p-8 relative z-0">
-           {/* Subtle background decoration */}
-           <div 
-             className="absolute top-0 right-0 w-[600px] h-[600px] opacity-[0.03] rounded-full blur-3xl -z-10 transform translate-x-1/3 -translate-y-1/3 pointer-events-none"
-             style={{ backgroundColor: brand.admin_dash_accent_hex }}
-           ></div>
+        <div className="flex-1 overflow-auto p-4 sm:p-6 relative bg-gray-50/50">
            <Outlet />
         </div>
       </main>
-      
     </div>
   );
 };

@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import AnimatedSection from '../components/AnimatedSection';
+import SEO from '../components/SEO';
+import { apiFetch, resolveFileUrl } from '../utils/api';
 import {
   FaBookOpen,
   FaFilePdf,
@@ -22,110 +24,6 @@ import {
   FaQrcode
 } from 'react-icons/fa';
 
-const currentArticles = [
-  {
-    id: 1,
-    title: "BRIDGING CINEMATIC NARRATIVES AND LITERARY DEPTHS: FUSIONS IN CONTEMPORARY MYTHOLOGICAL NOVELS CONCERNING AMISH TRIPATHI’S RAM CHANDRA SERIES.",
-    author: "Garima Singh",
-    pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/07/TLS20250103_26.pdf",
-    category: "Mythological Fiction & Cinema",
-    pages: "26-30"
-  },
-  {
-    id: 2,
-    title: "Retelling the Past: Cinematic Narratives of Oppression and Resistance in Bolivia and Bengal.",
-    author: "Ahana Bhandari",
-    pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/07/TLS20250103_27.pdf",
-    category: "Comparative Cultural Studies",
-    pages: "31-36"
-  },
-  {
-    id: 3,
-    title: "What Did She Know About Transformation That We Don’t?",
-    author: "Lina Mandal",
-    pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/07/TLS20250103_28.pdf",
-    category: "Literary Theory & Criticism",
-    pages: "37-41"
-  },
-  {
-    id: 4,
-    title: "Laapataa Ladies: A Cinematic Satire on Gendered Invisibility and Rural Agency.",
-    author: "Satyam Kumar",
-    pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/07/TLS20250103_30.pdf",
-    category: "Gender Studies & Film",
-    pages: "42-47"
-  },
-  {
-    id: 5,
-    title: "Patachitra Tradition and Artist Kalam Pauta: A Theoretical Perspective on Art and Literature.",
-    author: "Dr. Rakesh Kaibartya",
-    pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/07/TLS20250103_31.pdf",
-    category: "Art, Folk Tradition & Literature",
-    pages: "48-54"
-  },
-  {
-    id: 6,
-    title: "BEYOND THE CHARACTERS: NATURE SHAPES THE STORY IN “ULLOZHUKKU”.",
-    author: "Dona Joseph",
-    pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/07/TLS20250103_32.pdf",
-    category: "Eco-Criticism & Narrative",
-    pages: "55-60"
-  },
-  {
-    id: 7,
-    title: "How ideology shapes consumption: The case of Oil Palm Industry and Red Meat Production.",
-    author: "Souvik Karmakar",
-    pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/07/TLS20250103_.33.pdf",
-    category: "Environmental Sciences & Policy",
-    pages: "61-68"
-  },
-  {
-    id: 8,
-    title: "FROM ‘LITTLE MAIDEN’ TO ‘THE WITCH’: EXPLORING THE THEMES OF VAMPIRISM, WITCHCRAFT AND THE FEMALE WANDERER THROUGH A BIOGRAPHICAL READING OF MARY COLERIDGE’S “THE WITCH”.",
-    author: "Shibangi Ghose",
-    pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/07/TLS20250103_34.pdf",
-    category: "Gothic Literature & Gender",
-    pages: "69-75"
-  },
-  {
-    id: 9,
-    title: "The Word as Weapon: Language, Power, and Black Male Representation in Morrison’s Narratives.",
-    author: "Sakshi Virmani",
-    pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/07/TLS20250103_37.pdf",
-    category: "African American Literature",
-    pages: "76-82"
-  },
-  {
-    id: 10,
-    title: "Between Nations and Narratives: Transnational Engagement and Flexible Citizenship in American Betiya.",
-    author: "Kakoli Debnath and Dr. Binda Sah",
-    pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/07/TLS20250103_.38.pdf",
-    category: "Diaspora & Transnationalism",
-    pages: "83-90"
-  }
-];
-
-const previousIssues = [
-  {
-    volume: "Volume I Issue I",
-    date: "December, 2023",
-    coverImg: "/annousments/img2.png",
-    description: "Inaugural issue establishing our multidisciplinary bridge between literary theory and empirical scientific inquiry.",
-    status: "Inaugural Issue",
-    link: "/archive",
-    issn: "ISSN: 3048-7366"
-  },
-  {
-    volume: "Volume I Issue II",
-    date: "January, 2025",
-    coverImg: "/annousments/image copy.png",
-    description: "Second volume featuring pioneering scholarship on modern cultural hermeneutics and socio-environmental dynamics.",
-    status: "Archived Issue",
-    link: "/archive",
-    issn: "ISSN: 3048-7366"
-  }
-];
-
 const callTopics = [
   "Tiny Tales, Micro Literature as a mainstream literature",
   "Environmental Humanities",
@@ -137,18 +35,278 @@ const callTopics = [
   "Queer studies, Physics of speech & Literature"
 ];
 
+const defaultArticles = [
+  {
+    id: 1,
+    title: "BRIDGING CINEMATIC NARRATIVES AND LITERARY DEPTHS: FUSIONS IN CONTEMPORARY MYTHOLOGICAL NOVELS CONCERNING AMISH TRIPATHI’S RAM CHANDRA SERIES.",
+    author: "Garima Singh",
+    pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_26.pdf",
+    category: "MYTHOLOGICAL FICTION & CINEMA",
+    volumeLabel: "Vol I, Issue III (July 2025)",
+    pages: "pp. 26-30",
+    doi: "10.5281/zenodo.1082326"
+  },
+  {
+    id: 2,
+    title: "Retelling the Past: Cinematic Narratives of Oppression and Resistance in Bolivia and Bengal.",
+    author: "Ahana Bhandari",
+    pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_27.pdf",
+    category: "COMPARATIVE CULTURAL STUDIES",
+    volumeLabel: "Vol I, Issue III (July 2025)",
+    pages: "pp. 31-36",
+    doi: "10.5281/zenodo.1082327"
+  },
+  {
+    id: 3,
+    title: "What Did She Know About Transformation That We Don’t?",
+    author: "Lina Mandal",
+    pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_28.pdf",
+    category: "LITERARY THEORY & CRITICISM",
+    volumeLabel: "Vol I, Issue III (July 2025)",
+    pages: "pp. 37-41",
+    doi: "10.5281/zenodo.1082328"
+  },
+  {
+    id: 4,
+    title: "Laapataa Ladies: A Cinematic Satire on Gendered Invisibility and Rural Agency.",
+    author: "Satyam Kumar",
+    pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_30.pdf",
+    category: "GENDER STUDIES & FILM",
+    volumeLabel: "Vol I, Issue III (July 2025)",
+    pages: "pp. 42-47",
+    doi: "10.5281/zenodo.1082330"
+  },
+  {
+    id: 5,
+    title: "Patachitra Tradition and Artist Kalam Pauta: A Theoretical Perspective on Art and Literature.",
+    author: "Dr. Rakesh Kaibartya",
+    pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/07/TLS20250103_31.pdf",
+    category: "ART, FOLK TRADITION & LITERATURE",
+    volumeLabel: "Vol I, Issue III (July 2025)",
+    pages: "pp. 48-54",
+    doi: "10.5281/zenodo.1082331"
+  },
+  {
+    id: 6,
+    title: "BEYOND THE CHARACTERS: NATURE SHAPES THE STORY IN “ULLOZHUKKU”.",
+    author: "Dona Joseph",
+    pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_32.pdf",
+    category: "ECO-CRITICISM & NARRATIVE",
+    volumeLabel: "Vol I, Issue III (July 2025)",
+    pages: "pp. 55-60",
+    doi: "10.5281/zenodo.1082332"
+  },
+  {
+    id: 7,
+    title: "How ideology shapes consumption: The case of Oil Palm Industry and Red Meat Production.",
+    author: "Souvik Karmakar",
+    pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/07/TLS20250103_.33.pdf",
+    category: "ENVIRONMENTAL SCIENCES & POLICY",
+    volumeLabel: "Vol I, Issue III (July 2025)",
+    pages: "pp. 61-68",
+    doi: "10.5281/zenodo.1082333"
+  },
+  {
+    id: 8,
+    title: "FROM ‘LITTLE MAIDEN’ TO ‘THE WITCH’: EXPLORING THE THEMES OF VAMPIRISM, WITCHCRAFT AND THE FEMALE WANDERER THROUGH A BIOGRAPHICAL READING OF MARY COLERIDGE’S “THE WITCH”.",
+    author: "Shibangi Ghose",
+    pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_34.pdf",
+    category: "GOTHIC LITERATURE & GENDER",
+    volumeLabel: "Vol I, Issue III (July 2025)",
+    pages: "pp. 69-75",
+    doi: "10.5281/zenodo.1082334"
+  },
+  {
+    id: 9,
+    title: "The Word as Weapon: Language, Power, and Black Male Representation in Morrison’s Narratives.",
+    author: "Sakshi Virmani",
+    pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_37.pdf",
+    category: "AFRICAN AMERICAN LITERATURE",
+    volumeLabel: "Vol I, Issue III (July 2025)",
+    pages: "pp. 76-82",
+    doi: "10.5281/zenodo.1082337"
+  },
+  {
+    id: 10,
+    title: "Between Nations and Narratives: Transnational Engagement and Flexible Citizenship in American Betiya.",
+    author: "Kakoli Debnath and Dr. Binda Sah",
+    pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_.38.pdf",
+    category: "DIASPORA & TRANSNATIONALISM",
+    volumeLabel: "Vol I, Issue III (July 2025)",
+    pages: "pp. 83-90",
+    doi: "10.5281/zenodo.1082338"
+  }
+];
+
+const defaultPreviousIssues = [
+  {
+    volume: "Volume I Issue I (December, 2023)",
+    date: "December, 2023",
+    status: "INAUGURAL ISSUE",
+    coverImg: "/annousments/img2.png",
+    description: "Inaugural volume establishing our multidisciplinary bridge between literary theory and empirical scientific inquiry.",
+    link: "/archive"
+  },
+  {
+    volume: "Volume I Issue II (January, 2025)",
+    date: "January, 2025",
+    status: "ARCHIVED ISSUE",
+    coverImg: "/annousments/image copy.png",
+    description: "Featuring peer-reviewed scholarship across modern cultural hermeneutics, socio-environmental dynamics, and medical humanities.",
+    link: "/archive"
+  }
+];
+
 const Home = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeModalPoster, setActiveModalPoster] = useState(null);
+  const [activePdfViewer, setActivePdfViewer] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const filteredArticles = currentArticles.filter((article) =>
+  // Live Database States (Pre-populated with authentic journal edition structure)
+  const [liveArticles, setLiveArticles] = useState(defaultArticles);
+  const [currentIssueInfo, setCurrentIssueInfo] = useState({
+    title: "Volume I, Issue III (July, 2025)",
+    volume: "Volume I",
+    issue: "Issue III",
+    date: "July, 2025",
+    description: "This edition brings together rigorous cross-disciplinary investigations exploring contemporary mythological literature, cinema, gendered rural agency, folk art traditions, eco-criticism, and transnational identities.",
+    coverImg: "/annousments/image2.png",
+    articlesCount: 10
+  });
+  const [previousIssuesList, setPreviousIssuesList] = useState(defaultPreviousIssues);
+
+  // Live Announcements & Popup State
+  const [announcements, setAnnouncements] = useState([]);
+  const [activeAnnouncementIndex, setActiveAnnouncementIndex] = useState(0);
+  const [showAnnouncementPopup, setShowAnnouncementPopup] = useState(false);
+  const [dontShowAgain, setDontShowAgain] = useState(false);
+
+  useEffect(() => {
+    const fetchLiveHomeData = async () => {
+      try {
+        const [volRes, annRes] = await Promise.all([
+          apiFetch('/volumes?with_articles=true&published_only=true'),
+          apiFetch('/announcements?published_only=true')
+        ]);
+
+        // Process Volumes & Live Published Articles from Database
+        if (volRes && volRes.data && volRes.data.length > 0) {
+          const allIssues = [];
+          volRes.data.forEach(vol => {
+            if (vol.issues && vol.issues.length > 0) {
+              vol.issues.forEach(iss => {
+                allIssues.push({
+                  ...iss,
+                  volume_title: vol.volume_title,
+                  volume_number: vol.volume_number,
+                  publication_year: vol.publication_year,
+                  vol_cover_url: vol.cover_url
+                });
+              });
+            }
+          });
+
+          // Sort descending by date & issue number so latest published issue (Volume 1 Issue 3) is always index 0
+          allIssues.sort((a, b) => {
+            const dateA = new Date(a.publication_date || `${a.publication_year}-01-01`).getTime();
+            const dateB = new Date(b.publication_date || `${b.publication_year}-01-01`).getTime();
+            if (dateB !== dateA) return dateB - dateA;
+            return (b.issue_number || 0) - (a.issue_number || 0);
+          });
+
+          if (allIssues.length > 0) {
+            const latest = allIssues[0];
+            const issueDateStr = latest.publication_date 
+              ? new Date(latest.publication_date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+              : `${latest.publication_year}`;
+
+            setCurrentIssueInfo({
+              title: `${latest.volume_title || `Volume ${latest.volume_number}`}, ${latest.issue_title || `Issue ${latest.issue_number}`} (${issueDateStr})`,
+              volume: latest.volume_title || `Volume ${latest.volume_number}`,
+              issue: latest.issue_title || `Issue ${latest.issue_number}`,
+              date: issueDateStr,
+              description: latest.description || "This edition brings together rigorous cross-disciplinary investigations exploring contemporary mythological literature, cinema, gendered rural agency, folk art traditions, eco-criticism, and transnational identities.",
+              coverImg: resolveFileUrl(latest.cover_url || latest.vol_cover_url || "/annousments/image2.png"),
+              articlesCount: latest.articles?.length || 10
+            });
+
+            if (latest.articles && latest.articles.length > 0) {
+              setLiveArticles(latest.articles.map((art, idx) => ({
+                id: art.article_id,
+                title: art.title,
+                author: art.author_name || 'Author',
+                pdfUrl: resolveFileUrl(art.published_url || art.manuscript_url),
+                category: (art.keywords?.split(',')[0] || (art.doi ? `DOI: ${art.doi}` : 'Research Paper')).toUpperCase(),
+                pages: art.page_range || `pp. 1-${10 + idx}`,
+                volumeLabel: `${latest.volume_title || `Vol ${latest.volume_number}`}, ${latest.issue_title || `Issue ${latest.issue_number}`} (${issueDateStr})`,
+                keywords: art.keywords || '',
+                doi: art.doi || ''
+              })));
+            }
+
+            if (allIssues.length > 1) {
+              setPreviousIssuesList(allIssues.slice(1).map(iss => {
+                const prevDate = iss.publication_date 
+                  ? new Date(iss.publication_date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+                  : `${iss.publication_year}`;
+                return {
+                  volume: `${iss.volume_title || `Volume ${iss.volume_number}`} ${iss.issue_title || `Issue ${iss.issue_number}`} (${prevDate})`,
+                  date: prevDate,
+                  coverImg: resolveFileUrl(iss.cover_url || iss.vol_cover_url || "/annousments/img2.png"),
+                  description: iss.description || `Peer-reviewed volume publication with scholarly research papers.`,
+                  status: iss.issue_number === 1 ? "INAUGURAL ISSUE" : "ARCHIVED ISSUE",
+                  link: "/archive",
+                  issn: "ISSN: 3048-7366"
+                };
+              }));
+            }
+          }
+        }
+
+        // Process Announcements
+        if (annRes && annRes.data && annRes.data.length > 0) {
+          setAnnouncements(annRes.data);
+          const latestAnn = annRes.data[0];
+          
+          const dismissedId = sessionStorage.getItem('dismissed_announcement_id');
+          if (dismissedId !== String(latestAnn.announcement_id)) {
+            setTimeout(() => {
+              setShowAnnouncementPopup(true);
+            }, 700);
+          }
+        }
+      } catch (err) {
+        console.warn('Live home data fetch error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchLiveHomeData();
+  }, []);
+
+  const handleCloseAnnouncementPopup = () => {
+    if (dontShowAgain && announcements[activeAnnouncementIndex]) {
+      sessionStorage.setItem('dismissed_announcement_id', String(announcements[activeAnnouncementIndex].announcement_id));
+    }
+    setShowAnnouncementPopup(false);
+  };
+
+  const filteredArticles = liveArticles.filter((article) =>
     article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     article.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    article.category.toLowerCase().includes(searchTerm.toLowerCase())
+    article.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (article.keywords && article.keywords.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   return (
     <div className="flex-grow flex flex-col bg-[#F9F6F0] text-[#2C2C2C]">
+      <SEO
+        title="The Literary Scientist | A Multi-Disciplinary Journal for Literature and Science"
+        description="The Literary Scientist (ISSN: 3048-7366) is an open-access, peer-reviewed journal publishing innovative multidisciplinary research at the intersection of literary theory and scientific disciplines."
+        keywords="The Literary Scientist, academic journal, literature and science, ISSN 3048-7366, peer-reviewed research, multidisciplinary humanities, open access"
+        canonical="/"
+      />
       
       {/* 1. HERO SECTION */}
       <AnimatedSection animation="fade-in" duration={800}>
@@ -234,44 +392,139 @@ const Home = () => {
       </section>
       </AnimatedSection>
 
-      {/* 2. NOTIFICATIONS & MILESTONE BANNER */}
+      {/* 2. NOTIFICATIONS & ANNOUNCEMENTS BANNER (LIVE FROM BACKEND) */}
       <AnimatedSection animation="fade-up" delay={100}>
       <section className="max-w-6xl mx-auto px-4 -mt-8 relative z-20 w-full">
-        <div className="bg-white border-2 border-[#8E7C68]/30 rounded-2xl shadow-xl p-6 sm:p-8 md:p-10 backdrop-blur-sm">
-          <div className="flex flex-col md:flex-row items-start gap-6">
-            <div className="p-4 bg-[#F9F6F0] rounded-2xl text-[#8E7C68] border border-[#E5E0D8] flex-shrink-0 flex items-center justify-center">
-              <FaBullhorn className="w-8 h-8 text-[#1E2530]" />
-            </div>
+        <div className="bg-white border-2 border-[#8E7C68]/30 rounded-2xl shadow-xl p-6 sm:p-8 md:p-10 backdrop-blur-sm relative">
+          
+          {announcements.length > 0 ? (
+            (() => {
+              const currentAnn = announcements[activeAnnouncementIndex] || announcements[0];
+              const isPdf = currentAnn.doc_url && (currentAnn.doc_url.match(/\.pdf$/i) || currentAnn.mime_type?.includes('pdf'));
+              const pubDate = currentAnn.published_at 
+                ? new Date(currentAnn.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                : 'Recent';
 
-            <div className="flex-grow">
-              <div className="flex flex-wrap items-center gap-3 mb-3">
-                <span className="bg-amber-100 text-amber-900 border border-amber-300 font-bold px-3 py-0.5 rounded-full text-xs tracking-wider uppercase">
-                  New Notification
-                </span>
-                <span className="text-xs font-semibold text-[#8E7C68]">Milestone Announcement</span>
+              return (
+                <div className="flex flex-col md:flex-row items-start gap-6">
+                  <div className="p-4 bg-[#F9F6F0] rounded-2xl text-[#8E7C68] border border-[#E5E0D8] flex-shrink-0 flex items-center justify-center">
+                    <FaBullhorn className="w-8 h-8 text-[#1E2530]" />
+                  </div>
+
+                  <div className="flex-grow space-y-3">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="bg-amber-100 text-amber-900 border border-amber-300 font-bold px-3 py-0.5 rounded-full text-xs tracking-wider uppercase">
+                          Latest Announcement
+                        </span>
+                        <span className="text-xs font-semibold text-[#8E7C68]">
+                          Published: {pubDate}
+                        </span>
+                        {currentAnn.admin_name && (
+                          <span className="text-xs text-gray-500">
+                            • By {currentAnn.admin_name}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Pagination if multiple announcements */}
+                      {announcements.length > 1 && (
+                        <div className="flex items-center gap-1 bg-[#FAF7F2] px-2 py-1 rounded-lg border border-[#E5E0D8]">
+                          <button
+                            type="button"
+                            onClick={() => setActiveAnnouncementIndex((prev) => (prev > 0 ? prev - 1 : announcements.length - 1))}
+                            className="text-xs px-2 py-0.5 font-bold hover:bg-[#EAE6DF] rounded"
+                            title="Previous Announcement"
+                          >
+                            ◀
+                          </button>
+                          <span className="text-xs font-bold text-[#8E7C68] px-1">
+                            {activeAnnouncementIndex + 1} / {announcements.length}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setActiveAnnouncementIndex((prev) => (prev < announcements.length - 1 ? prev + 1 : 0))}
+                            className="text-xs px-2 py-0.5 font-bold hover:bg-[#EAE6DF] rounded"
+                            title="Next Announcement"
+                          >
+                            ▶
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    <h2 className="text-xl sm:text-2xl font-bold text-[#1E2530] font-serif leading-snug">
+                      {currentAnn.title}
+                    </h2>
+
+                    <div className="text-sm sm:text-base text-[#5C5446] leading-relaxed whitespace-pre-line">
+                      {currentAnn.content}
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-3 pt-2">
+                      <button
+                        type="button"
+                        onClick={() => setShowAnnouncementPopup(true)}
+                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1E2530] hover:bg-[#2C384A] text-white rounded-lg font-bold text-xs sm:text-sm shadow transition-all"
+                      >
+                        <FaBullhorn className="text-amber-400" /> View Announcement Details & Popup
+                      </button>
+
+                      {currentAnn.doc_url && (
+                        <a
+                          href={resolveFileUrl(currentAnn.doc_url)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-[#FAF7F2] hover:bg-[#EFE9DF] text-[#1E2530] border border-[#E5E0D8] rounded-lg text-xs sm:text-sm font-semibold transition-all"
+                        >
+                          {isPdf ? <FaFilePdf className="text-red-600" /> : <FaExpandAlt className="text-[#8E7C68]" />}
+                          <span>{isPdf ? 'Download Attachment (PDF)' : 'View Attachment'}</span>
+                          <FaExternalLinkAlt className="text-[10px] opacity-70" />
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })()
+          ) : (
+            /* Fallback Default Milestone Banner */
+            <div className="flex flex-col md:flex-row items-start gap-6">
+              <div className="p-4 bg-[#F9F6F0] rounded-2xl text-[#8E7C68] border border-[#E5E0D8] flex-shrink-0 flex items-center justify-center">
+                <FaBullhorn className="w-8 h-8 text-[#1E2530]" />
               </div>
 
-              <h2 className="text-xl sm:text-2xl font-bold text-[#1E2530] mb-3 font-serif">
-                Proud Recipient of ISSN: 3048-7366 (ONLINE)
-              </h2>
+              <div className="flex-grow">
+                <div className="flex flex-wrap items-center gap-3 mb-3">
+                  <span className="bg-amber-100 text-amber-900 border border-amber-300 font-bold px-3 py-0.5 rounded-full text-xs tracking-wider uppercase">
+                    New Notification
+                  </span>
+                  <span className="text-xs font-semibold text-[#8E7C68]">Milestone Announcement</span>
+                </div>
 
-              <p className="text-sm sm:text-base text-[#5C5446] leading-relaxed mb-4">
-                We're thrilled to announce that <strong>The Literary Scientist</strong> now proudly holds an <strong>ISSN: 3048-7366 (ONLINE)</strong>, marking a significant milestone in our journey. This achievement underscores our commitment to fostering interdisciplinary scholarship and creativity across literature, science, and beyond.
-              </p>
+                <h2 className="text-xl sm:text-2xl font-bold text-[#1E2530] mb-3 font-serif">
+                  Proud Recipient of ISSN: 3048-7366 (ONLINE)
+                </h2>
 
-              <p className="text-sm sm:text-base text-[#5C5446] leading-relaxed">
-                With this call for contributions, we invite young minds and seasoned researchers alike to explore groundbreaking topics—from micro literature to digital humanities, cultural studies, and more. Be part of a pioneering publication that bridges disciplines and enriches the landscape of academic thought.
-              </p>
+                <p className="text-sm sm:text-base text-[#5C5446] leading-relaxed mb-4">
+                  We’re thrilled to announce that <strong>The Literary Scientist</strong> now proudly holds an <strong>ISSN: 3048-7366 (ONLINE)</strong>, marking a significant milestone in our journey. This achievement underscores our commitment to fostering interdisciplinary scholarship and creativity across literature, science, and beyond.
+                </p>
+
+                <p className="text-sm sm:text-base text-[#5C5446] leading-relaxed">
+                  With this call for contributions, we invite young minds and seasoned researchers alike to explore groundbreaking topics—from micro literature to digital humanities, cultural studies, and more. Be part of a pioneering publication that bridges disciplines and enriches the landscape of academic thought.
+                </p>
+              </div>
             </div>
-          </div>
+          )}
+
         </div>
       </section>
       </AnimatedSection>
 
-      {/* 3. CALL FOR CONTRIBUTIONS WITH OFFICIAL ANNOUNCEMENT POSTER (image.png) */}
+      {/* 3. CALL FOR CONTRIBUTIONS (EXACT MATCH TO INPUT UI IMAGE 1) */}
       <AnimatedSection animation="fade-up" delay={100}>
       <section className="max-w-6xl mx-auto px-4 py-12 w-full">
-        <div className="bg-gradient-to-br from-[#1E2530] via-[#26303F] to-[#161B22] text-white rounded-3xl p-6 sm:p-10 md:p-12 shadow-2xl border border-gray-700/60 relative overflow-hidden">
+        <div className="bg-[#1E2530] text-white rounded-3xl p-6 sm:p-10 md:p-12 shadow-2xl border border-gray-700/60 relative overflow-hidden">
           <div className="absolute right-0 top-0 translate-x-12 -translate-y-12 w-96 h-96 bg-white/5 rounded-full blur-3xl pointer-events-none"></div>
 
           <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
@@ -279,28 +532,27 @@ const Home = () => {
             {/* Left Content Column */}
             <div className="lg:col-span-7 space-y-6">
               <div>
-                <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-full text-xs font-bold uppercase tracking-widest mb-4">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                  Call For Contribution Is Live
+                <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-[#133E32] text-[#25D366] border border-[#1E5D4B] rounded-full text-xs font-bold uppercase tracking-widest mb-4">
+                  CALL FOR CONTRIBUTION IS LIVE
                 </div>
-                
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-serif leading-tight mb-3">
+
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-serif leading-tight mb-3 text-white">
                   Vol. II Issue I (2025): Call for Contributions
                 </h2>
-                
-                <p className="text-gray-300 text-sm sm:text-base leading-relaxed">
+
+                <p className="text-gray-300 text-sm sm:text-base leading-relaxed font-serif">
                   We are pleased to announce the launch of our most recent contribution for our upcoming volume. Our Call for Contribution is already live for your upcoming volume. Take a look and share your thought within the time period.
                 </p>
               </div>
 
-              {/* Topics Highlights */}
-              <div className="bg-white/5 border border-white/10 rounded-xl p-4 sm:p-5">
-                <h4 className="text-xs uppercase font-bold tracking-wider text-[#D4AF37] mb-3">
-                  Scope of Research Topics (Open for Submissions):
+              {/* Topics Highlights Box */}
+              <div className="bg-[#161D27] border border-white/10 rounded-2xl p-5 sm:p-6">
+                <h4 className="text-xs uppercase font-bold tracking-wider text-[#D4AF37] mb-3 font-sans">
+                  SCOPE OF RESEARCH TOPICS (OPEN FOR SUBMISSIONS):
                 </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-gray-300">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs text-gray-300">
                   {callTopics.map((topic, i) => (
-                    <div key={i} className="flex items-start gap-1.5">
+                    <div key={i} className="flex items-start gap-2">
                       <span className="text-emerald-400 font-bold">•</span>
                       <span>{topic}</span>
                     </div>
@@ -308,15 +560,17 @@ const Home = () => {
                 </div>
               </div>
 
-              {/* Action Buttons */}
+              {/* Action Buttons matching Image 1 */}
               <div className="flex flex-wrap items-center gap-3 pt-2">
                 <a
                   href="/annousments/Olive-Green-Doodle-Final-Project-Cover-A4-Document.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-[#8E7C68] hover:bg-[#7D6B57] text-white rounded-lg font-bold text-sm transition-all shadow-md hover:shadow-lg"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-[#8E7C68] hover:bg-[#7D6B57] text-white rounded-xl font-bold text-xs sm:text-sm shadow-md transition-all"
                 >
-                  <FaFilePdf className="text-base" /> Document Details (PDF) <FaExternalLinkAlt className="text-xs opacity-70" />
+                  <FaFilePdf className="text-sm" />
+                  <span>Document Details (PDF)</span>
+                  <FaExternalLinkAlt className="text-[10px] opacity-70" />
                 </a>
 
                 <button
@@ -328,21 +582,23 @@ const Home = () => {
                     downloadName: "The_Literary_Scientist_Call_For_Contributions_Vol2_Issue1.png",
                     pdfLink: "/annousments/Olive-Green-Doodle-Final-Project-Cover-A4-Document.pdf"
                   })}
-                  className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-lg font-semibold text-sm transition-all"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-[#26303F] hover:bg-[#323F52] text-white border border-gray-600 rounded-xl font-bold text-xs sm:text-sm shadow-md transition-all"
                 >
-                  <FaExpandAlt className="text-xs" /> View Full Poster
+                  <FaExpandAlt className="text-xs" />
+                  <span>View Full Poster</span>
                 </button>
 
                 <Link
                   to="/start-submission"
-                  className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold text-sm transition-all shadow"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#009E60] hover:bg-[#008751] text-white rounded-xl font-bold text-xs sm:text-sm shadow-lg hover:shadow-emerald-900/40 transition-all"
                 >
-                  Submit Paper <FaArrowRight className="text-xs" />
+                  <span>Submit Paper</span>
+                  <FaArrowRight className="text-xs" />
                 </Link>
               </div>
             </div>
 
-            {/* Right Poster Preview Column (Call for Contributions Poster: image.png) */}
+            {/* Right Poster Preview Column */}
             <div className="lg:col-span-5 flex justify-center">
               <div
                 onClick={() => setActiveModalPoster({
@@ -352,34 +608,18 @@ const Home = () => {
                   downloadName: "The_Literary_Scientist_Call_For_Contributions_Vol2_Issue1.png",
                   pdfLink: "/annousments/Olive-Green-Doodle-Final-Project-Cover-A4-Document.pdf"
                 })}
-                className="relative group cursor-pointer max-w-[320px] sm:max-w-[340px] rounded-2xl overflow-hidden shadow-2xl border-2 border-white/20 bg-white transform transition-all duration-300 hover:scale-[1.02] hover:shadow-emerald-900/30 p-2"
+                className="relative group cursor-pointer max-w-[320px] sm:max-w-[340px] rounded-3xl overflow-hidden shadow-2xl border border-white/20 bg-white transform transition-all duration-300 hover:scale-[1.02] p-2"
               >
-                {/* Poster Image with Natural Aspect Ratio */}
-                <div className="rounded-xl overflow-hidden bg-neutral-100 flex items-center justify-center">
+                <div className="rounded-2xl overflow-hidden bg-white flex items-center justify-center relative">
                   <img
                     src="/annousments/image.png"
-                    alt="The Literary Scientist - Call for Contributions Vol. II Issue I (2025)"
+                    alt="The Literary Scientist - Call for Contributions"
                     className="w-full h-auto max-h-[460px] object-contain block"
                     loading="lazy"
                   />
-                </div>
-
-                {/* Hover Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#1E2530]/90 via-[#1E2530]/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5 text-white">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="text-xs uppercase tracking-wider text-[#D4AF37] font-bold">Official Announcement</span>
-                      <p className="text-sm font-bold">Click to enlarge poster & scan QR</p>
-                    </div>
-                    <span className="p-2.5 bg-white text-[#1E2530] rounded-full shadow-lg">
-                      <FaExpandAlt className="w-3.5 h-3.5" />
-                    </span>
+                  <div className="absolute top-3 left-3 bg-[#1E2530]/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-[11px] font-bold border border-white/20 shadow">
+                    Vol. II Issue I (2025)
                   </div>
-                </div>
-
-                {/* Badge Tag */}
-                <div className="absolute top-4 left-4 bg-[#1E2530]/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-[11px] font-bold border border-white/20 shadow">
-                  Vol. II Issue I (2025)
                 </div>
               </div>
             </div>
@@ -389,43 +629,36 @@ const Home = () => {
       </section>
       </AnimatedSection>
 
-      {/* 4. LATEST PUBLISHED ISSUE (VOLUME I ISSUE III - JULY 2025) WITH OFFICIAL ISSUE COVER (image2.png) */}
+      {/* 4. LATEST PUBLISHED ISSUE (EXACT MATCH TO INPUT UI IMAGE 2) */}
       <AnimatedSection animation="fade-up" delay={100}>
       <section id="current-issue" className="max-w-6xl mx-auto px-4 py-8 w-full">
         
         {/* Issue Showcase Header Banner with Cover Art */}
-        <div className="bg-white border border-[#E5E0D8] rounded-3xl p-6 sm:p-8 md:p-10 mb-10 shadow-md">
+        <div className="bg-white border border-[#EBE6DE] rounded-3xl p-6 sm:p-8 md:p-10 mb-10 shadow-sm">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
             
-            {/* Issue Cover Art (image2.png) */}
+            {/* Issue Cover Art */}
             <div className="md:col-span-4 lg:col-span-3 flex justify-center">
               <div
                 onClick={() => setActiveModalPoster({
-                  src: "/annousments/image2.png",
-                  title: "The Literary Scientist — Volume I, Issue III (2025)",
-                  subtitle: "Official Issue Cover Artwork • ISSN: 3048-7366 (ONLINE)",
-                  downloadName: "The_Literary_Scientist_Vol1_Issue3_Cover.png",
-                  pdfLink: "https://theliteraryscientist.org/wp-content/uploads/2025/07/TLS20250103_26.pdf"
+                  src: currentIssueInfo?.coverImg || "/annousments/image2.png",
+                  title: `The Literary Scientist — ${currentIssueInfo?.title || 'Volume I, Issue III (July, 2025)'}`,
+                  subtitle: `Official Issue Cover Artwork • ISSN: 3048-7366 (ONLINE)`,
+                  downloadName: "The_Literary_Scientist_Current_Cover.png",
+                  pdfLink: liveArticles[0]?.pdfUrl || null
                 })}
-                className="relative group cursor-pointer w-full max-w-[210px] rounded-2xl overflow-hidden shadow-xl border border-[#E5E0D8] hover:border-[#8E7C68] transform transition-all duration-300 hover:scale-[1.03] bg-[#FAF7F2] p-1.5"
+                className="relative group cursor-pointer w-full max-w-[210px] rounded-2xl overflow-hidden shadow-md border border-[#E5E0D8] hover:border-[#8E7C68] transform transition-all duration-300 hover:scale-[1.03] bg-white p-1.5"
               >
-                <div className="rounded-xl overflow-hidden bg-white">
+                <div className="rounded-xl overflow-hidden bg-white relative">
                   <img
-                    src="/annousments/image2.png"
-                    alt="The Literary Scientist Volume I Issue III 2025 Cover"
+                    src={currentIssueInfo?.coverImg || "/annousments/image2.png"}
+                    alt={`${currentIssueInfo?.title || 'Current Issue'} Cover`}
                     className="w-full h-auto max-h-[290px] object-contain block mx-auto"
                     loading="lazy"
                   />
-                </div>
-
-                <div className="absolute inset-0 bg-gradient-to-t from-[#1E2530]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center p-3 text-white">
-                  <span className="inline-flex items-center gap-1.5 text-xs font-bold bg-white text-[#1E2530] px-3 py-1.5 rounded-full shadow">
-                    <FaExpandAlt className="text-[10px]" /> Enlarge Cover
-                  </span>
-                </div>
-
-                <div className="absolute top-3 left-3 bg-[#1E2530]/90 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-md shadow">
-                  Issue Cover
+                  <div className="absolute top-2.5 left-2.5 bg-[#1E2530]/90 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-md shadow">
+                    Issue Cover
+                  </div>
                 </div>
               </div>
             </div>
@@ -433,43 +666,43 @@ const Home = () => {
             {/* Issue Details & Metadata */}
             <div className="md:col-span-8 lg:col-span-9 space-y-4">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="px-3 py-1 bg-[#1E2530] text-white text-xs font-bold uppercase tracking-wider rounded-full">
-                  Latest Published Issue
+                <span className="px-3 py-1 bg-[#1E2530] text-white text-[11px] font-bold uppercase tracking-wider rounded-full">
+                  LATEST PUBLISHED ISSUE
                 </span>
-                <span className="px-3 py-1 bg-[#FAF7F2] text-[#8E7C68] border border-[#E5E0D8] text-xs font-semibold rounded-full flex items-center gap-1">
-                  <FaCalendarAlt className="text-xs" /> July, 2025
+                <span className="px-3 py-1 bg-[#FAF7F2] text-[#8E7C68] border border-[#E5E0D8] text-xs font-semibold rounded-full flex items-center gap-1.5">
+                  <FaCalendarAlt className="text-xs" /> {currentIssueInfo?.date || 'July, 2025'}
                 </span>
-                <span className="px-3 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-semibold rounded-full flex items-center gap-1">
-                  <FaCheckCircle className="text-xs text-emerald-600" /> 10 Articles Published
+                <span className="px-3 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-semibold rounded-full flex items-center gap-1.5">
+                  <FaCheckCircle className="text-xs text-emerald-600" /> {currentIssueInfo?.articlesCount || liveArticles.length} Articles Published
                 </span>
               </div>
 
               <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1E2530] font-serif leading-tight">
-                Volume I, Issue III (July, 2025)
+                {currentIssueInfo?.title || 'Volume I, Issue III (July, 2025)'}
               </h2>
 
               <p className="text-sm sm:text-base text-[#5C5446] leading-relaxed font-serif">
-                This edition brings together rigorous cross-disciplinary investigations exploring contemporary mythological literature, cinema, gendered rural agency, folk art traditions, eco-criticism, and transnational identities.
+                {currentIssueInfo?.description || 'This edition brings together rigorous cross-disciplinary investigations exploring contemporary mythological literature, cinema, gendered rural agency, folk art traditions, eco-criticism, and transnational identities.'}
               </p>
 
               <div className="flex flex-wrap items-center gap-3 pt-2">
                 <button
                   type="button"
                   onClick={() => setActiveModalPoster({
-                    src: "/annousments/image2.png",
-                    title: "The Literary Scientist — Volume I, Issue III (2025)",
-                    subtitle: "Official Issue Cover Artwork • ISSN: 3048-7366 (ONLINE)",
-                    downloadName: "The_Literary_Scientist_Vol1_Issue3_Cover.png",
-                    pdfLink: "https://theliteraryscientist.org/wp-content/uploads/2025/07/TLS20250103_26.pdf"
+                    src: currentIssueInfo?.coverImg || "/annousments/image2.png",
+                    title: `The Literary Scientist — ${currentIssueInfo?.title || 'Current Issue'}`,
+                    subtitle: `Official Issue Cover Artwork • ISSN: 3048-7366 (ONLINE)`,
+                    downloadName: "The_Literary_Scientist_Current_Cover.png",
+                    pdfLink: liveArticles[0]?.pdfUrl || null
                   })}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#FAF7F2] hover:bg-[#EFE9DF] text-[#1E2530] border border-[#E5E0D8] rounded-lg text-xs sm:text-sm font-bold transition-all shadow-sm"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#FAF7F2] hover:bg-[#EFE9DF] text-[#1E2530] border border-[#E5E0D8] rounded-lg text-xs sm:text-sm font-bold transition-all shadow-xs"
                 >
                   <FaQrcode className="text-[#8E7C68]" /> View Cover & QR
                 </button>
 
                 <a
                   href="#articles-list"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#1E2530] hover:bg-[#2C384A] text-white rounded-lg text-xs sm:text-sm font-bold transition-all shadow"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#1E2530] hover:bg-[#2C384A] text-white rounded-lg text-xs sm:text-sm font-bold transition-all shadow-sm"
                 >
                   <FaBookOpen /> Jump to Articles ({filteredArticles.length})
                 </a>
@@ -480,10 +713,10 @@ const Home = () => {
         </div>
 
         {/* Search & Filter Header */}
-        <div id="articles-list" className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 border-b border-[#E5E0D8] pb-6">
+        <div id="articles-list" className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 pb-4">
           <div>
-            <div className="flex items-center gap-2 text-[#8E7C68] font-bold text-sm uppercase tracking-wider mb-2">
-              <FaBookOpen /> Table of Contents
+            <div className="flex items-center gap-2 text-[#8E7C68] font-bold text-xs uppercase tracking-widest mb-1.5">
+              <FaBookOpen className="text-xs" /> TABLE OF CONTENTS
             </div>
             <h3 className="text-2xl sm:text-3xl font-extrabold text-[#1E2530] font-serif">
               Published Research Articles
@@ -494,21 +727,21 @@ const Home = () => {
           </div>
 
           {/* Quick Search in Current Issue */}
-          <div className="w-full md:w-72">
+          <div className="w-full md:w-80">
             <div className="relative">
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search articles or authors..."
-                className="w-full pl-9 pr-4 py-2 bg-white border border-[#E5E0D8] rounded-lg text-sm focus:outline-none focus:border-[#8E7C68] focus:ring-1 focus:ring-[#8E7C68] shadow-sm"
+                className="w-full pl-9 pr-4 py-2 bg-white border border-[#E5E0D8] rounded-lg text-xs sm:text-sm focus:outline-none focus:border-[#8E7C68] focus:ring-1 focus:ring-[#8E7C68] shadow-xs"
               />
               <FaSearch className="absolute left-3 top-3 text-gray-400 text-xs" />
             </div>
           </div>
         </div>
 
-        {/* Articles List Grid */}
+        {/* Articles List Grid (EXACT MATCH TO INPUT UI IMAGE 3) */}
         <div className="space-y-4 mb-10">
           {filteredArticles.length === 0 ? (
             <div className="bg-white p-12 rounded-xl text-center border border-[#E5E0D8] text-[#5C5446]">
@@ -523,8 +756,8 @@ const Home = () => {
           ) : (
             filteredArticles.map((article, index) => (
               <article
-                key={article.id}
-                className="bg-white border border-[#E5E0D8] hover:border-[#8E7C68]/60 rounded-xl p-5 sm:p-6 shadow-sm hover:shadow-md transition-all duration-200 group flex flex-col md:flex-row items-start md:items-center justify-between gap-5"
+                key={article.id || index}
+                className="bg-white border border-[#EBE6DE] hover:border-[#8E7C68]/60 rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-md transition-all duration-200 group flex flex-col md:flex-row items-start md:items-center justify-between gap-5"
               >
                 <div className="flex items-start gap-4 flex-grow">
                   {/* Article index pill */}
@@ -532,42 +765,61 @@ const Home = () => {
                     {String(index + 1).padStart(2, '0')}
                   </span>
 
-                  <div className="space-y-2">
+                  <div className="space-y-1.5">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-[11px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded bg-[#FAF7F2] text-[#8E7C68] border border-[#EFE9DF]">
+                      <span className="text-[10px] sm:text-[11px] font-bold tracking-wider uppercase px-2.5 py-0.5 rounded bg-[#FAF7F2] text-[#8E7C68] border border-[#EFE9DF]">
                         {article.category}
                       </span>
                       <span className="text-[11px] text-gray-500 font-medium">
-                        Vol I, Issue III (July 2025)
+                        {article.volumeLabel || currentIssueInfo?.title || "Vol I, Issue III (July 2025)"}
                       </span>
                     </div>
 
-                    <h3 className="text-base sm:text-lg font-bold text-[#1E2530] group-hover:text-[#8E7C68] transition-colors leading-snug font-serif">
-                      <a href={article.pdfUrl} target="_blank" rel="noopener noreferrer">
-                        {article.title}
-                      </a>
+                    <h3 
+                      onClick={() => article.pdfUrl && setActivePdfViewer({
+                        url: article.pdfUrl,
+                        title: article.title,
+                        author: article.author,
+                        category: article.category,
+                        pages: article.pages,
+                        doi: article.doi
+                      })}
+                      className={`text-base sm:text-lg font-bold text-[#1E2530] leading-snug font-serif ${article.pdfUrl ? 'cursor-pointer hover:text-[#8E7C68]' : ''} transition-colors`}
+                    >
+                      {article.title}
                     </h3>
 
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs sm:text-sm text-[#5C5446]">
                       <span className="font-semibold flex items-center gap-1.5 text-[#2C2C2C]">
                         <FaUserEdit className="text-[#8E7C68]" /> {article.author}
                       </span>
+                      {article.pages && (
+                        <span className="text-xs text-gray-400 font-mono">
+                          • {article.pages}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
 
-                {/* PDF Link Button */}
-                <div className="flex-shrink-0 w-full md:w-auto pt-2 md:pt-0 border-t md:border-t-0 border-[#F0EBE1] flex justify-end">
-                  <a
-                    href={article.pdfUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full md:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#FAF7F2] hover:bg-[#1E2530] text-[#1E2530] hover:text-white border border-[#E5E0D8] hover:border-[#1E2530] rounded-lg text-xs sm:text-sm font-bold transition-all shadow-sm group-hover:shadow"
+                {/* Download PDF Button matching Image 3 */}
+                <div className="flex-shrink-0 w-full md:w-auto pt-2 md:pt-0 border-t md:border-t-0 border-[#F0EBE1] flex items-center gap-2 justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setActivePdfViewer({
+                      url: article.pdfUrl,
+                      title: article.title,
+                      author: article.author,
+                      category: article.category,
+                      pages: article.pages,
+                      doi: article.doi
+                    })}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-[#FAF7F2] hover:bg-[#EFE9DF] text-[#1E2530] border border-[#E5E0D8] rounded-lg text-xs font-bold transition-all shadow-xs shrink-0 cursor-pointer"
                   >
-                    <FaFilePdf className="text-red-600 group-hover:text-red-400" />
+                    <FaFilePdf className="text-red-600 text-sm" />
                     <span>Download PDF</span>
-                    <FaExternalLinkAlt className="text-[10px] opacity-60" />
-                  </a>
+                    <FaExternalLinkAlt className="text-[9px] opacity-60 text-gray-500" />
+                  </button>
                 </div>
               </article>
             ))
@@ -576,9 +828,9 @@ const Home = () => {
       </section>
       </AnimatedSection>
 
-      {/* 5. PREVIOUS ISSUES SECTION (PERFECT VERTICAL CARD ORIENTATION) */}
+      {/* 5. PREVIOUS ISSUES SECTION (EXACT MATCH TO INPUT UI IMAGE 4) */}
       <AnimatedSection animation="fade-up" delay={100}>
-      <section className="bg-white border-y border-[#E5E0D8] py-16 px-4">
+      <section className="bg-[#FAF7F2]/40 border-y border-[#E5E0D8] py-16 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-extrabold text-[#1E2530] font-serif uppercase tracking-wide mb-3">
@@ -590,30 +842,30 @@ const Home = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10 mb-10 max-w-4xl mx-auto">
-            {previousIssues.map((issue, idx) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10 mb-10 max-w-5xl mx-auto">
+            {previousIssuesList.map((issue, idx) => (
               <div
                 key={idx}
-                className="bg-[#FAF7F2] border border-[#E5E0D8] hover:border-[#8E7C68] rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
+                className="bg-[#FAF7F2] border border-[#E5E0D8] rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
               >
                 {/* Header Info */}
-                <div className="mb-5">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="px-3 py-0.5 bg-white border border-[#E5E0D8] text-[#8E7C68] rounded-full text-xs font-bold tracking-wider uppercase shadow-xs">
+                <div>
+                  <div className="flex justify-between items-center mb-3">
+                    <span className="px-3 py-1 bg-white border border-[#E5E0D8] text-[#8E7C68] rounded-full text-xs font-bold tracking-wider uppercase shadow-xs">
                       {issue.status}
                     </span>
-                    <span className="flex items-center gap-1.5 text-xs text-gray-600 font-medium">
+                    <span className="flex items-center gap-1.5 text-xs text-gray-500 font-medium">
                       <FaCalendarAlt className="text-[#8E7C68] text-xs" /> {issue.date}
                     </span>
                   </div>
 
-                  <h3 className="text-2xl font-bold text-[#1E2530] font-serif tracking-tight">
-                    {issue.volume} ({issue.date.split(',')[0]}, {issue.date.split(',')[1]?.trim()})
+                  <h3 className="text-xl sm:text-2xl font-bold text-[#1E2530] font-serif tracking-tight mb-6">
+                    {issue.volume}
                   </h3>
                 </div>
 
-                {/* Centered Journal Cover (Natural Portrait Proportion - No Distortion) */}
-                <div className="my-3 flex justify-center">
+                {/* Centered Journal Cover */}
+                <div className="my-2 flex justify-center">
                   <div
                     onClick={() => setActiveModalPoster({
                       src: issue.coverImg,
@@ -622,52 +874,16 @@ const Home = () => {
                       downloadName: `The_Literary_Scientist_${issue.volume.replace(/[^a-zA-Z0-9]/g, '_')}_Cover.png`,
                       pdfLink: null
                     })}
-                    className="relative cursor-pointer w-full max-w-[220px] rounded-2xl overflow-hidden shadow-md group-hover:shadow-2xl border-2 border-white bg-white transform group-hover:scale-[1.03] transition-all duration-300 p-1"
+                    className="relative cursor-pointer w-full max-w-[240px] rounded-2xl overflow-hidden shadow-lg border-2 border-white bg-white transform hover:scale-[1.03] transition-all duration-300 p-1"
                   >
-                    <div className="rounded-xl overflow-hidden bg-neutral-50 flex items-center justify-center">
+                    <div className="rounded-xl overflow-hidden bg-white flex items-center justify-center">
                       <img
                         src={issue.coverImg}
                         alt={`${issue.volume} Cover`}
-                        className="w-full h-auto max-h-[300px] object-contain block mx-auto"
+                        className="w-full h-auto max-h-[320px] object-contain block mx-auto"
                         loading="lazy"
                       />
                     </div>
-
-                    <div className="absolute inset-0 bg-[#1E2530]/75 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-3 text-white">
-                      <span className="text-xs font-bold bg-white text-[#1E2530] px-3 py-1.5 rounded-full shadow flex items-center gap-1.5">
-                        <FaExpandAlt className="text-[10px]" /> Enlarge Cover
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Description and Action Footer */}
-                <div className="mt-4 pt-4 border-t border-[#E5E0D8]">
-                  <p className="text-[#5C5446] text-xs sm:text-sm leading-relaxed mb-5 font-serif text-center sm:text-left">
-                    {issue.description}
-                  </p>
-
-                  <div className="flex items-center justify-between gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setActiveModalPoster({
-                        src: issue.coverImg,
-                        title: `The Literary Scientist — ${issue.volume}`,
-                        subtitle: `${issue.status} • Published: ${issue.date}`,
-                        downloadName: `The_Literary_Scientist_${issue.volume.replace(/[^a-zA-Z0-9]/g, '_')}_Cover.png`,
-                        pdfLink: null
-                      })}
-                      className="inline-flex items-center gap-1.5 text-xs text-[#8E7C68] hover:text-[#1E2530] font-semibold transition-colors"
-                    >
-                      <FaQrcode className="text-xs" /> Scan QR / View Cover
-                    </button>
-
-                    <Link
-                      to={issue.link}
-                      className="inline-flex items-center gap-1 px-3.5 py-1.5 bg-[#1E2530] hover:bg-[#8E7C68] text-white rounded-lg text-xs font-bold transition-all shadow-sm"
-                    >
-                      View Archive <FaArrowRight className="text-[10px]" />
-                    </Link>
                   </div>
                 </div>
               </div>
@@ -817,7 +1033,7 @@ const Home = () => {
                   {activeModalPoster.subtitle || activeModalPoster.title}
                 </span>
               </div>
-              
+
               <button
                 type="button"
                 onClick={() => setActiveModalPoster(null)}
@@ -848,16 +1064,6 @@ const Home = () => {
               </a>
 
               <div className="flex items-center gap-2">
-                {activeModalPoster.pdfLink && (
-                  <a
-                    href={activeModalPoster.pdfLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#8E7C68] hover:bg-[#7D6B57] text-white text-xs sm:text-sm font-bold rounded-lg transition-colors"
-                  >
-                    <FaFilePdf /> Details PDF
-                  </a>
-                )}
                 <Link
                   to="/start-submission"
                   onClick={() => setActiveModalPoster(null)}
@@ -871,6 +1077,170 @@ const Home = () => {
           </div>
         </div>
       )}
+
+      {/* 8. IN-BROWSER PEER-REVIEWED PDF READER MODAL */}
+      {activePdfViewer && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-2 sm:p-4 animate-fadeIn">
+          <div className="bg-[#1E2530] border border-gray-700 rounded-2xl w-full max-w-5xl h-[92vh] flex flex-col overflow-hidden shadow-2xl">
+            {/* Reader Header */}
+            <div className="bg-[#161B22] px-4 py-3 border-b border-gray-700 flex justify-between items-center text-white">
+              <div className="min-w-0 pr-4">
+                <div className="flex items-center gap-2 mb-0.5">
+                  <span className="bg-emerald-600 text-white text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded">
+                    Peer-Reviewed Publication
+                  </span>
+                  {activePdfViewer.pages && (
+                    <span className="text-xs text-gray-400 font-mono">Pages: {activePdfViewer.pages}</span>
+                  )}
+                  {activePdfViewer.doi && (
+                    <span className="text-xs text-[#D4AF37] font-mono hidden sm:inline">{activePdfViewer.doi}</span>
+                  )}
+                </div>
+                <h4 className="text-sm font-bold text-gray-100 truncate max-w-2xl font-serif">
+                  {activePdfViewer.title}
+                </h4>
+                <p className="text-xs text-gray-400">By {activePdfViewer.author}</p>
+              </div>
+
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <a
+                  href={activePdfViewer.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#2C384A] hover:bg-[#8E7C68] text-white rounded-lg text-xs font-semibold transition-colors shadow-xs"
+                >
+                  <FaExternalLinkAlt className="text-[10px]" />
+                  <span className="hidden sm:inline">Safe Open in Tab</span>
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setActivePdfViewer(null)}
+                  className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
+                  aria-label="Close PDF Viewer"
+                >
+                  <FaTimes className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Embedded Stream Viewer */}
+            <div className="flex-1 bg-neutral-900 w-full h-full relative">
+              <iframe
+                src={`${activePdfViewer.url}#toolbar=0&navpanes=0&scrollbar=1`}
+                className="w-full h-full border-0 bg-white"
+                title={activePdfViewer.title}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 9. ANNOUNCEMENT POPUP MODAL (AUTO-OPEN ON LOAD & ON-DEMAND CLICK) */}
+      {showAnnouncementPopup && announcements.length > 0 && (() => {
+        const popupAnn = announcements[activeAnnouncementIndex] || announcements[0];
+        const isPdf = popupAnn.doc_url && (popupAnn.doc_url.match(/\.pdf$/i) || popupAnn.mime_type?.includes('pdf'));
+        const isImg = popupAnn.doc_url && (popupAnn.doc_url.match(/\.(jpg|jpeg|png|webp|gif|svg)$/i) || popupAnn.mime_type?.includes('image'));
+        const pubDate = popupAnn.published_at 
+          ? new Date(popupAnn.published_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+          : 'Official Journal Notification';
+
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
+            <div className="bg-[#FAF9F6] border-2 border-[#8E7C68] rounded-3xl max-w-2xl w-full max-h-[90vh] shadow-2xl flex flex-col overflow-hidden animate-scaleUp">
+              
+              {/* Popup Header */}
+              <div className="bg-gradient-to-r from-[#1E2530] to-[#2C384A] text-white p-5 flex justify-between items-center border-b border-gray-700">
+                <div className="flex items-center gap-3">
+                  <span className="p-2.5 bg-amber-500/20 text-amber-400 rounded-xl">
+                    <FaBullhorn className="w-5 h-5" />
+                  </span>
+                  <div>
+                    <span className="text-[11px] uppercase tracking-widest text-[#D4AF37] font-bold">
+                      Important Journal Announcement
+                    </span>
+                    <p className="text-xs text-gray-300">{pubDate}</p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleCloseAnnouncementPopup}
+                  className="p-2 text-gray-300 hover:text-white rounded-full hover:bg-white/10 transition-colors"
+                  aria-label="Close Announcement Popup"
+                >
+                  <FaTimes className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Popup Body */}
+              <div className="p-6 sm:p-8 overflow-y-auto space-y-5 flex-1">
+                <h3 className="text-2xl sm:text-3xl font-serif font-bold text-[#1E2530] leading-tight">
+                  {popupAnn.title}
+                </h3>
+
+                {/* Attached Image Preview if available */}
+                {isImg && (
+                  <div className="rounded-2xl overflow-hidden border border-[#E5E0D8] bg-white shadow-sm max-h-[280px] flex items-center justify-center">
+                    <img
+                      src={resolveFileUrl(popupAnn.doc_url)}
+                      alt={popupAnn.title}
+                      className="w-full h-auto max-h-[280px] object-contain"
+                    />
+                  </div>
+                )}
+
+                {/* Announcement Content */}
+                <div className="text-sm sm:text-base text-[#4A443D] leading-relaxed font-serif whitespace-pre-line bg-white p-5 rounded-2xl border border-[#E5E0D8] shadow-xs">
+                  {popupAnn.content}
+                </div>
+
+                {/* Attached Document Notice */}
+                {isPdf && (
+                  <div className="p-4 bg-amber-50/70 rounded-xl border border-amber-200 flex items-center gap-3">
+                    <FaFilePdf className="text-red-600 text-lg flex-shrink-0" />
+                    <span className="text-xs font-bold text-amber-950">Official Document Record Verified on File</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Popup Footer */}
+              <div className="bg-white p-4 sm:p-5 border-t border-[#E5E0D8] flex flex-col sm:flex-row justify-between items-center gap-4">
+                <label className="flex items-center gap-2 cursor-pointer text-xs text-[#7A736B] select-none">
+                  <input
+                    type="checkbox"
+                    checked={dontShowAgain}
+                    onChange={(e) => setDontShowAgain(e.target.checked)}
+                    className="rounded text-[#8E7C68] focus:ring-[#8E7C68] border-gray-300"
+                  />
+                  <span>Don't show this announcement again today</span>
+                </label>
+
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                  {popupAnn.doc_url && (
+                    <a
+                      href={resolveFileUrl(popupAnn.doc_url)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#FAF7F2] hover:bg-[#EFE9DF] text-[#1E2530] border border-[#E5E0D8] rounded-xl text-xs sm:text-sm font-bold transition-all w-full sm:w-auto"
+                    >
+                      <FaFilePdf className="text-red-600" /> View Document <FaExternalLinkAlt className="text-[10px]" />
+                    </a>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={handleCloseAnnouncementPopup}
+                    className="px-5 py-2.5 bg-[#1E2530] hover:bg-[#2C384A] text-white rounded-xl text-xs sm:text-sm font-bold transition-all w-full sm:w-auto shadow-sm"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        );
+      })()}
 
     </div>
   );

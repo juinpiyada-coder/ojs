@@ -1,559 +1,564 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import SEO from '../components/SEO';
+import { apiFetch, resolveFileUrl } from '../utils/api';
 import {
   FaBookOpen,
   FaFilePdf,
-  FaAward,
   FaCalendarAlt,
-  FaUserEdit,
-  FaCheckCircle,
-  FaLanguage,
-  FaExternalLinkAlt,
   FaSearch,
   FaExpandAlt,
   FaTimes,
   FaDownload,
-  FaQrcode,
-  FaHeart,
+  FaExternalLinkAlt,
+  FaChevronDown,
+  FaChevronRight,
+  FaAward,
+  FaCheckCircle,
   FaArrowRight
 } from 'react-icons/fa';
 
-const archivedVolumes = [
-  {
-    id: "vol1-issue2",
-    volume: "Volume I Issue II",
-    date: "January, 2025",
-    status: "Archived Issue",
-    coverImg: "/annousments/image copy.png",
-    description: "Featuring peer-reviewed research across neuroplasticity in academic gauging, psychoanalytic film theory, microfiction, eco-narratives, and maternal healthcare access.",
-    articles: [
-      {
-        id: 1,
-        title: "Praxis in Academic Gauging: A Critique to Scholastic Module of Neuroplasticity Dialogue on Mental Health.",
-        author: "Bidisha Chakraborty",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/02/Praxis_final.pdf",
-        category: "Mental Health & Pedagogy"
-      },
-      {
-        id: 2,
-        title: "Phallic Myth and Sexual Rapport Reprogrammed: Lacanian Analysis of Bryan Forbes, Film The Stepford Wives (1975).",
-        author: "Biswadip Mal",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/02/Phallic_Final.pdf",
-        category: "Psychoanalysis & Cinema"
-      },
-      {
-        id: 3,
-        title: "Jung’s Archetypes and Baum’s Attempt at Ethical Neutrality in The Wizard of Oz.",
-        author: "Sounak Banerjee",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/02/Sounak_final.pdf",
-        category: "Archetypal Literary Theory"
-      },
-      {
-        id: 4,
-        title: "Remaining Literary Forms: Twitterature and Instapoetry as Microfiction.",
-        author: "Anuska Bag",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/02/Remaining-literacy_Final.pdf",
-        category: "Digital Humanities & Microfiction"
-      },
-      {
-        id: 5,
-        title: "Critiquing the Eco-Narratives.",
-        author: "Debanjan Chakraborty",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/02/Critiquing_final.pdf",
-        category: "Eco-Criticism"
-      },
-      {
-        id: 6,
-        title: "Subverting the Patriarchal Trope by Challenging Toxic Masculinity in Feminist Revenge Fantasy: An Analysis of Anvita Dutt’s ‘Bulbul’ and Prosit Roy’s ‘Pari’.",
-        author: "Quincy Tikadar",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/02/Subverting_final.pdf",
-        category: "Gender Studies & Film"
-      },
-      {
-        id: 7,
-        title: "Intersecting Inequalities: The Role of Caste and Socioeconomic Status in Maternal Healthcare Access.",
-        author: "Suchismita Mitra and Samriddha Biswas",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/02/The-Role_Final.pdf",
-        category: "Social Sciences & Public Health"
-      },
-      {
-        id: 8,
-        title: "MENSTRUAL EDUCATION THROUGH INDIAN INFO COMIC MENSTRUPEDIA.",
-        author: "Firthouse Tajuddin and Dr. K. Sindhu",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/02/Mentrual_Final.pdf",
-        category: "Graphic Medicine & Education"
-      },
-      {
-        id: 9,
-        title: "WOUNDS OF THE PAST: Feminine Histories and Silent Landscapes in Ice-Candy-Man and What the Body Remembers.",
-        author: "Kazmi Afrose",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/02/Wound-of-the-past_Final.pdf",
-        category: "Partition Literature & Memory"
-      },
-      {
-        id: 10,
-        title: "Film Review: Breaking Barriers with Laughter in “Badhaai Do”.",
-        author: "Pallabi Gharami",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/02/Badhaai-Do_Final.pdf",
-        category: "Queer Studies & Cinema"
-      }
-    ]
-  },
-  {
-    id: "vol1-issue1",
-    volume: "Volume I Issue I",
-    date: "December, 2023",
-    status: "Inaugural Issue",
-    coverImg: "/annousments/img2.png",
-    description: "Inaugural volume establishing the multidisciplinary junction between literature, physical sciences, language acquisition, and critical philosophy.",
-    articles: [
-      {
-        id: 1,
-        title: "Gendering Wartime Sexual Violence Against Women in Bangladesh: The Liberation War and the Struggles of the War Heroines in the book “Birangona”.",
-        author: "Quince Tikadar",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2024/07/Gendering-1.pdf",
-        category: "Gender & Historical Violence"
-      },
-      {
-        id: 2,
-        title: "ভারতীয় সাহিত্যঃ লোক সংস্কৃতি ও মিথের বহূকৌনিকের গোমোণ।",
-        author: "Samaresh Mondal",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2024/07/bharatiya-sahitya-1.pdf",
-        category: "Indian Literature & Folklore"
-      },
-      {
-        id: 3,
-        title: "শ্রীগদ্যশরীর : একটি বিশ্লেষণী পাঠ ।",
-        author: "Debasree Pal",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2024/07/goddosorir-2-1.pdf",
-        category: "Bengali Literary Criticism"
-      },
-      {
-        id: 4,
-        title: "আমাদের জল জীবন।",
-        author: "Aritree De",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2024/07/jol-1.pdf",
-        category: "Eco-Humanities & Culture"
-      },
-      {
-        id: 5,
-        title: "Book Review: Heidegger and a Hippo Walk Through Those Pearly Gates.",
-        author: "Agomoni Chakraborty",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2024/07/The_BOOK.pdf",
-        category: "Philosophy & Book Review"
-      },
-      {
-        id: 6,
-        title: "The Euclidean Mind and the major Archetypes in Dostoevsky’s novel, The Brothers Karamazov.",
-        author: "Al Minar Mahmudur Reza",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2024/07/The-euclident-mind.pdf",
-        category: "Mathematics & Classic Literature"
-      },
-      {
-        id: 7,
-        title: "The Influence of Music Videos in Second Language Listening Development: A Study of the Undergraduate Students of Dhaka City.",
-        author: "Farah Ulfat Mohinee and Progga Saha",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2024/07/The-Influence.pdf",
-        category: "Linguistics & Pedagogy"
-      },
-      {
-        id: 8,
-        title: "“Where words fail, music speaks”: The Role of Influential Music in Shaping Young Adults’ Identities and Perspectives.",
-        author: "Simanta Nandy and Sumedha Ghosh",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2024/07/The_role.pdf",
-        category: "Cultural Studies & Musicology"
-      },
-      {
-        id: 9,
-        title: "Delineating Eco-Epistemic Paradigms: A Multifaceted Exegesis of Environmental Morality and Hegemonic Dynamics in Mandaar and Macbeth.",
-        author: "Soumabha Chakraborty and Sounak Banerjee",
-        pdfUrl: null,
-        category: "Comparative Drama & Eco-Epistemology"
-      },
-      {
-        id: 10,
-        title: "The Gollem Effect: Integration of Gollem-Class AIs during the Climate Change in Online Ecosystem.",
-        author: "Megha Bhattacharya and Arkannel Khan",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2024/07/Golem-Effect-Final.pdf",
-        category: "AI, Ecology & Online Discourse"
-      }
-    ]
-  }
-];
-
 const Archive = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedVolume, setSelectedVolume] = useState('all');
+  const [activeSearch, setActiveSearch] = useState('');
+  const [volumesList, setVolumesList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedIssueId, setSelectedIssueId] = useState(null);
+  const [expandedYears, setExpandedYears] = useState({});
+  const [fontSizeLevel, setFontSizeLevel] = useState('base'); // 'sm' | 'base' | 'lg'
   const [activeModalPoster, setActiveModalPoster] = useState(null);
+  const [activePdfViewer, setActivePdfViewer] = useState(null);
 
-  const filteredVolumes = archivedVolumes
-    .filter((vol) => selectedVolume === 'all' || vol.id === selectedVolume)
-    .map((vol) => {
-      const filteredArticles = vol.articles.filter(
-        (art) =>
-          art.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          art.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          art.category.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      return { ...vol, articles: filteredArticles };
-    });
+  // Fetch Live Volumes & Issues from Database
+  useEffect(() => {
+    const fetchArchiveData = async () => {
+      try {
+        const res = await apiFetch('/volumes?with_articles=true&published_only=true');
+        if (res && res.data && res.data.length > 0) {
+          const mappedVolumes = [];
+          
+          res.data.forEach((vol) => {
+            const yr = parseInt(vol.publication_year) || new Date().getFullYear();
+            if (vol.issues && vol.issues.length > 0) {
+              vol.issues.forEach((iss) => {
+                const dateStr = iss.publication_date
+                  ? new Date(iss.publication_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+                  : `${yr}`;
+
+                const articlesList = (iss.articles || []).map((art, idx) => ({
+                  id: art.article_id || idx + 1,
+                  title: art.title,
+                  author: art.author_name || 'Anonymous Author',
+                  pdfUrl: resolveFileUrl(art.published_url || art.manuscript_url),
+                  category: art.doi ? `DOI: ${art.doi}` : (art.page_range ? `Pages: ${art.page_range}` : 'Research Article'),
+                  pages: art.page_range || '',
+                  abstract: art.abstract || '',
+                  keywords: art.keywords || '',
+                  doi: art.doi || ''
+                }));
+
+                mappedVolumes.push({
+                  id: `vol-${vol.volume_id}-iss-${iss.issue_id}`,
+                  volumeNumber: vol.volume_number,
+                  issueNumber: iss.issue_number,
+                  year: yr,
+                  volume: `Vol. ${vol.volume_number}, Issue No. ${iss.issue_number}`,
+                  date: dateStr,
+                  status: "Published Issue",
+                  coverImg: resolveFileUrl(iss.cover_url || vol.cover_url || "/annousments/image copy.png"),
+                  description: iss.description || `Peer-reviewed volume featuring scholarly investigations across literature, science, and the humanities.`,
+                  articles: articlesList
+                });
+              });
+            }
+          });
+
+          if (mappedVolumes.length > 0) {
+            setVolumesList(mappedVolumes);
+            // Default select the latest issue
+            setSelectedIssueId(mappedVolumes[0].id);
+          }
+        }
+      } catch (err) {
+        console.warn('Could not fetch live archives, using fallback:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchArchiveData();
+  }, []);
+
+  // Set default selected issue on initial load
+  useEffect(() => {
+    if (!selectedIssueId && volumesList.length > 0) {
+      setSelectedIssueId(volumesList[0].id);
+    }
+  }, [volumesList, selectedIssueId]);
+
+  // Group volumes by Year
+  const groupedByYear = volumesList.reduce((acc, issue) => {
+    const y = issue.year || 2025;
+    if (!acc[y]) acc[y] = [];
+    acc[y].push(issue);
+    return acc;
+  }, {});
+
+  // Sort years descending (e.g. 2026, 2025, 2024, 2023)
+  const sortedYears = Object.keys(groupedByYear).map(Number).sort((a, b) => b - a);
+
+  // Compute min and max year
+  const minYear = sortedYears.length > 0 ? sortedYears[sortedYears.length - 1] : 2023;
+  const maxYear = sortedYears.length > 0 ? sortedYears[0] : 2026;
+
+  // Toggle year collapse
+  const toggleYear = (year) => {
+    setExpandedYears(prev => ({
+      ...prev,
+      [year]: !prev[year]
+    }));
+  };
+
+  // Find currently active issue
+  const activeIssue = volumesList.find(v => v.id === selectedIssueId) || volumesList[0] || null;
+  const recentIssue = volumesList[0] || {
+    id: 'latest-issue',
+    volume: 'Volume 1, Issue 1',
+    date: '2025',
+    status: 'Latest Issue',
+    coverImg: '/annousments/image2.png',
+    articles: []
+  };
+
+  // Font scale class helper
+  const getFontSizeClass = () => {
+    switch (fontSizeLevel) {
+      case 'sm': return 'text-[13px] leading-relaxed';
+      case 'lg': return 'text-[17px] leading-loose';
+      case 'base':
+      default: return 'text-[15px] leading-normal';
+    }
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    setActiveSearch(searchTerm.trim());
+  };
 
   return (
-    <main className="flex-grow bg-[#F9F6F0] text-[#2C2C2C] py-16 md:py-24 px-4">
-      <div className="max-w-6xl mx-auto space-y-12">
+    <main className="min-h-screen bg-[#FDFCF7] text-gray-900 pb-20 font-sans">
+      <SEO
+        title="Journal Archive & Published Issues"
+        description="Explore the complete archive of past volumes, issues, and peer-reviewed scholarly articles published in The Literary Scientist (ISSN: 3048-7366)."
+        keywords="The Literary Scientist archives, journal issues, scholarly publications, volume archive, peer-reviewed articles, research index"
+        canonical="/archive"
+      />
+      
+      {/* Top Academic Breadcrumb / ISSN Bar */}
+      <div className="border-b border-gray-200 bg-[#FAF9F6] py-3 px-4 sm:px-8">
+        <div className="max-w-7xl mx-auto flex flex-wrap justify-between items-center text-xs text-gray-500 font-medium">
+          <div className="flex items-center gap-2">
+            <Link to="/" className="hover:text-[#D32F2F] transition-colors">Home</Link>
+            <span>/</span>
+            <span className="text-gray-900 font-bold">Archives</span>
+          </div>
+          <div className="flex items-center gap-4 text-[11px] text-gray-600">
+            <span>ISSN (Online): 3048-7366</span>
+            <span className="hidden sm:inline">•</span>
+            <span className="hidden sm:inline">Peer-Reviewed Open Access</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 pt-8 sm:pt-12">
         
-        {/* 1. Header Section */}
-        <div className="text-center max-w-4xl mx-auto">
-          <div className="flex flex-wrap justify-center items-center gap-2 mb-4">
-            <span className="inline-flex items-center gap-1.5 px-3.5 py-1 bg-[#1E2530] text-[#F9F6F0] rounded-full text-xs md:text-sm font-semibold tracking-wider shadow-sm">
-              <FaAward className="text-[#D4AF37]" /> ISSN: 3048-7366 (ONLINE)
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-3.5 py-1 bg-white border border-[#E5E0D8] text-[#5C5446] rounded-full text-xs md:text-sm font-medium shadow-sm">
-              <FaLanguage className="text-[#8E7C68]" /> Multilingual (Bengali & English)
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-3.5 py-1 bg-white border border-[#E5E0D8] text-[#5C5446] rounded-full text-xs md:text-sm font-medium shadow-sm">
-              <FaCheckCircle className="text-emerald-600" /> Open Access Archive
-            </span>
-          </div>
-
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-[#1E2530] font-serif uppercase tracking-tight mb-4">
-            Journal Archives
-          </h1>
-          <p className="text-xl sm:text-2xl text-[#8E7C68] font-serif italic mb-6 font-medium">
-            The Literary Scientist: A Multi-Disciplinary Journal for Literature and Science
-          </p>
-          <div className="w-24 h-1 bg-[#8E7C68] mx-auto rounded-full mb-6"></div>
-          <p className="text-base sm:text-lg text-[#5C5446] font-serif max-w-3xl mx-auto leading-relaxed">
-            Explore past peer-reviewed volumes documenting the intellectual genesis and ongoing trajectory of multidisciplinary research across science and the humanities.
-          </p>
-        </div>
-
-        {/* 2. Editorial Appreciation Message Banner */}
-        <section className="bg-white border-2 border-[#8E7C68]/30 rounded-3xl p-8 sm:p-10 shadow-sm relative overflow-hidden">
-          <div className="flex flex-col md:flex-row items-start gap-6">
-            <div className="w-14 h-14 rounded-2xl bg-[#FAF7F2] border border-[#E5E0D8] text-[#8E7C68] flex items-center justify-center flex-shrink-0">
-              <FaHeart className="w-6 h-6 text-red-500" />
-            </div>
-
-            <div className="space-y-3">
-              <span className="inline-block px-3 py-0.5 bg-[#FAF7F2] border border-[#E5E0D8] text-[#8E7C68] rounded-full text-xs font-bold uppercase tracking-wider">
-                Editorial Note & Appreciation
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-bold text-[#1E2530] font-serif">
-                A Heartfelt Thank You to Our Academic Community
-              </h2>
-              <p className="text-sm sm:text-base text-[#5C5446] leading-relaxed font-serif">
-                A heartfelt thank you to our contributors, reviewers, and the editorial team for their dedication and expertise in making this inaugural issue a reality. This is just the beginning! Stay Tuned for future issues as we continue to explore and contribute to the ever-evolving landscape of our journal.
-              </p>
-              <div className="pt-2 flex items-center gap-2 text-xs font-semibold text-[#8E7C68]">
-                <span>The Literary Scientist</span> • <span>Published Online Since 2023</span> • <span>Thrice a Year</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* 3. Search and Volume Filter Tabs */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-white p-4 rounded-2xl border border-[#E5E0D8] shadow-xs">
+        {/* ========================================================================= */}
+        {/* 1. Header Section: Title, Accessibility Controls (A+ | A | A-), and Search */}
+        {/* ========================================================================= */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b-2 border-gray-900">
           
-          {/* Volume Filter Buttons */}
-          <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
-            <button
-              onClick={() => setSelectedVolume('all')}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
-                selectedVolume === 'all'
-                  ? 'bg-[#1E2530] text-white shadow-sm'
-                  : 'bg-[#FAF7F2] text-[#5C5446] hover:bg-[#EFE9DF]'
-              }`}
-            >
-              All Volumes
-            </button>
-            <button
-              onClick={() => setSelectedVolume('vol1-issue2')}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
-                selectedVolume === 'vol1-issue2'
-                  ? 'bg-[#1E2530] text-white shadow-sm'
-                  : 'bg-[#FAF7F2] text-[#5C5446] hover:bg-[#EFE9DF]'
-              }`}
-            >
-              Vol. I Issue II (Jan 2025)
-            </button>
-            <button
-              onClick={() => setSelectedVolume('vol1-issue1')}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
-                selectedVolume === 'vol1-issue1'
-                  ? 'bg-[#1E2530] text-white shadow-sm'
-                  : 'bg-[#FAF7F2] text-[#5C5446] hover:bg-[#EFE9DF]'
-              }`}
-            >
-              Vol. I Issue I (Dec 2023)
-            </button>
-          </div>
-
-          {/* Quick Search */}
-          <div className="w-full md:w-80 relative">
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search title, author, topic..."
-              className="w-full pl-9 pr-4 py-2 bg-[#FAF7F2] border border-[#E5E0D8] rounded-xl text-xs sm:text-sm focus:outline-none focus:border-[#8E7C68] focus:bg-white transition-colors"
-            />
-            <FaSearch className="absolute left-3 top-3 text-gray-400 text-xs" />
-          </div>
-
-        </div>
-
-        {/* 4. Archived Volumes Showcase */}
-        <div className="space-y-16">
-          {filteredVolumes.map((vol) => (
-            <section
-              key={vol.id}
-              className="bg-white border border-[#E5E0D8] rounded-3xl p-6 sm:p-10 shadow-sm space-y-8"
-            >
-              
-              {/* Volume Header Banner with Cover Art */}
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center pb-8 border-b border-[#E5E0D8]">
-                
-                {/* Cover Image */}
-                <div className="md:col-span-4 lg:col-span-3 flex justify-center">
-                  <div
-                    onClick={() => setActiveModalPoster({
-                      src: vol.coverImg,
-                      title: `The Literary Scientist — ${vol.volume}`,
-                      subtitle: `${vol.status} • Published: ${vol.date}`,
-                      downloadName: `The_Literary_Scientist_${vol.volume.replace(/[^a-zA-Z0-9]/g, '_')}_Cover.png`
-                    })}
-                    className="relative group cursor-pointer w-full max-w-[210px] rounded-2xl overflow-hidden shadow-lg border border-[#E5E0D8] hover:border-[#8E7C68] transform transition-all duration-300 hover:scale-[1.03] bg-[#FAF7F2] p-1.5"
-                  >
-                    <div className="rounded-xl overflow-hidden bg-white">
-                      <img
-                        src={vol.coverImg}
-                        alt={`${vol.volume} Cover`}
-                        className="w-full h-auto max-h-[290px] object-contain block mx-auto"
-                        loading="lazy"
-                      />
-                    </div>
-
-                    <div className="absolute inset-0 bg-[#1E2530]/80 opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center p-3 text-white">
-                      <span className="inline-flex items-center gap-1.5 text-xs font-bold bg-white text-[#1E2530] px-3 py-1.5 rounded-full shadow">
-                        <FaExpandAlt className="text-[10px]" /> Enlarge Cover
-                      </span>
-                    </div>
-
-                    <div className="absolute top-3 left-3 bg-[#1E2530]/90 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-md shadow">
-                      {vol.status}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Volume Details */}
-                <div className="md:col-span-8 lg:col-span-9 space-y-4">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="px-3 py-1 bg-[#1E2530] text-white text-xs font-bold uppercase tracking-wider rounded-full">
-                      {vol.status}
-                    </span>
-                    <span className="px-3 py-1 bg-[#FAF7F2] text-[#8E7C68] border border-[#E5E0D8] text-xs font-semibold rounded-full flex items-center gap-1">
-                      <FaCalendarAlt className="text-xs" /> {vol.date}
-                    </span>
-                    <span className="px-3 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-semibold rounded-full flex items-center gap-1">
-                      <FaCheckCircle className="text-xs text-emerald-600" /> {vol.articles.length} Research Papers
-                    </span>
-                  </div>
-
-                  <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1E2530] font-serif leading-tight">
-                    {vol.volume} ({vol.date})
-                  </h2>
-
-                  <p className="text-sm sm:text-base text-[#5C5446] leading-relaxed font-serif">
-                    {vol.description}
-                  </p>
-
-                  <div className="pt-2 flex flex-wrap items-center gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setActiveModalPoster({
-                        src: vol.coverImg,
-                        title: `The Literary Scientist — ${vol.volume}`,
-                        subtitle: `${vol.status} • Published: ${vol.date}`,
-                        downloadName: `The_Literary_Scientist_${vol.volume.replace(/[^a-zA-Z0-9]/g, '_')}_Cover.png`
-                      })}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-[#FAF7F2] hover:bg-[#EFE9DF] text-[#1E2530] border border-[#E5E0D8] rounded-lg text-xs sm:text-sm font-bold transition-all shadow-xs"
-                    >
-                      <FaQrcode className="text-[#8E7C68]" /> View Cover & QR
-                    </button>
-                    <a
-                      href={`#${vol.id}-articles`}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-[#1E2530] hover:bg-[#2C384A] text-white rounded-lg text-xs sm:text-sm font-bold transition-all shadow-xs"
-                    >
-                      <FaBookOpen /> Browse Papers ({vol.articles.length})
-                    </a>
-                  </div>
-                </div>
-
-              </div>
-
-              {/* Table of Contents / Articles Grid */}
-              <div id={`${vol.id}-articles`} className="space-y-4">
-                <div className="flex items-center justify-between pb-2">
-                  <h3 className="text-xl font-bold text-[#1E2530] font-serif flex items-center gap-2">
-                    <FaBookOpen className="text-[#8E7C68] text-sm" /> Table of Contents
-                  </h3>
-                  <span className="text-xs font-semibold text-gray-500">
-                    Showing {vol.articles.length} papers
-                  </span>
-                </div>
-
-                {vol.articles.length === 0 ? (
-                  <div className="bg-[#FAF7F2] p-8 rounded-xl text-center border border-[#E5E0D8] text-[#5C5446]">
-                    <p className="font-semibold text-sm">No articles match your search in this volume.</p>
-                  </div>
-                ) : (
-                  vol.articles.map((article, index) => (
-                    <article
-                      key={article.id}
-                      className="bg-[#FAF7F2]/60 hover:bg-white border border-[#E5E0D8] hover:border-[#8E7C68]/60 rounded-xl p-5 shadow-xs hover:shadow-md transition-all duration-200 group flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
-                    >
-                      <div className="flex items-start gap-4 flex-grow">
-                        <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-white border border-[#E5E0D8] text-[#8E7C68] font-bold text-xs flex items-center justify-center font-mono">
-                          {String(index + 1).padStart(2, '0')}
-                        </span>
-
-                        <div className="space-y-1.5">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <span className="text-[10px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded bg-white text-[#8E7C68] border border-[#EFE9DF]">
-                              {article.category}
-                            </span>
-                            <span className="text-[11px] text-gray-500 font-medium">
-                              {vol.volume} ({vol.date})
-                            </span>
-                          </div>
-
-                          <h4 className="text-base font-bold text-[#1E2530] group-hover:text-[#8E7C68] transition-colors leading-snug font-serif">
-                            {article.pdfUrl ? (
-                              <a href={article.pdfUrl} target="_blank" rel="noopener noreferrer">
-                                {article.title}
-                              </a>
-                            ) : (
-                              <span>{article.title}</span>
-                            )}
-                          </h4>
-
-                          <div className="flex items-center gap-1.5 text-xs text-[#5C5446] font-medium">
-                            <FaUserEdit className="text-[#8E7C68]" /> <span>by {article.author}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* PDF Link Button */}
-                      <div className="flex-shrink-0 w-full md:w-auto pt-2 md:pt-0 border-t md:border-t-0 border-[#F0EBE1] flex justify-end">
-                        {article.pdfUrl ? (
-                          <a
-                            href={article.pdfUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="w-full md:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 bg-white hover:bg-[#1E2530] text-[#1E2530] hover:text-white border border-[#E5E0D8] hover:border-[#1E2530] rounded-lg text-xs font-bold transition-all shadow-xs"
-                          >
-                            <FaFilePdf className="text-red-600 group-hover:text-red-400" />
-                            <span>Download PDF</span>
-                            <FaExternalLinkAlt className="text-[9px] opacity-60" />
-                          </a>
-                        ) : (
-                          <span className="text-xs font-semibold text-gray-400 italic px-3 py-1.5 bg-gray-100 rounded-lg">
-                            Archived Record
-                          </span>
-                        )}
-                      </div>
-                    </article>
-                  ))
-                )}
-              </div>
-
-            </section>
-          ))}
-        </div>
-
-        {/* 5. Navigation Footer to Current Issue & Submit */}
-        <section className="bg-gradient-to-r from-[#1E2530] via-[#2A3342] to-[#1E2530] text-white rounded-3xl p-8 sm:p-12 text-center shadow-xl">
-          <div className="max-w-2xl mx-auto space-y-6">
-            <h2 className="text-3xl font-bold font-serif">
-              Looking for the Latest Published Research?
-            </h2>
-            <p className="text-gray-300 text-sm sm:text-base font-serif leading-relaxed">
-              Explore our current active issue or submit your manuscript for our upcoming volume.
-            </p>
-            <div className="flex flex-wrap justify-center items-center gap-4 pt-2">
-              <Link
-                to="/current-issue"
-                className="inline-flex items-center gap-2 px-7 py-3.5 bg-[#8E7C68] hover:bg-[#7D6B57] text-white rounded-xl font-bold text-sm sm:text-base transition-all shadow-md"
+          {/* Main Title & Font Resizer */}
+          <div className="flex flex-wrap items-baseline gap-4 sm:gap-6">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold font-serif text-gray-950 tracking-tight">
+              The Literary Scientist Archive from {minYear} – {maxYear}
+            </h1>
+            
+            {/* Font Size Accessibility Toggles */}
+            <div className="inline-flex items-center gap-1.5 text-xs text-gray-500 font-mono select-none">
+              <button
+                onClick={() => setFontSizeLevel('lg')}
+                className={`hover:text-[#D32F2F] transition-colors font-bold px-1 ${fontSizeLevel === 'lg' ? 'text-[#D32F2F] underline' : ''}`}
+                title="Increase text size"
               >
-                <FaBookOpen /> View Current Issue <FaArrowRight className="text-xs" />
-              </Link>
-              <Link
-                to="/start-submission"
-                className="inline-flex items-center gap-2 px-7 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm sm:text-base transition-all shadow-md"
+                A⁺
+              </button>
+              <span className="text-gray-300">|</span>
+              <button
+                onClick={() => setFontSizeLevel('base')}
+                className={`hover:text-[#D32F2F] transition-colors font-bold px-1 ${fontSizeLevel === 'base' ? 'text-[#D32F2F] underline' : ''}`}
+                title="Default text size"
               >
-                Submit Paper <FaArrowRight className="text-xs" />
-              </Link>
+                A
+              </button>
+              <span className="text-gray-300">|</span>
+              <button
+                onClick={() => setFontSizeLevel('sm')}
+                className={`hover:text-[#D32F2F] transition-colors font-bold px-1 ${fontSizeLevel === 'sm' ? 'text-[#D32F2F] underline' : ''}`}
+                title="Decrease text size"
+              >
+                A⁻
+              </button>
             </div>
           </div>
-        </section>
+
+          {/* Search Bar with Red Button */}
+          <form onSubmit={handleSearchSubmit} className="flex items-center w-full md:w-auto">
+            <div className="relative flex-1 md:w-64">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search archive..."
+                className="w-full pl-3 pr-3 py-1.5 text-sm border border-gray-300 rounded-l focus:outline-none focus:border-gray-500"
+              />
+            </div>
+            <button
+              type="submit"
+              className="px-5 py-1.5 bg-[#D32F2F] hover:bg-[#B71C1C] text-white text-xs font-bold uppercase tracking-wider rounded-r transition-colors flex items-center gap-1.5 shadow-xs"
+            >
+              <FaSearch className="text-[10px]" /> SEARCH
+            </button>
+          </form>
+
+        </div>
+
+        {/* ========================================================================= */}
+        {/* 2. Main Body: 2-Column Academic Layout (Archive Tree vs. Recent Issues)  */}
+        {/* ========================================================================= */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 pt-8 items-start">
+          
+          {/* ----------------------------------------------------------------------- */}
+          {/* LEFT COLUMN: Collapsible Year Accordions & Issue Directory (8 cols)    */}
+          {/* ----------------------------------------------------------------------- */}
+          <div className="lg:col-span-8 space-y-6">
+            
+            <div className={`space-y-6 ${getFontSizeClass()}`}>
+              {sortedYears.map((year) => {
+                const issuesInYear = groupedByYear[year] || [];
+                const isExpanded = expandedYears[year] ?? true;
+
+                return (
+                  <div key={year} className="border-b border-gray-200 pb-4">
+                    
+                    {/* Collapsible Year Header */}
+                    <button
+                      onClick={() => toggleYear(year)}
+                      className="w-full flex items-center gap-2 text-left py-2 text-lg sm:text-xl font-bold font-serif text-gray-900 hover:text-[#D32F2F] transition-colors group focus:outline-none"
+                    >
+                      <span className="text-[#D32F2F] text-xs transition-transform duration-200">
+                        {isExpanded ? '▼' : '▶'}
+                      </span>
+                      <span>{year}</span>
+                      <span className="text-xs font-normal text-gray-400 font-sans ml-2">
+                        ({issuesInYear.length} {issuesInYear.length === 1 ? 'Issue' : 'Issues'})
+                      </span>
+                    </button>
+
+                    {/* Bulleted List of Issues under Year */}
+                    {isExpanded && (
+                      <div className="mt-3 pl-4 sm:pl-6 border-l-2 border-gray-100 space-y-2.5 animate-fadeIn">
+                        {issuesInYear.map((iss) => {
+                          const isSelected = selectedIssueId === iss.id;
+                          return (
+                            <div key={iss.id} className="space-y-2">
+                              <div
+                                onClick={() => setSelectedIssueId(iss.id)}
+                                className={`flex items-start gap-2.5 cursor-pointer group py-1 transition-all ${
+                                  isSelected ? 'text-[#D32F2F] font-bold' : 'text-gray-700 hover:text-[#D32F2F]'
+                                }`}
+                              >
+                                <span className="text-gray-400 group-hover:text-[#D32F2F] text-sm mt-0.5">•</span>
+                                <span className="font-sans text-sm sm:text-base leading-snug">
+                                  {iss.volume}, {iss.date}
+                                </span>
+                                {isSelected && (
+                                  <span className="px-2 py-0.5 text-[10px] font-mono bg-red-50 text-[#D32F2F] rounded border border-red-200 font-semibold uppercase">
+                                    Active View
+                                  </span>
+                                )}
+                              </div>
+
+                              {/* In-Place Table of Contents for Active Issue */}
+                              {isSelected && (
+                                <div className="mt-4 mb-6 bg-[#FAF9F6] border border-gray-200 rounded-xl p-5 sm:p-7 space-y-5 shadow-xs animate-fadeIn">
+                                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-4 border-b border-gray-200 gap-2">
+                                    <div>
+                                      <span className="text-xs font-bold text-[#D32F2F] uppercase tracking-wider">
+                                        Table of Contents
+                                      </span>
+                                      <h3 className="text-lg sm:text-xl font-bold font-serif text-gray-900 mt-0.5">
+                                        {iss.volume} ({iss.date})
+                                      </h3>
+                                    </div>
+                                    <span className="text-xs text-gray-500 font-medium">
+                                      {iss.articles.length} Published Articles
+                                    </span>
+                                  </div>
+
+                                  <div className="divide-y divide-gray-200 space-y-4">
+                                    {iss.articles.map((art, idx) => (
+                                      <div key={art.id || idx} className="pt-4 first:pt-0 space-y-2">
+                                        <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
+                                          <div className="space-y-1 max-w-xl">
+                                            <h4 
+                                              onClick={() => art.pdfUrl && setActivePdfViewer(art)}
+                                              className={`text-sm sm:text-base font-bold text-gray-900 leading-snug ${art.pdfUrl ? 'cursor-pointer hover:text-[#D32F2F]' : ''} transition-colors`}
+                                            >
+                                              {art.title}
+                                            </h4>
+                                            <p className="text-xs font-semibold text-[#8E7C68]">
+                                              By: {art.author}
+                                            </p>
+                                            <div className="flex flex-wrap items-center gap-2 text-[11px] text-gray-500 font-mono pt-1">
+                                              {art.pages && <span className="bg-gray-100 px-1.5 py-0.5 rounded">{art.pages}</span>}
+                                              {art.doi && <span className="bg-amber-50 text-amber-900 px-1.5 py-0.5 rounded border border-amber-200">DOI: {art.doi}</span>}
+                                              <span className="text-gray-400">{art.category}</span>
+                                            </div>
+                                          </div>
+
+                                          {art.pdfUrl && (
+                                            <button
+                                              type="button"
+                                              onClick={() => setActivePdfViewer(art)}
+                                              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white hover:bg-[#D32F2F] text-gray-800 hover:text-white border border-gray-300 hover:border-[#D32F2F] rounded text-xs font-bold transition-all shadow-xs shrink-0 cursor-pointer"
+                                            >
+                                              <FaBookOpen className="text-red-600 group-hover:text-white" />
+                                              <span>View PDF</span>
+                                            </button>
+                                          )}
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Editorial Footer Information */}
+            <div className="pt-8 border-t border-gray-200 text-xs text-gray-500 space-y-2">
+              <p>
+                <strong>The Literary Scientist</strong> publishes peer-reviewed research across multidisciplinary domains. All archived volumes are openly accessible under Creative Commons Attribution 4.0 International (CC BY 4.0).
+              </p>
+              <div className="flex flex-wrap items-center gap-3 text-[11px] text-gray-400 pt-1">
+                <span>Indexed in Google Scholar</span> • <span>CrossRef DOI Registered</span> • <span>Open Access Journal</span>
+              </div>
+            </div>
+
+          </div>
+
+          {/* ----------------------------------------------------------------------- */}
+          {/* RIGHT COLUMN: "Recent Issues" Sidebar Card (4 cols)                    */}
+          {/* ----------------------------------------------------------------------- */}
+          <div className="lg:col-span-4 space-y-6">
+            
+            <div className="bg-[#FAF9F6] border border-gray-200 rounded-lg shadow-sm overflow-hidden sticky top-6">
+              
+              {/* Card Top Red Line Header */}
+              <div className="border-t-4 border-[#D32F2F] px-5 py-4 bg-white border-b border-gray-200">
+                <h2 className="text-base font-bold text-gray-900 font-sans tracking-wide text-center">
+                  Recent Issues
+                </h2>
+              </div>
+
+              {/* Latest Issue Callout */}
+              <div className="p-5 sm:p-6 text-center space-y-4">
+                
+                <div>
+                  <h3 className="text-sm sm:text-base font-bold text-gray-900 font-sans">
+                    {recentIssue?.volume || 'Volume 1, Issue 1'}, {recentIssue?.date || ''}
+                  </h3>
+                  <button
+                    onClick={() => {
+                      if (recentIssue?.id) {
+                        setSelectedIssueId(recentIssue.id);
+                        window.scrollTo({ top: 200, behavior: 'smooth' });
+                      }
+                    }}
+                    className="text-xs font-bold text-[#D32F2F] hover:underline mt-1 inline-block"
+                  >
+                    Contents
+                  </button>
+                </div>
+
+                {/* Journal Cover Art Box with Preview */}
+                <div 
+                  onClick={() => setActiveModalPoster({
+                    src: recentIssue?.coverImg || "/annousments/image2.png",
+                    title: `The Literary Scientist — ${recentIssue?.volume || 'Current Issue'}`,
+                    subtitle: `${recentIssue?.status || 'Published'} • ${recentIssue?.date || ''}`,
+                    downloadName: `The_Literary_Scientist_${(recentIssue?.volume || 'Issue').replace(/[^a-zA-Z0-9]/g, '_')}_Cover.png`
+                  })}
+                  className="relative group cursor-pointer border border-gray-300 rounded shadow-sm bg-white p-2 hover:shadow-md transition-shadow"
+                >
+                  <img
+                    src={recentIssue?.coverImg || "/annousments/image2.png"}
+                    alt={`${recentIssue?.volume || 'Current Issue'} Cover`}
+                    className="w-full h-auto max-h-[380px] object-contain mx-auto"
+                  />
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-3 text-white rounded">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-bold bg-white text-gray-900 px-3 py-1.5 rounded shadow">
+                      <FaExpandAlt className="text-[10px]" /> Enlarge Cover
+                    </span>
+                  </div>
+                </div>
+
+                {/* Quick List of Recent Issues */}
+                <div className="text-left pt-4 border-t border-gray-200 space-y-2">
+                  <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider block">
+                    Browse Other Recent Issues:
+                  </span>
+                  <ul className="space-y-1.5 text-xs text-gray-700 font-medium">
+                    {volumesList.slice(0, 4).map(v => (
+                      <li key={v.id}>
+                        <button
+                          onClick={() => {
+                            setSelectedIssueId(v.id);
+                            window.scrollTo({ top: 200, behavior: 'smooth' });
+                          }}
+                          className={`text-left hover:text-[#D32F2F] transition-colors flex items-center gap-1.5 w-full truncate ${
+                            selectedIssueId === v.id ? 'text-[#D32F2F] font-bold' : ''
+                          }`}
+                        >
+                          <span className="text-[#D32F2F]">•</span>
+                          <span className="truncate">{v.volume} ({v.date})</span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Submit Article CTA Button */}
+                <div className="pt-4">
+                  <Link
+                    to="/start-submission"
+                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#1E2530] hover:bg-[#D32F2F] text-white rounded text-xs font-bold uppercase tracking-wider transition-colors shadow-xs"
+                  >
+                    Submit Paper to Next Issue <FaArrowRight className="text-[10px]" />
+                  </Link>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
 
       </div>
 
-      {/* 6. Universal Fullscreen Lightbox Modal */}
+      {/* ========================================================================= */}
+      {/* 3. Cover / Lightbox Modal                                                 */}
+      {/* ========================================================================= */}
       {activeModalPoster && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-fade-in">
-          <div className="relative max-w-2xl w-full max-h-[92vh] flex flex-col bg-[#1E2530] border border-gray-700 rounded-2xl overflow-hidden shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fadeIn">
+          <div className="relative max-w-2xl w-full max-h-[92vh] flex flex-col bg-white border border-gray-300 rounded-xl overflow-hidden shadow-2xl">
             
-            {/* Modal Header */}
-            <div className="flex justify-between items-center px-5 py-3.5 bg-[#161B22] border-b border-gray-700 text-white">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold uppercase tracking-wider px-2 py-0.5 bg-[#8E7C68] text-white rounded">
-                  {activeModalPoster.title.split('—')[0] || "Cover"}
-                </span>
-                <span className="text-sm font-semibold hidden sm:inline text-gray-300 truncate max-w-md">
-                  {activeModalPoster.subtitle || activeModalPoster.title}
-                </span>
-              </div>
-              
+            <div className="flex justify-between items-center px-5 py-3.5 bg-gray-900 text-white">
+              <span className="text-sm font-bold truncate">
+                {activeModalPoster.title}
+              </span>
               <button
                 type="button"
                 onClick={() => setActiveModalPoster(null)}
-                className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
-                aria-label="Close modal"
+                className="text-gray-400 hover:text-white text-xl font-bold leading-none p-1"
+              >
+                &times;
+              </button>
+            </div>
+
+            <div className="p-4 overflow-y-auto flex items-center justify-center bg-neutral-100 min-h-[300px]">
+              <img
+                src={activeModalPoster.src}
+                alt={activeModalPoster.title}
+                className="max-h-[72vh] w-auto max-w-full object-contain rounded shadow-lg mx-auto"
+              />
+            </div>
+
+            <div className="flex justify-between items-center px-5 py-3 bg-white border-t border-gray-200">
+              <a
+                href={activeModalPoster.src}
+                download={activeModalPoster.downloadName || "cover.png"}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold rounded transition-colors"
+              >
+                <FaDownload className="text-xs" /> Save Cover Image
+              </a>
+              <button
+                type="button"
+                onClick={() => setActiveModalPoster(null)}
+                className="px-4 py-2 bg-gray-900 text-white text-xs font-bold rounded hover:bg-gray-800"
+              >
+                Close
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 4. In-Browser PDF Reader Modal (Protected - Direct Download Dissolved)    */}
+      {/* ========================================================================= */}
+      {activePdfViewer && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-2 sm:p-4 animate-fadeIn">
+          <div className="bg-[#1E2530] border border-gray-700 rounded-2xl w-full max-w-5xl h-[92vh] flex flex-col overflow-hidden shadow-2xl">
+            {/* Reader Header */}
+            <div className="bg-[#161B22] px-4 py-3 border-b border-gray-700 flex justify-between items-center text-white">
+              <div className="min-w-0 pr-4">
+                <div className="flex items-center gap-2 mb-0.5">
+                  <span className="bg-[#D32F2F] text-white text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded">
+                    Scholarly Publication
+                  </span>
+                  {activePdfViewer.pages && (
+                    <span className="text-xs text-gray-400 font-mono">Pages: {activePdfViewer.pages}</span>
+                  )}
+                  {activePdfViewer.doi && (
+                    <span className="text-xs text-[#D4AF37] font-mono hidden sm:inline">{activePdfViewer.doi}</span>
+                  )}
+                </div>
+                <h4 className="text-sm font-bold text-gray-100 truncate max-w-2xl font-serif">
+                  {activePdfViewer.title}
+                </h4>
+                <p className="text-xs text-gray-400">By {activePdfViewer.author}</p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setActivePdfViewer(null)}
+                className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors flex-shrink-0"
+                aria-label="Close PDF Viewer"
               >
                 <FaTimes className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Modal Body: Non-Cropped Fit */}
-            <div className="p-4 overflow-y-auto flex items-center justify-center bg-neutral-950/90 min-h-[300px]">
-              <img
-                src={activeModalPoster.src}
-                alt={activeModalPoster.title}
-                className="max-h-[72vh] w-auto max-w-full object-contain rounded-lg shadow-2xl border border-gray-700 mx-auto"
+            {/* Embedded Stream Viewer */}
+            <div className="flex-1 bg-neutral-900 w-full h-full relative">
+              <iframe
+                src={`${activePdfViewer.pdfUrl || activePdfViewer.url}#toolbar=0&navpanes=0&scrollbar=1`}
+                className="w-full h-full border-0"
+                title={activePdfViewer.title}
               />
             </div>
-
-            {/* Modal Footer */}
-            <div className="flex flex-wrap justify-between items-center gap-3 px-5 py-3 bg-[#161B22] border-t border-gray-700">
-              <a
-                href={activeModalPoster.src}
-                download={activeModalPoster.downloadName || "cover.png"}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-medium rounded-lg transition-colors"
-              >
-                <FaDownload className="text-xs" /> Save Cover Image
-              </a>
-
-              <Link
-                to="/start-submission"
-                onClick={() => setActiveModalPoster(null)}
-                className="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold rounded-lg transition-colors"
-              >
-                Submit Paper
-              </Link>
-            </div>
-
           </div>
         </div>
       )}

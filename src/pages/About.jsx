@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import AnimatedSection from '../components/AnimatedSection';
+import SEO from '../components/SEO';
 import {
   FaBookOpen,
   FaAward,
@@ -40,8 +41,8 @@ const scopeTopics = [
   },
   {
     id: 5,
-    title: "Intersectional Studies: Literature, Society & the Physical World",
-    description: "Examining the multi-dimensional connections between human geography, gender, eco-criticism, physical sciences, and contemporary literary expressions."
+    title: "Interdisciplinary Pedagogies & Knowledge Systems",
+    description: "Promoting dialogues across English, regional languages, Indian knowledge systems, environmental humanities, and empirical scientific methodologies."
   },
   {
     id: 6,
@@ -53,6 +54,12 @@ const scopeTopics = [
 const About = () => {
   return (
     <div className="flex-grow bg-[#F9F6F0] text-[#2C2C2C] py-16 md:py-24 px-4">
+      <SEO
+        title="About The Journal (ISSN: 3048-7366)"
+        description="Learn about the aims, scope, interdisciplinary vision, and open-access publication ethos of The Literary Scientist: A Multi-Disciplinary Journal for Literature and Science."
+        keywords="About The Literary Scientist, journal aims and scope, interdisciplinary literature and science, peer review policy, ISSN 3048-7366"
+        canonical="/about"
+      />
       <div className="max-w-6xl mx-auto space-y-16">
         
         {/* 1. Header Section */}

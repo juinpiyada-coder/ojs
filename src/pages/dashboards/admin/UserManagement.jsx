@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../../utils/api';
 import { toast } from 'react-toastify';
 import { FaEdit, FaTrash } from 'react-icons/fa';
+import ExcelDataSheet from '../../../components/ExcelDataSheet';
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -9,7 +10,6 @@ const UserManagement = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Form State
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     user_id: '',
@@ -54,7 +54,7 @@ const UserManagement = () => {
         user_id: user.user_id,
         display_name: user.display_name,
         email: user.email,
-        password: '', // Never populate password on edit
+        password: '',
         role_id: user.role_id,
         account_status: user.account_status
       });
@@ -115,90 +115,103 @@ const UserManagement = () => {
     }
   };
 
-  if (loading) return <div>Loading users...</div>;
-  if (error) return <div className="text-red-500 p-8">Error: {error}</div>;
+  if (loading) return <div className="p-8 text-gray-500 text-sm">Loading users...</div>;
+  if (error) return <div className="p-8 text-red-500 text-sm">Error: {error}</div>;
+
+  const userColumns = [
+    { key: 'user_id', label: 'UID', width: 'w-16', render: (v) => <span className="font-mono font-bold text-slate-700">#{v}</span> },
+    { key: 'display_name', label: 'Display Name', render: (v) => <span className="font-bold text-slate-900">{v}</span> },
+    { key: 'email', label: 'Email Address', render: (v) => <span className="text-slate-600 font-mono text-[11px]">{v}</span> },
+    { key: 'role_name', label: 'Assigned Role', render: (v, r) => <span className="font-mono text-[10px] uppercase font-bold bg-slate-100 px-2 py-0.5 rounded border border-slate-300">{v || r.role_id}</span> },
+    { key: 'account_status', label: 'Account Status', render: (v) => (
+      <span className={`px-2 py-0.5 text-[10px] font-mono font-bold rounded border ${
+        v === 'active' ? 'bg-[#E6F4EA] text-[#137333] border-[#CEEAD6]' : 'bg-[#FCE8E6] text-[#C5221F] border-[#FAD2CF]'
+      }`}>
+        {String(v || '').toUpperCase()}
+      </span>
+    )},
+    { key: 'actions', label: 'Actions / Edit', width: 'w-32', render: (_, user) => (
+      <div className="flex items-center gap-2">
+        <button 
+          onClick={() => openModal(user)} 
+          className="text-blue-600 hover:text-blue-800 text-xs font-semibold inline-flex items-center gap-1 bg-blue-50 px-2 py-0.5 rounded border border-blue-200"
+        >
+          <FaEdit /> Edit
+        </button>
+        <button 
+          onClick={() => handleDelete(user.user_id)} 
+          className="text-red-500 hover:text-red-700 text-xs font-semibold inline-flex items-center gap-1 bg-red-50 px-2 py-0.5 rounded border border-red-200"
+        >
+          <FaTrash /> Del
+        </button>
+      </div>
+    )}
+  ];
 
   return (
-    <div className="bg-white p-8 rounded-2xl shadow-sm border border-[#E5E0D8] relative">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-[#2C2C2C]">User Management</h2>
+    <div className="space-y-6 pb-12">
+      {/* Header Banner */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
+        <div>
+          <div className="flex items-center gap-2">
+            <h2 className="text-xl font-bold text-slate-900">User Management Data Sheet</h2>
+            <span className="px-2 py-0.5 bg-[#107C41] text-white text-[10px] font-mono font-bold rounded">
+              EXCEL_VIEW
+            </span>
+          </div>
+          <p className="text-xs text-slate-500 mt-0.5">Manage all system users, credentials, and roles in spreadsheet view</p>
+        </div>
         <button 
           onClick={() => openModal()}
-          className="px-5 py-2 bg-[#8E7C68] text-white rounded font-bold hover:bg-[#7a6a57] transition-colors"
+          className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold transition-all shadow-xs"
         >
-          + Add User
+          + Add New User Row
         </button>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="border-b-2 border-[#E5E0D8] text-[#5C5446]">
-              <th className="py-3 px-4">Name</th>
-              <th className="py-3 px-4">Email</th>
-              <th className="py-3 px-4">Role</th>
-              <th className="py-3 px-4">Status</th>
-              <th className="py-3 px-4 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map(user => (
-              <tr key={user.user_id} className="border-b border-[#F0EBE1] hover:bg-[#FAF9F6]">
-                <td className="py-3 px-4 text-[#2C2C2C] font-semibold">{user.display_name}</td>
-                <td className="py-3 px-4 text-[#5C5446]">{user.email}</td>
-                <td className="py-3 px-4 text-[#5C5446]">{user.role_name || user.role_id}</td>
-                <td className="py-3 px-4">
-                  <span className={`px-2 py-1 text-xs rounded-full ${user.account_status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                    {user.account_status}
-                  </span>
-                </td>
-                <td className="py-3 px-4 text-right space-x-3 whitespace-nowrap">
-                  <button onClick={() => openModal(user)} className="text-blue-600 hover:text-blue-800 font-semibold inline-flex items-center gap-1"><FaEdit /> Edit</button>
-                  <button onClick={() => handleDelete(user.user_id)} className="text-red-600 hover:text-red-800 font-semibold inline-flex items-center gap-1"><FaTrash /> Delete</button>
-                </td>
-              </tr>
-            ))}
-            {users.length === 0 && (
-              <tr>
-                <td colSpan="5" className="py-4 text-center text-[#5C5446]">No users found.</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+      {/* Excel Data Grid */}
+      <ExcelDataSheet
+        sheetName="Users_Master"
+        workbookName="OJS_User_Directory.xlsx"
+        columns={userColumns}
+        data={users}
+        loading={loading}
+        onRefresh={fetchUsers}
+        formulaText={`=USERS_TABLE!A1:F${users.length} [AUTO_SYNC=TRUE]`}
+        emptyMessage="No users found in database spreadsheet."
+      />
 
-      {/* Form Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 sm:p-6 overflow-y-auto">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg flex flex-col relative my-auto">
-            <div className="px-8 py-5 border-b border-[#E5E0D8] flex justify-between items-center bg-[#FAF9F6] rounded-t-2xl shrink-0">
-              <h3 className="text-xl font-bold text-[#2C2C2C]">{isEditing ? 'Edit User' : 'Add New User'}</h3>
-              <button onClick={closeModal} className="text-[#8E7C68] hover:text-[#2C2C2C] text-2xl font-light leading-none">✕</button>
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
+          <div className="bg-white rounded-xl shadow-sm w-full max-w-lg relative">
+            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+              <h3 className="text-base font-bold text-gray-900">{isEditing ? 'Edit User' : 'Add New User'}</h3>
+              <button onClick={closeModal} className="text-gray-500 hover:text-gray-600 text-lg leading-none">&times;</button>
             </div>
             
-            <div className="p-8 overflow-y-auto">
+            <div className="p-6">
               <form id="userForm" onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-bold text-[#5C5446] mb-1.5">Display Name *</label>
-                  <input required type="text" value={formData.display_name} onChange={e => setFormData({...formData, display_name: e.target.value})} className="w-full px-3 py-2 border border-[#E5E0D8] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8E7C68]/30 focus:border-[#8E7C68]" />
+                  <label className="block text-xs font-semibold text-gray-600 mb-1.5">Display Name *</label>
+                  <input required type="text" value={formData.display_name} onChange={e => setFormData({...formData, display_name: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-200" />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-bold text-[#5C5446] mb-1.5">Email Address *</label>
-                  <input required type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full px-3 py-2 border border-[#E5E0D8] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8E7C68]/30 focus:border-[#8E7C68]" />
+                  <label className="block text-xs font-semibold text-gray-600 mb-1.5">Email Address *</label>
+                  <input required type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-200" />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-[#5C5446] mb-1.5">
+                  <label className="block text-xs font-semibold text-gray-600 mb-1.5">
                     {isEditing ? 'New Password (leave blank to keep current)' : 'Password *'}
                   </label>
-                  <input required={!isEditing} type="password" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} className="w-full px-3 py-2 border border-[#E5E0D8] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8E7C68]/30 focus:border-[#8E7C68]" />
+                  <input required={!isEditing} type="password" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-200" />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-bold text-[#5C5446] mb-1.5">Role *</label>
-                    <select required value={formData.role_id} onChange={e => setFormData({...formData, role_id: e.target.value})} className="w-full px-3 py-2 border border-[#E5E0D8] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8E7C68]/30 focus:border-[#8E7C68] bg-white">
+                    <label className="block text-xs font-semibold text-gray-600 mb-1.5">Role *</label>
+                    <select required value={formData.role_id} onChange={e => setFormData({...formData, role_id: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-200 bg-white">
                       <option value="">Select Role</option>
                       {roles.map(r => (
                         <option key={r.role_id} value={r.role_id}>{r.role_name}</option>
@@ -206,8 +219,8 @@ const UserManagement = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-[#5C5446] mb-1.5">Status</label>
-                    <select value={formData.account_status} onChange={e => setFormData({...formData, account_status: e.target.value})} className="w-full px-3 py-2 border border-[#E5E0D8] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8E7C68]/30 focus:border-[#8E7C68] bg-white">
+                    <label className="block text-xs font-semibold text-gray-600 mb-1.5">Status</label>
+                    <select value={formData.account_status} onChange={e => setFormData({...formData, account_status: e.target.value})} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-200 bg-white">
                       <option value="active">Active</option>
                       <option value="suspended">Suspended</option>
                       <option value="pending">Pending</option>
@@ -217,9 +230,9 @@ const UserManagement = () => {
               </form>
             </div>
 
-            <div className="px-8 py-5 border-t border-[#E5E0D8] bg-[#FAF9F6] rounded-b-2xl flex justify-end space-x-4 shrink-0">
-              <button type="button" onClick={closeModal} className="px-6 py-2.5 text-[#5C5446] hover:bg-[#E5E0D8] rounded-lg font-bold transition-colors">Cancel</button>
-              <button type="submit" form="userForm" disabled={formLoading} className="px-8 py-2.5 bg-[#2C2C2C] text-white rounded-lg font-bold hover:bg-[#4A4A4A] transition-colors disabled:opacity-50">
+            <div className="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
+              <button type="button" onClick={closeModal} className="px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg text-sm font-semibold transition-colors">Cancel</button>
+              <button type="submit" form="userForm" disabled={formLoading} className="px-6 py-2 bg-gray-900 text-white rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors disabled:opacity-50">
                 {formLoading ? 'Saving...' : 'Save User'}
               </button>
             </div>

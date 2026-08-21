@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { apiFetch } from '../utils/api';
 
 const ResetPassword = () => {
   const [searchParams] = useSearchParams();
@@ -33,17 +34,10 @@ const ResetPassword = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/reset-password`, {
+      await apiFetch('/auth/reset-password', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, email, password })
+        body: { token, email, password }
       });
-      
-      const data = await response.json();
-      
-      if (!response.ok || data.status === 'error') {
-        throw new Error(data.message || 'Failed to reset password');
-      }
 
       setMessage('Password successfully reset. You will be redirected to login.');
       setPassword('');
@@ -51,7 +45,7 @@ const ResetPassword = () => {
       
       setTimeout(() => navigate('/login'), 3000);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Failed to reset password');
     } finally {
       setLoading(false);
     }

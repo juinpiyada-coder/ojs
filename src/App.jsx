@@ -46,6 +46,7 @@ import DashboardLayout from './pages/dashboards/DashboardLayout';
 import AdminDashboard from './pages/dashboards/AdminDashboard';
 import EditorDashboard from './pages/dashboards/EditorDashboard';
 import AssistantEditorDashboard from './pages/dashboards/AssistantEditorDashboard';
+import ReviewerDashboard from './pages/dashboards/ReviewerDashboard';
 import AuthorDashboard from './pages/dashboards/AuthorDashboard';
 
 import AdminProfile from './pages/dashboards/admin/AdminProfile';
@@ -55,6 +56,8 @@ import BrandingUI from './pages/dashboards/admin/BrandingUI';
 import AuditLogs from './pages/dashboards/admin/AuditLogs';
 import Announcements from './pages/dashboards/admin/Announcements';
 import PaperSubmissions from './pages/dashboards/admin/PaperSubmissions';
+import VolumeIssueManagement from './pages/dashboards/admin/VolumeIssueManagement';
+import ArchiveManagement from './pages/dashboards/admin/ArchiveManagement';
 
 function App() {
   return (
@@ -121,6 +124,8 @@ function App() {
           <Route path="branding" element={<BrandingUI />} />
           <Route path="audit-logs" element={<AuditLogs />} />
           <Route path="announcements" element={<Announcements />} />
+          <Route path="volumes-issues" element={<VolumeIssueManagement />} />
+          <Route path="archives" element={<ArchiveManagement />} />
           <Route path="submissions" element={<PaperSubmissions />} />
         </Route>
         
@@ -131,6 +136,11 @@ function App() {
         
         <Route path="/assistant-editor/dashboard" element={<DashboardLayout title="Assistant Editor Dashboard" />}>
           <Route index element={<AssistantEditorDashboard />} />
+          <Route path="profile" element={<AdminProfile />} />
+        </Route>
+        
+        <Route path="/reviewer/dashboard" element={<DashboardLayout title="Reviewer Dashboard" />}>
+          <Route index element={<ReviewerDashboard />} />
           <Route path="profile" element={<AdminProfile />} />
         </Route>
         

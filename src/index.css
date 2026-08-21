@@ -2,9 +2,9 @@
 
 @layer base {
   body {
-    font-family: 'Times New Roman', Times, serif;
-    background-color: #F9F6F0; /* Japandi Warm Beige */
-    color: #2C2C2C; /* Soft Charcoal */
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-color: #FFFFFF;
+    color: #1A1A1A;
   }
 }
 

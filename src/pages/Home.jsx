@@ -17,12 +17,73 @@ import {
   FaLanguage,
   FaShieldAlt,
   FaQuoteRight,
+  FaQuoteLeft,
   FaArrowRight,
+  FaChevronLeft,
+  FaChevronRight,
   FaExpandAlt,
   FaTimes,
   FaDownload,
   FaQrcode
 } from 'react-icons/fa';
+
+const featuredSliderPapers = [
+  {
+    id: 1,
+    title: "BRIDGING CINEMATIC NARRATIVES AND LITERARY DEPTHS: FUSIONS IN CONTEMPORARY MYTHOLOGICAL NOVELS CONCERNING AMISH TRIPATHI’S RAM CHANDRA SERIES",
+    author: "Garima Singh",
+    category: "MYTHOLOGICAL FICTION & CINEMA",
+    volume: "Vol I, Issue III (July 2025)",
+    pages: "pp. 26-30",
+    doi: "10.5281/zenodo.1082326",
+    pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_26.pdf",
+    abstract: `Religious texts in the Indian context are perhaps the most utilised and most admired for every generation and genre. Irrespective of belonging to the contemporary age or being placed in the erstwhile era, Indian mythology and its umpteen tributaries have significantly influenced Indian Literature. The recent trends in the last decade have focused on exploring mythical tales in the light of modern literary texts and creating connections between archaeological evidence and mythical stories. The narratives in such works have been constructed as such to enamour a wider audience to take them through an emotionally resonant journey. The vivid descriptions construct a visual experience that mirrors the cinematic composition. Amish Tripathi does this experiment in the Ram Chandra Series and weaves a visual spectacle in a cinematic tapestry. This paper examines the gripping cinematic structure of the Ram Chandra Series by Amish Tripathi and explores the building of gradually diversified and multi-dimensional narratives in contemporary mythical novels. Along with that, it also attempts to analyze the book series from a modern and newly cultured perspective, creating a grand landscape and visual imagery through immersive experiences that construct a live-action substitute through contemporary literary texts.`
+  },
+  {
+    id: 2,
+    title: "Retelling the Past: Cinematic Narratives of Oppression and Resistance in Bolivia and Bengal",
+    author: "Ahana Bhandari",
+    category: "COMPARATIVE CULTURAL STUDIES",
+    volume: "Vol I, Issue III (July 2025)",
+    pages: "pp. 31-36",
+    doi: "10.5281/zenodo.1082327",
+    pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_27.pdf",
+    abstract: `Politics forms the backbone of the cinematic visions of Jorge Sanjines and Mrinal Sen, filmmakers from twentieth-century Bolivia and Bengal respectively. This paper examines the potential of cinema as a weapon of resistance by focusing on Sanjines’ El Corajo del Pueblo (1971) and Sen’s Akaler Sandhane (1982). Sanjines reconstructs the events of the 1967 San Juan massacre, where Bolivian government forces violently attacked striking tin miners, while Sen’s film depicts a film crew’s journey to rural Bengal to make a film about the devastating 1943 famine—a man-made tragedy linked to colonial exploitation during World War II. Both films revisit political violence through experimental cinematic forms that blur the boundaries between fiction and documentary. This paper explores how the directors’ direct engagement with oppressed communities becomes a tool for documenting collective memory and resistance. It also analyzes the use of aesthetics—non-linear narratives, montage, and self-reflexivity—as political strategies to foreground the realities of marginalized voices. In examining the coexistence of past and present within the structure of both films, the paper argues that the filmmaking process itself becomes an act of political intervention. Sanjines and Sen use cinema not just to represent, but to participate in resistance, offering a counter-narrative to dominant historical discourses. Their works demonstrate how film can function as a radical medium of protest, solidarity, and remembrance.`
+  },
+  {
+    id: 3,
+    title: "What Did She Know About Transformation That We Don’t?",
+    author: "Lina Mandal",
+    category: "LITERARY THEORY & CRITICISM",
+    volume: "Vol I, Issue III (July 2025)",
+    pages: "pp. 37-41",
+    doi: "10.5281/zenodo.1082328",
+    pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_28.pdf",
+    abstract: `An old woman lingers in Sir Bertilak’s castle, silent and unnoticed. Only at the end of Sir Gawain and the Green Knight is her name revealed—Morgan le Fay. A fleeting presence, a shadow behind the game. But was she merely a sorceress? Or a master of deeper knowledge, a scientist of transformation cloaked in mysticism? This paper reimagines Morgan le Fay through the lens of Le Morte d’Arthur, Vita Merlini, and medieval alchemical-herbal traditions. Far from a mere enchantress, her manipulation of life forms, elemental forces, and bodily change aligns with alchemy’s quest for transmutation, renewal and modern-day Pharmacology. Her creation of the Green Knight is no illusion—it echoes the origins of genetic manipulation. In medieval thought, metals were purified into gold through trial, just as Bertilak becomes a vessel of endurance and near-immortality to test Gawain’s virtue. The Green Knight’s seasonal return and survival of decapitation embody alchemical ideals of regeneration and the Elixir of Life. Could Morgan’s "sorcery" have roots in early proto-scientific knowledge? This interpretation is grounded in The Mirror of Alchemy (Roger Bacon), The Book of Secrets (Pseudo-Albertus Magnus), and The Emerald Tablet (Hermes Trismegistus), texts that blur the natural and the unnatural. Morgan’s imagined experimentations bridge medieval alchemy and modern debates on bioengineering, human enhancement, and life’s ethical boundaries. Perhaps Morgan wasn’t just shaping legend, but prefiguring the science and the dilemmas of the future.`
+  },
+  {
+    id: 4,
+    title: "Laapataa Ladies: A Cinematic Satire on Gendered Invisibility and Rural Agency",
+    author: "Satyam Kumar",
+    category: "GENDER STUDIES & FILM",
+    volume: "Vol I, Issue III (July 2025)",
+    pages: "pp. 42-47",
+    doi: "10.5281/zenodo.1082330",
+    pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_30.pdf",
+    abstract: `Kiran Rao’s Laapataa Ladies (2023) is a poignant and satirical exploration of women’s invisibility within the patriarchal fabric of rural India. Set against the backdrop of the early 2000s, the film opens with the accidental switching of two newlywed brides during a train journey—a mix-up that soon unravels into a nuanced commentary on gender, identity, and the oppressive social norms that dictate women's lives. While the plot appears light-hearted on the surface, it subtly challenges the audience to question the deep-rooted structures that normalize the marginalization of women, particularly in rural settings. This review positions Laapataa Ladies within the broader framework of feminist film discourse, examining how the film subverts conventional Bollywood tropes to foreground female subjectivity. Rao’s narrative resists the typical resolution-driven structure and instead prioritizes the internal journeys of the two protagonists as they navigate unexpected freedom, societal expectations, and self-discovery. The film’s portrayal of agency is refreshingly understated; rather than overt rebellion, the characters express resistance through small, meaningful acts that challenge the roles imposed upon them. Furthermore, the review engages with the film’s use of rural sociolinguistic textures, where dialect, humor, and silence serve as powerful tools of characterization and critique. Through authentic dialogues and situational irony, Laapataa Ladies crafts a world that is both specific and universally resonant. In doing so, Kiran Rao offers not just a story of misplaced brides, but a layered reflection on how women often find themselves lost within societal frameworks—and how they might begin to reclaim that space.`
+  },
+  {
+    id: 5,
+    title: "BEYOND THE CHARACTERS: NATURE SHAPES THE STORY IN “ULLOZHUKKU”",
+    author: "Dona Joseph",
+    category: "ECO-CRITICISM & NARRATIVE",
+    volume: "Vol I, Issue III (July 2025)",
+    pages: "pp. 55-60",
+    doi: "10.5281/zenodo.1082332",
+    pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_32.pdf",
+    abstract: `“Ullozhukku” (Under Current) is a 2024 Malayalam language drama film from India featuring female protagonists who represent two generations and the clash of their ideologies, experiences, and agency. It challenges the conventional positioning of women, motherhood, and the commodification of women. The dilemmas faced by the female protagonists, Anju (Parvathy Thiruvothu) and her mother-in-law, Leelamma (Urvashi), are both similar and different. The plot revolves around Anju, who has lost her husband and is pregnant with her lover’s child, and Leelamma, who feels relieved upon hearing the news of the pregnancy, even in the wake of her son’s death, as his lineage will continue. While the female-centered movie does not depict violent retributions, the weight of emotions lingers in the silences and gaps in dialogue. The film opens with the female characters constrained by societal and cultural norms; as the story progresses, they gradually loosen these ties and find solidarity in each other. Nature plays a significant role, a spectator, as the relentless rain and flooded surroundings amplify the characters' psychological distress. The direction, cinematography and narrative style add to the sensitive storyline. It is as if the rainy blues have enveloped the film, awaiting sunlight, as the characters long to breathe freely after the funeral and seek reconciliation.`
+  }
+];
 
 const callTopics = [
   "Tiny Tales, Micro Literature as a mainstream literature",
@@ -182,6 +243,27 @@ const Home = () => {
   const [showAnnouncementPopup, setShowAnnouncementPopup] = useState(false);
   const [dontShowAgain, setDontShowAgain] = useState(false);
 
+  // Featured Research Paper Showcase Slider State
+  const [activeSlideIndex, setActiveSlideIndex] = useState(0);
+  const [isSliderPaused, setIsSliderPaused] = useState(false);
+
+  // Auto-advance slider every 6.5s unless paused by user interaction
+  useEffect(() => {
+    if (isSliderPaused) return;
+    const timer = setInterval(() => {
+      setActiveSlideIndex((prev) => (prev + 1) % featuredSliderPapers.length);
+    }, 6500);
+    return () => clearInterval(timer);
+  }, [isSliderPaused]);
+
+  const nextSlide = () => {
+    setActiveSlideIndex((prev) => (prev + 1) % featuredSliderPapers.length);
+  };
+
+  const prevSlide = () => {
+    setActiveSlideIndex((prev) => (prev > 0 ? prev - 1 : featuredSliderPapers.length - 1));
+  };
+
   useEffect(() => {
     const fetchLiveHomeData = async () => {
       try {
@@ -308,9 +390,147 @@ const Home = () => {
         canonical="/"
       />
       
-      {/* 1. HERO SECTION */}
+      {/* 1. FULL-WIDTH JAPANDI CINEMATIC FEATURED PAPERS SLIDER (AUTO-SLIDE OPENING) */}
+      <AnimatedSection animation="fade-in" duration={600}>
+      <section className="w-full bg-[#181B20] text-white border-b border-gray-800 relative z-10 overflow-hidden">
+        {/* Subtle Ambient Glow */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#8E7C68]/10 rounded-full blur-3xl pointer-events-none -mr-32 -mt-32"></div>
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-red-950/20 rounded-full blur-3xl pointer-events-none -ml-32 -mb-32"></div>
+
+        <div 
+          onMouseEnter={() => setIsSliderPaused(true)}
+          onMouseLeave={() => setIsSliderPaused(false)}
+          className="w-full relative"
+        >
+          {/* Main Slide Content Grid */}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            
+            {/* Left Column: Visual Artwork / Cover with subtle cinematic gradient blend */}
+            <div className="lg:col-span-5 relative flex items-center justify-center">
+              <div 
+                onClick={() => setActiveModalPoster({
+                  src: "/annousments/image2.png",
+                  title: "The Literary Scientist — Volume I, Issue III (July 2025)",
+                  subtitle: "Official Issue Cover Artwork • ISSN: 3048-7366 (ONLINE)",
+                  downloadName: "The_Literary_Scientist_Vol1_Issue3_Cover.png",
+                  pdfLink: featuredSliderPapers[activeSlideIndex]?.pdfUrl
+                })}
+                className="relative group cursor-pointer w-full max-w-[340px] lg:max-w-none h-[280px] sm:h-[320px] md:h-[360px] rounded-2xl overflow-hidden shadow-2xl border border-white/10 bg-[#12151A] flex items-center justify-center"
+              >
+                <img
+                  src="/annousments/image2.png"
+                  alt="The Literary Scientist Issue Cover"
+                  className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                  loading="lazy"
+                />
+                {/* Subtle right-side gradient vignette blending into dark background */}
+                <div className="hidden lg:block absolute inset-y-0 right-0 w-28 bg-gradient-to-l from-[#181B20] to-transparent pointer-events-none"></div>
+                {/* Bottom gradient on mobile */}
+                <div className="lg:hidden absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#181B20] to-transparent pointer-events-none"></div>
+                
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-bold gap-1.5">
+                  <FaExpandAlt className="text-sm text-white" />
+                  <span>Enlarge Cover</span>
+                </div>
+
+                <div className="absolute top-3.5 left-3.5 bg-[#181B20]/90 backdrop-blur-sm border border-white/15 text-white text-[11px] font-bold px-3 py-1 rounded shadow">
+                  Vol. I Issue III (2025)
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column: Paper Typography & Details matching Screenshot */}
+            {(() => {
+              const currentPaper = featuredSliderPapers[activeSlideIndex];
+              return (
+                <div key={activeSlideIndex} className="lg:col-span-7 flex flex-col justify-between space-y-4 animate-fadeIn">
+                  
+                  {/* Category Pill Tag (Vermilion Red matching Screenshot) */}
+                  <div>
+                    <span className="inline-block px-3 py-1 bg-[#D32F2F] text-white text-[11px] sm:text-xs font-extrabold uppercase tracking-wider rounded-xs shadow-sm">
+                      {currentPaper.category || "PERSPECTIVES"}
+                    </span>
+                  </div>
+
+                  {/* Main Title */}
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-white font-serif leading-tight tracking-tight">
+                    {currentPaper.title}
+                  </h2>
+
+                  {/* Author Name */}
+                  <div className="text-base sm:text-lg font-bold text-gray-200 font-serif">
+                    {currentPaper.author}
+                  </div>
+
+                  {/* Abstract Text */}
+                  <p className="text-gray-300 text-sm sm:text-base font-serif leading-relaxed line-clamp-5 lg:line-clamp-6">
+                    {currentPaper.abstract}
+                  </p>
+
+                  {/* Action Buttons */}
+                  <div className="flex flex-wrap items-center gap-3 pt-3">
+                    <a
+                      href={currentPaper.pdfUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#D32F2F] hover:bg-[#B71C1C] text-white text-xs sm:text-sm font-bold rounded shadow transition-colors"
+                    >
+                      <FaFilePdf />
+                      <span>Read Paper (PDF)</span>
+                      <FaExternalLinkAlt className="text-[10px]" />
+                    </a>
+
+                    <button
+                      type="button"
+                      onClick={() => setActivePdfViewer({
+                        url: currentPaper.pdfUrl,
+                        title: currentPaper.title,
+                        author: currentPaper.author,
+                        pages: currentPaper.pages,
+                        doi: currentPaper.doi
+                      })}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#262B34] hover:bg-[#323844] text-white border border-gray-700 text-xs sm:text-sm font-semibold rounded transition-colors"
+                    >
+                      <FaBookOpen className="text-gray-300" />
+                      <span>Quick Preview</span>
+                    </button>
+
+                    <span className="text-xs text-gray-400 font-mono ml-auto hidden sm:inline">
+                      {currentPaper.pages} • {currentPaper.doi}
+                    </span>
+                  </div>
+
+                </div>
+              );
+            })()}
+
+          </div>
+
+          {/* Bottom Center Pagination Bar matching Screenshot */}
+          <div className="flex items-center justify-center gap-2.5 py-4 bg-[#14171C] border-t border-gray-800/80">
+            {featuredSliderPapers.map((_, idx) => (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => setActiveSlideIndex(idx)}
+                className={`h-2.5 transition-all duration-300 rounded-xs ${
+                  idx === activeSlideIndex 
+                    ? 'w-7 bg-[#D32F2F] shadow-sm shadow-red-500/50' 
+                    : 'w-2.5 bg-white/70 hover:bg-white'
+                }`}
+                title={`Go to slide ${idx + 1}`}
+                aria-label={`Slide ${idx + 1}`}
+              />
+            ))}
+          </div>
+
+        </div>
+      </section>
+      </AnimatedSection>
+
+      {/* 2. JOURNAL INTRODUCTION & MISSION HERO SECTION */}
       <AnimatedSection animation="fade-in" duration={800}>
-      <section className="bg-gradient-to-b from-white via-[#FAF7F2] to-[#F3EEE5] border-b border-[#E5E0D8] py-16 md:py-24 px-4 relative overflow-hidden">
+      <section className="bg-gradient-to-b from-white via-[#FAF7F2] to-[#F3EEE5] border-b border-[#E5E0D8] py-16 md:py-20 px-4 relative overflow-hidden">
         {/* Subtle decorative background circles */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-[#8E7C68]/5 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#1E2530]/5 rounded-full blur-2xl pointer-events-none -ml-20 -mb-20"></div>
@@ -392,9 +612,9 @@ const Home = () => {
       </section>
       </AnimatedSection>
 
-      {/* 2. NOTIFICATIONS & ANNOUNCEMENTS BANNER (LIVE FROM BACKEND) */}
+      {/* 3. NOTIFICATIONS & ANNOUNCEMENTS BANNER (LIVE FROM BACKEND) */}
       <AnimatedSection animation="fade-up" delay={100}>
-      <section className="max-w-6xl mx-auto px-4 -mt-8 relative z-20 w-full">
+      <section className="max-w-6xl mx-auto px-4 py-6 relative z-20 w-full">
         <div className="bg-white border-2 border-[#8E7C68]/30 rounded-2xl shadow-xl p-6 sm:p-8 md:p-10 backdrop-blur-sm relative">
           
           {announcements.length > 0 ? (

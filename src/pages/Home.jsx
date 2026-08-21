@@ -1103,15 +1103,6 @@ const Home = () => {
               </div>
 
               <div className="flex items-center gap-2 flex-shrink-0">
-                <a
-                  href={activePdfViewer.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#2C384A] hover:bg-[#8E7C68] text-white rounded-lg text-xs font-semibold transition-colors shadow-xs"
-                >
-                  <FaExternalLinkAlt className="text-[10px]" />
-                  <span className="hidden sm:inline">Safe Open in Tab</span>
-                </a>
                 <button
                   type="button"
                   onClick={() => setActivePdfViewer(null)}

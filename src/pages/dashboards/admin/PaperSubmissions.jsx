@@ -371,36 +371,44 @@ const PaperSubmissions = () => {
     }
   };
 
-  const getFileExtension = (url) => {
-    if (!url) return '';
-    return url.split('.').pop().toLowerCase();
+  const isPdfDoc = (url) => {
+    if (!url) return false;
+    const clean = url.split('?')[0].split('#')[0].toLowerCase();
+    return clean.endsWith('.pdf') || url.toLowerCase().includes('.pdf') || url.includes('/stream') || url.includes('/docs/');
   };
 
   const renderFileViewer = () => {
     if (!viewingDocUrl) return null;
-    const ext = getFileExtension(viewingDocUrl);
     
-    if (ext === 'pdf') {
-      return <iframe src={viewingDocUrl} title="Document Viewer" className="w-full h-full border-0" />;
-    } else if (['jpg', 'jpeg', 'png', 'gif'].includes(ext)) {
+    if (isPdfDoc(viewingDocUrl)) {
       return (
-        <div className="w-full h-full flex items-center justify-center p-4">
-          <img src={viewingDocUrl} alt="Document" className="max-w-full max-h-full object-contain shadow-lg" />
+        <iframe 
+          src={viewingDocUrl} 
+          title="Document Viewer" 
+          className="w-full h-full border-0 bg-white" 
+        />
+      );
+    } else if (['jpg', 'jpeg', 'png', 'gif', 'webp'].some(ext => viewingDocUrl.toLowerCase().includes(`.${ext}`))) {
+      return (
+        <div className="w-full h-full flex items-center justify-center p-4 bg-slate-900/50">
+          <img src={viewingDocUrl} alt="Document" className="max-w-full max-h-full object-contain shadow-lg rounded" />
         </div>
       );
     } else {
       return (
-        <div className="w-full h-full flex flex-col items-center justify-center p-8 text-center">
+        <div className="w-full h-full flex flex-col items-center justify-center p-8 text-center bg-slate-50">
           <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mb-4 shadow-sm">
             <FaFileAlt className="w-10 h-10" />
           </div>
-          <h4 className="text-xl font-bold text-gray-900 mb-2">Download Document</h4>
-          <p className="text-gray-600 max-w-md mb-6 text-xs">
-            Live preview is unavailable for this document type. Please download the file to inspect.
+          <h4 className="text-xl font-bold text-gray-900 mb-2">Manuscript Document</h4>
+          <p className="text-gray-600 max-w-md mb-6 text-xs font-mono break-all">
+            {viewingDocUrl}
           </p>
-          <a href={viewingDocUrl} download target="_blank" rel="noreferrer" className="px-6 py-2.5 bg-gray-900 hover:bg-gray-800 text-white font-bold rounded-xl transition-all shadow text-xs">
-            Download File
-          </a>
+          <div className="flex gap-3">
+            <a href={viewingDocUrl} target="_blank" rel="noreferrer" className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow text-xs inline-flex items-center gap-1.5 cursor-pointer">
+              <FaDownload /> Download / Open
+            </a>
+          </div>
         </div>
       );
     }
@@ -627,35 +635,36 @@ const PaperSubmissions = () => {
         </div>
 
         {/* Spreadsheet Data Grid */}
-        <div className="overflow-x-auto overflow-y-auto max-h-[650px] bg-slate-100">
-          <table className="w-full border-collapse text-left font-mono text-xs select-text">
+        {/* Spreadsheet Data Grid */}
+        <div className="overflow-x-auto overflow-y-auto max-h-[650px] bg-slate-100 border-t border-slate-300">
+          <table className="min-w-[1250px] w-full border-collapse text-left font-mono text-xs select-text">
             <thead>
               <tr className="bg-[#E9EDF4] border-b-2 border-slate-400 text-slate-700 sticky top-0 z-10 shadow-xs">
-                <th className="w-10 text-center py-1.5 px-2 font-bold text-[11px] border-r border-slate-300 bg-[#DCE2EC] text-slate-600 select-none">
+                <th className="w-10 text-center py-2 px-2 font-bold text-[11px] border-r border-slate-300 bg-[#DCE2EC] text-slate-600 select-none">
                   #
                 </th>
-                <th className="py-1.5 px-3 font-bold text-[11px] border-r border-slate-300 tracking-wider uppercase text-slate-800 max-w-xs">
+                <th className="py-2 px-3 font-bold text-[11px] border-r border-slate-300 tracking-wider uppercase text-slate-800 min-w-[220px]">
                   <span className="text-emerald-800 mr-1 font-bold text-[10px]">A</span> Manuscript Title & Topics
                 </th>
-                <th className="py-1.5 px-3 font-bold text-[11px] border-r border-slate-300 tracking-wider uppercase text-slate-800">
+                <th className="py-2 px-3 font-bold text-[11px] border-r border-slate-300 tracking-wider uppercase text-slate-800 min-w-[140px]">
                   <span className="text-emerald-800 mr-1 font-bold text-[10px]">B</span> Submitted By
                 </th>
-                <th className="py-1.5 px-3 font-bold text-[11px] border-r border-slate-300 tracking-wider uppercase text-slate-800">
+                <th className="py-2 px-3 font-bold text-[11px] border-r border-slate-300 tracking-wider uppercase text-slate-800 w-36 text-center">
                   <span className="text-emerald-800 mr-1 font-bold text-[10px]">C</span> Assigned Editor
                 </th>
-                <th className="py-1.5 px-3 font-bold text-[11px] border-r border-slate-300 tracking-wider uppercase text-slate-800">
+                <th className="py-2 px-3 font-bold text-[11px] border-r border-slate-300 tracking-wider uppercase text-slate-800 w-40 text-center">
                   <span className="text-emerald-800 mr-1 font-bold text-[10px]">D</span> Assigned Reviewer(s)
                 </th>
-                <th className="py-1.5 px-3 font-bold text-[11px] border-r border-slate-300 tracking-wider uppercase text-slate-800">
+                <th className="py-2 px-3 font-bold text-[11px] border-r border-slate-300 tracking-wider uppercase text-slate-800 w-28 text-center">
                   <span className="text-emerald-800 mr-1 font-bold text-[10px]">E</span> Vol / Issue
                 </th>
-                <th className="py-1.5 px-3 font-bold text-[11px] border-r border-slate-300 tracking-wider uppercase text-slate-800 text-center">
+                <th className="py-2 px-3 font-bold text-[11px] border-r border-slate-300 tracking-wider uppercase text-slate-800 text-center w-28 shrink-0">
                   <span className="text-emerald-800 mr-1 font-bold text-[10px]">F</span> Manuscript
                 </th>
-                <th className="py-1.5 px-3 font-bold text-[11px] border-r border-slate-300 tracking-wider uppercase text-slate-800 text-center">
+                <th className="py-2 px-3 font-bold text-[11px] border-r border-slate-300 tracking-wider uppercase text-slate-800 text-center w-28 shrink-0">
                   <span className="text-emerald-800 mr-1 font-bold text-[10px]">G</span> Status
                 </th>
-                <th className="py-1.5 px-3 font-bold text-[11px] border-l-2 border-slate-400 tracking-wider uppercase text-slate-800 text-center min-w-[260px] sticky right-0 z-30 bg-[#E2E8F0] shadow-[-4px_0_6px_-1px_rgba(0,0,0,0.1)] select-none">
+                <th className="py-2 px-3 font-bold text-[11px] border-l-2 border-slate-400 tracking-wider uppercase text-slate-800 text-center min-w-[270px] sticky right-0 z-30 bg-[#E2E8F0] shadow-[-4px_0_6px_-1px_rgba(0,0,0,0.1)] select-none">
                   <span className="text-emerald-800 mr-1 font-bold text-[10px]">H</span> Actions
                 </th>
               </tr>
@@ -677,157 +686,165 @@ const PaperSubmissions = () => {
                   </td>
                 </tr>
               ) : (
-                filteredArticles.map((article, rIdx) => (
-                  <tr key={article.article_id} className={`hover:bg-[#E8F0FE] transition-colors ${rIdx % 2 === 0 ? 'bg-white' : 'bg-[#FBFBFC]'}`}>
-                    
-                    {/* Row Index */}
-                    <td className="text-center py-2 px-2 font-bold text-[11px] border-r border-slate-300 bg-[#F0F3F7] text-slate-500 select-none border-b border-slate-200">
-                      {rIdx + 1}
-                    </td>
+                filteredArticles.map((article, rIdx) => {
+                  const pdfUrl = article.published_url || article.manuscript_url || article.anonymous_pdf_url;
+                  return (
+                    <tr key={article.article_id} className={`hover:bg-[#E8F0FE] transition-colors ${rIdx % 2 === 0 ? 'bg-white' : 'bg-[#FBFBFC]'}`}>
+                      
+                      {/* Row Index */}
+                      <td className="text-center py-2 px-2 font-bold text-[11px] border-r border-slate-300 bg-[#F0F3F7] text-slate-500 select-none border-b border-slate-200">
+                        {rIdx + 1}
+                      </td>
 
-                    {/* Title & Metadata */}
-                    <td className="py-2 px-3 border-r border-slate-200 border-b border-slate-200 max-w-xs font-sans">
-                      <div className="flex items-center gap-1.5">
-                        <span className="font-mono font-bold text-[10px] text-slate-500 bg-slate-100 px-1 py-0.2 rounded border border-slate-200">#{article.article_id}</span>
-                        <p className="font-bold text-slate-900 truncate text-xs">{article.title}</p>
-                      </div>
-                      {article.keywords && (
-                        <div className="flex flex-wrap gap-1 mt-1 font-mono">
-                          {article.keywords.split(',').map((kw, i) => kw.trim() && (
-                            <span key={i} className="inline-block text-[9px] font-semibold bg-slate-100 text-slate-600 border border-slate-200 px-1.5 py-0.2 rounded">
-                              #{kw.trim()}
-                            </span>
-                          ))}
+                      {/* Title & Metadata */}
+                      <td className="py-2 px-3 border-r border-slate-200 border-b border-slate-200 min-w-[220px] max-w-xs font-sans">
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-mono font-bold text-[10px] text-slate-500 bg-slate-100 px-1 py-0.2 rounded border border-slate-200">#{article.article_id}</span>
+                          <p className="font-bold text-slate-900 truncate text-xs">{article.title}</p>
                         </div>
-                      )}
-                    </td>
-
-                    {/* Submitted By */}
-                    <td className="py-2 px-3 border-r border-slate-200 border-b border-slate-200 font-sans">
-                      <p className="font-bold text-slate-800 text-xs">{article.author_name || `User #${article.author_user_id}`}</p>
-                      {article.author_email && (
-                        <p className="text-[10px] text-slate-500 font-mono mt-0.5">{article.author_email}</p>
-                      )}
-                    </td>
-
-                    {/* Assigned Editor */}
-                    <td className="py-2 px-3 border-r border-slate-200 border-b border-slate-200 text-xs font-sans">
-                      {article.editor_name ? (
-                        <div className="flex items-center gap-1.5 font-bold text-slate-900">
-                          <FaUserShield className="text-slate-500 text-xs flex-shrink-0" />
-                          <span>{article.editor_name}</span>
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => openWorkflowModal(article)}
-                          className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-300 px-2 py-0.5 rounded transition-colors"
-                        >
-                          <FaUserShield className="text-[9px]" /> + Assign Editor
-                        </button>
-                      )}
-                    </td>
-
-                    {/* Assigned Reviewers */}
-                    <td className="py-2 px-3 border-r border-slate-200 border-b border-slate-200 text-xs font-sans">
-                      {article.reviews && article.reviews.length > 0 ? (
-                        <div className="space-y-1">
-                          {article.reviews.map((rev, rIdx2) => (
-                            <div key={rIdx2} className="flex items-center gap-1 font-medium text-slate-700 text-[11px]">
-                              <FaUserCheck className="text-blue-600 text-xs flex-shrink-0" />
-                              <span className="truncate max-w-[100px]">{rev.reviewer_name}:</span>
-                              <span className="font-bold uppercase text-[9px] bg-blue-50 text-blue-800 px-1 py-0.2 rounded border border-blue-200">
-                                {rev.recommendation}
+                        {article.keywords && (
+                          <div className="flex flex-wrap gap-1 mt-1 font-mono">
+                            {article.keywords.split(',').map((kw, i) => kw.trim() && (
+                              <span key={i} className="inline-block text-[9px] font-semibold bg-slate-100 text-slate-600 border border-slate-200 px-1.5 py-0.2 rounded">
+                                #{kw.trim()}
                               </span>
-                            </div>
-                          ))}
+                            ))}
+                          </div>
+                        )}
+                      </td>
+
+                      {/* Submitted By */}
+                      <td className="py-2 px-3 border-r border-slate-200 border-b border-slate-200 font-sans min-w-[140px]">
+                        <p className="font-bold text-slate-800 text-xs">{article.author_name || `User #${article.author_user_id}`}</p>
+                        {article.author_email && (
+                          <p className="text-[10px] text-slate-500 font-mono mt-0.5">{article.author_email}</p>
+                        )}
+                      </td>
+
+                      {/* Assigned Editor */}
+                      <td className="py-2 px-3 border-r border-slate-200 border-b border-slate-200 text-xs font-sans w-36 text-center">
+                        {article.editor_name ? (
+                          <div className="flex items-center justify-center gap-1.5 font-bold text-slate-900">
+                            <FaUserShield className="text-slate-500 text-xs flex-shrink-0" />
+                            <span className="truncate max-w-[110px]">{article.editor_name}</span>
+                          </div>
+                        ) : (
                           <button
+                            type="button"
                             onClick={() => openWorkflowModal(article)}
-                            className="text-[10px] font-bold text-blue-600 hover:underline block pt-0.5"
+                            className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-300 px-2 py-0.5 rounded transition-colors cursor-pointer"
                           >
-                            + Add Reviewer
+                            <FaUserShield className="text-[9px]" /> + Editor
+                          </button>
+                        )}
+                      </td>
+
+                      {/* Assigned Reviewers */}
+                      <td className="py-2 px-3 border-r border-slate-200 border-b border-slate-200 text-xs font-sans w-40 text-center">
+                        {article.reviews && article.reviews.length > 0 ? (
+                          <div className="space-y-1">
+                            {article.reviews.map((rev, rIdx2) => (
+                              <div key={rIdx2} className="flex items-center justify-center gap-1 font-medium text-slate-700 text-[11px]">
+                                <FaUserCheck className="text-blue-600 text-xs flex-shrink-0" />
+                                <span className="truncate max-w-[80px]">{rev.reviewer_name}:</span>
+                                <span className="font-bold uppercase text-[9px] bg-blue-50 text-blue-800 px-1 py-0.2 rounded border border-blue-200">
+                                  {rev.recommendation}
+                                </span>
+                              </div>
+                            ))}
+                            <button
+                              type="button"
+                              onClick={() => openWorkflowModal(article)}
+                              className="text-[10px] font-bold text-blue-600 hover:underline block mx-auto pt-0.5 cursor-pointer"
+                            >
+                              + Add Reviewer
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => openWorkflowModal(article)}
+                            className="inline-flex items-center gap-1 text-[10px] font-bold text-blue-800 bg-blue-50 hover:bg-blue-100 border border-blue-300 px-2 py-0.5 rounded transition-colors cursor-pointer"
+                          >
+                            <FaUserCheck className="text-[9px]" /> + Reviewer
+                          </button>
+                        )}
+                      </td>
+
+                      {/* Volume / Issue */}
+                      <td className="py-2 px-3 border-r border-slate-200 border-b border-slate-200 text-xs font-mono w-28 text-center">
+                        {article.volume_number && article.issue_number ? (
+                          <div className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-slate-100 text-slate-800 rounded border border-slate-300 font-bold text-[11px]">
+                            <FaBookOpen className="text-slate-600 text-[9px]" />
+                            <span>Vol {article.volume_number}, Iss {article.issue_number}</span>
+                          </div>
+                        ) : (
+                          <span className="text-slate-400 italic text-[11px]">Unassigned</span>
+                        )}
+                      </td>
+
+                      {/* Document / PDF */}
+                      <td className="py-2 px-3 border-r border-slate-200 border-b border-slate-200 text-center font-sans w-28 shrink-0">
+                        {pdfUrl ? (
+                          <button
+                            type="button"
+                            onClick={() => setViewingDocUrl(resolveFileUrl(pdfUrl))}
+                            className="text-red-700 hover:text-red-900 bg-red-50 hover:bg-red-100 border border-red-200 px-2.5 py-1 rounded font-bold text-xs inline-flex items-center justify-center gap-1 cursor-pointer transition-all shadow-xs"
+                            title="Preview PDF Document"
+                          >
+                            <FaFilePdf className="text-red-600 text-xs" /> View PDF
+                          </button>
+                        ) : (
+                          <span className="text-slate-400 text-[11px] italic bg-slate-100 px-2 py-0.5 rounded border border-slate-200">No File</span>
+                        )}
+                      </td>
+
+                      {/* Status Badge */}
+                      <td className="py-2 px-3 border-r border-slate-200 border-b border-slate-200 text-center font-mono w-28 shrink-0">
+                        {getStatusBadge(article.status)}
+                      </td>
+
+                      {/* Sticky Actions Column */}
+                      <td className={`py-2 px-3 border-l-2 border-slate-300 border-b border-slate-200 text-center whitespace-nowrap font-sans min-w-[270px] sticky right-0 z-20 shadow-[-4px_0_6px_-1px_rgba(0,0,0,0.06)] ${rIdx % 2 === 0 ? 'bg-white' : 'bg-[#FBFBFC]'}`}>
+                        <div className="flex items-center justify-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => openModal(article)}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-300 rounded text-xs font-bold transition-all shadow-xs cursor-pointer"
+                            title="Edit Submission Details"
+                          >
+                            <FaEdit /> Edit
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(article.article_id)}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-700 border border-red-300 rounded text-xs font-bold transition-all shadow-xs cursor-pointer"
+                            title="Delete Submission"
+                          >
+                            <FaTrash /> Delete
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => openWorkflowModal(article)}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded text-xs font-bold transition-all shadow-xs cursor-pointer"
+                            title="Manage Lifecycle & Reviewers"
+                          >
+                            <FaHistory /> Workflow
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setRedactorArticle(article)}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 rounded text-xs font-bold transition-all shadow-xs cursor-pointer"
+                            title="Auto-Redact Author & Assign Reviewer"
+                          >
+                            <FaShieldAlt className="text-amber-700" /> Redact
                           </button>
                         </div>
-                      ) : (
-                        <button
-                          onClick={() => openWorkflowModal(article)}
-                          className="inline-flex items-center gap-1 text-[10px] font-bold text-blue-800 bg-blue-50 hover:bg-blue-100 border border-blue-300 px-2 py-0.5 rounded transition-colors"
-                        >
-                          <FaUserCheck className="text-[9px]" /> + Assign Reviewer
-                        </button>
-                      )}
-                    </td>
+                      </td>
 
-                    {/* Volume / Issue */}
-                    <td className="py-2 px-3 border-r border-slate-200 border-b border-slate-200 text-xs font-mono">
-                      {article.volume_number && article.issue_number ? (
-                        <div className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-slate-100 text-slate-800 rounded border border-slate-300 font-bold text-[11px]">
-                          <FaBookOpen className="text-slate-600 text-[9px]" />
-                          <span>Vol {article.volume_number}, Iss {article.issue_number}</span>
-                        </div>
-                      ) : (
-                        <span className="text-slate-400 italic text-[11px]">Unassigned</span>
-                      )}
-                    </td>
-
-                    {/* Document */}
-                    <td className="py-2 px-3 border-r border-slate-200 border-b border-slate-200 text-center font-sans">
-                      {article.manuscript_url ? (
-                        <button
-                          onClick={() => setViewingDocUrl(resolveFileUrl(article.manuscript_url))}
-                          className="text-blue-600 hover:text-blue-800 font-bold text-xs underline inline-flex items-center justify-center gap-1"
-                        >
-                          <FaFilePdf className="text-red-600" /> View
-                        </button>
-                      ) : (
-                        <span className="text-slate-400 text-[11px] italic">Missing</span>
-                      )}
-                    </td>
-
-                    {/* Status Badge */}
-                    <td className="py-2 px-3 border-r border-slate-200 border-b border-slate-200 text-center font-mono">
-                      {getStatusBadge(article.status)}
-                    </td>
-
-                    {/* Sticky Actions Column */}
-                    <td className={`py-2 px-3 border-l-2 border-slate-300 border-b border-slate-200 text-center whitespace-nowrap font-sans min-w-[260px] sticky right-0 z-20 shadow-[-4px_0_6px_-1px_rgba(0,0,0,0.06)] ${rIdx % 2 === 0 ? 'bg-white' : 'bg-[#FBFBFC]'}`}>
-                      <div className="flex items-center justify-center gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => openModal(article)}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-300 rounded text-xs font-bold transition-all shadow-xs cursor-pointer"
-                          title="Edit Submission Details"
-                        >
-                          <FaEdit /> Edit
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleDelete(article.article_id)}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-700 border border-red-300 rounded text-xs font-bold transition-all shadow-xs cursor-pointer"
-                          title="Delete Submission"
-                        >
-                          <FaTrash /> Delete
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => openWorkflowModal(article)}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded text-xs font-bold transition-all shadow-xs cursor-pointer"
-                          title="Manage Lifecycle & Reviewers"
-                        >
-                          <FaHistory /> Workflow
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setRedactorArticle(article)}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 rounded text-xs font-bold transition-all shadow-xs cursor-pointer"
-                          title="Auto-Redact Author & Assign Reviewer"
-                        >
-                          <FaShieldAlt className="text-amber-700" /> Redact
-                        </button>
-                      </div>
-                    </td>
-
-                  </tr>
-                ))
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>
@@ -1293,17 +1310,31 @@ const PaperSubmissions = () => {
           <div className="bg-white rounded-2xl shadow-lg w-full max-w-5xl h-[85vh] flex flex-col relative overflow-hidden border border-gray-200">
             <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gray-50 shrink-0">
               <div className="flex items-center gap-2">
-                <span className="p-1.5 bg-gray-900/20 text-gray-500 rounded-lg">
+                <span className="p-1.5 bg-red-100 text-red-700 rounded-lg">
                   <FaFilePdf className="w-4 h-4" />
                 </span>
-                <h3 className="text-lg font-bold text-gray-900">Document Preview</h3>
+                <div>
+                  <h3 className="text-base font-bold text-gray-900">Document Preview</h3>
+                  <p className="text-[11px] text-gray-500 font-mono truncate max-w-lg">{viewingDocUrl}</p>
+                </div>
               </div>
-              <button 
-                onClick={() => setViewingDocUrl(null)} 
-                className="text-gray-500 hover:text-gray-900 text-2xl font-light leading-none p-1 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                &times;
-              </button>
+              <div className="flex items-center gap-2">
+                <a
+                  href={viewingDocUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs font-bold bg-white hover:bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg border border-gray-300 inline-flex items-center gap-1.5 transition-all cursor-pointer"
+                  title="Open PDF in new tab"
+                >
+                  <FaDownload className="text-xs" /> Open Tab
+                </a>
+                <button 
+                  onClick={() => setViewingDocUrl(null)} 
+                  className="text-gray-500 hover:text-gray-900 text-2xl font-light leading-none p-1 rounded-lg hover:bg-gray-200 transition-colors cursor-pointer"
+                >
+                  &times;
+                </button>
+              </div>
             </div>
             
             <div className="flex-1 bg-gray-100 overflow-hidden relative">

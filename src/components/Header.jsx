@@ -146,11 +146,11 @@ const Header = () => {
               to="/" 
               className="hover:opacity-90 transition-opacity flex items-center gap-2"
               onClick={closeMobileMenu}
-              aria-label={brand?.journal_title || "The Literary Scientist Home"}
+              aria-label="The Literary Scientist Home"
             >
               <img 
                 src="/logo.png" 
-                alt={brand?.journal_title || "The Literary Scientist"} 
+                alt="The Literary Scientist" 
                 className="h-10 sm:h-11 md:h-12 lg:h-13 w-auto max-w-[220px] sm:max-w-[260px] md:max-w-[300px] lg:max-w-[330px] object-contain" 
               />
             </Link>

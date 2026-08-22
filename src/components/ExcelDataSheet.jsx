@@ -133,7 +133,7 @@ const ExcelDataSheet = ({
 
       {/* 3. Excel Spreadsheet Data Grid */}
       <div className="overflow-x-auto overflow-y-auto max-h-[650px] bg-slate-100">
-        <table className="min-w-[1100px] w-full border-collapse text-left font-mono text-xs select-text">
+        <table className="w-full border-collapse text-left font-mono text-xs select-text">
           
           {/* Column Header Ribbon (A, B, C, D...) */}
           <thead>

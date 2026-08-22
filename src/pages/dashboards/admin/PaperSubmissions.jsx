@@ -139,15 +139,17 @@ const PaperSubmissions = () => {
       setIsEditing(true);
       setFormData({
         article_id: article.article_id,
-        title: article.title,
-        abstract: article.abstract,
+        title: article.title || '',
+        abstract: article.abstract || '',
         keywords: article.keywords || '',
-        author_user_id: article.author_user_id,
+        author_user_id: article.author_user_id || (users.length > 0 ? users[0].user_id : ''),
+        author_name: article.author_name || '',
+        author_email: article.author_email || '',
         assigned_editor_id: article.assigned_editor_id || '',
         issue_id: article.issue_id || '',
         page_range: article.page_range || '',
-        manuscript_pdf_id: article.manuscript_pdf_id || '',
-        manuscript_url: article.manuscript_url || '',
+        manuscript_pdf_id: article.manuscript_pdf_id || article.published_pdf_id || '',
+        manuscript_url: article.manuscript_url || article.published_url || '',
         status: article.status || 'submitted',
         doi: article.doi || ''
       });
@@ -159,10 +161,13 @@ const PaperSubmissions = () => {
         abstract: '',
         keywords: '',
         author_user_id: users.length > 0 ? users[0].user_id : '',
+        author_name: '',
+        author_email: '',
         assigned_editor_id: '',
         issue_id: '',
         page_range: '',
         manuscript_pdf_id: '',
+        manuscript_url: '',
         status: 'submitted',
         doi: ''
       });
@@ -180,6 +185,11 @@ const PaperSubmissions = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!formData.title?.trim()) {
+      toast.error('Article title is required.');
+      return;
+    }
+
     setFormLoading(true);
 
     let finalPdfId = formData.manuscript_pdf_id;
@@ -196,24 +206,31 @@ const PaperSubmissions = () => {
           body: docPayload
         });
         
-        finalPdfId = docRes.data.doc_id;
+        if (docRes && docRes.data && docRes.data.doc_id) {
+          finalPdfId = docRes.data.doc_id;
+        }
       }
       
-      if (!finalPdfId) {
+      if (!finalPdfId && !isEditing) {
         toast.error('A manuscript document is required.');
         setFormLoading(false);
         return;
       }
 
       const payload = { 
-        ...formData, 
-        manuscript_pdf_id: finalPdfId 
+        title: formData.title.trim(),
+        abstract: formData.abstract?.trim() || '',
+        keywords: formData.keywords?.trim() || null,
+        author_user_id: formData.author_user_id ? parseInt(formData.author_user_id) : (users[0]?.user_id || 1),
+        author_name: formData.author_name?.trim() || null,
+        author_email: formData.author_email?.trim() || null,
+        assigned_editor_id: formData.assigned_editor_id ? parseInt(formData.assigned_editor_id) : null,
+        issue_id: formData.issue_id ? parseInt(formData.issue_id) : null,
+        page_range: formData.page_range?.trim() || null,
+        doi: formData.doi?.trim() || null,
+        status: formData.status || 'submitted',
+        manuscript_pdf_id: finalPdfId ? parseInt(finalPdfId) : null
       };
-      
-      if (!payload.assigned_editor_id) delete payload.assigned_editor_id;
-      if (!payload.issue_id) delete payload.issue_id;
-      if (!payload.page_range) delete payload.page_range;
-      if (!payload.doi) delete payload.doi;
 
       if (isEditing) {
         await apiFetch(`/articles?id=${formData.article_id}`, {
@@ -232,7 +249,8 @@ const PaperSubmissions = () => {
       await fetchData();
       closeModal();
     } catch (err) {
-      toast.error(err.message);
+      console.error('Submission save error:', err);
+      toast.error(err.message || 'Failed to save submission');
     } finally {
       setFormLoading(false);
     }
@@ -336,13 +354,19 @@ const PaperSubmissions = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this submission?')) {
+    if (!id) {
+      toast.error('Invalid submission ID');
+      return;
+    }
+    if (window.confirm('Are you sure you want to delete this submission? This will permanently delete the manuscript and associated peer reviews.')) {
       try {
         await apiFetch(`/articles?id=${id}`, { method: 'DELETE' });
         toast.success('Submission deleted successfully');
+        setArticles(prev => prev.filter(a => String(a.article_id) !== String(id)));
         await fetchData();
       } catch (err) {
-        toast.error('Failed to delete: ' + err.message);
+        console.error('Failed to delete submission:', err);
+        toast.error('Failed to delete: ' + (err.message || 'Server error'));
       }
     }
   };
@@ -631,7 +655,7 @@ const PaperSubmissions = () => {
                 <th className="py-1.5 px-3 font-bold text-[11px] border-r border-slate-300 tracking-wider uppercase text-slate-800 text-center">
                   <span className="text-emerald-800 mr-1 font-bold text-[10px]">G</span> Status
                 </th>
-                <th className="py-1.5 px-3 font-bold text-[11px] border-r border-slate-300 tracking-wider uppercase text-slate-800 text-right">
+                <th className="py-1.5 px-3 font-bold text-[11px] border-r border-slate-300 tracking-wider uppercase text-slate-800 text-center min-w-[280px]">
                   <span className="text-emerald-800 mr-1 font-bold text-[10px]">H</span> Actions
                 </th>
               </tr>
@@ -765,31 +789,38 @@ const PaperSubmissions = () => {
                     </td>
 
                     {/* Actions */}
-                    <td className="py-2 px-3 border-r border-slate-200 border-b border-slate-200 text-right space-x-1.5 whitespace-nowrap font-sans">
+                    <td className="py-2 px-3 border-r border-slate-200 border-b border-slate-200 text-center space-x-1.5 whitespace-nowrap font-sans min-w-[280px]">
                       <button
+                        type="button"
                         onClick={() => setRedactorArticle(article)}
-                        className="inline-flex items-center gap-1 px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 rounded text-xs font-bold transition-all shadow-xs"
+                        className="inline-flex items-center gap-1 px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 rounded text-xs font-bold transition-all shadow-xs cursor-pointer"
                         title="Auto-Redact Author & Assign Reviewer"
                       >
                         <FaShieldAlt className="text-amber-700" /> Redact
                       </button>
                       <button
+                        type="button"
                         onClick={() => openWorkflowModal(article)}
-                        className="inline-flex items-center gap-1 px-2 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded text-xs font-bold transition-all shadow-xs"
+                        className="inline-flex items-center gap-1 px-2 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded text-xs font-bold transition-all shadow-xs cursor-pointer"
+                        title="Manage Lifecycle & Reviewers"
                       >
                         <FaHistory /> Workflow
                       </button>
                       <button
+                        type="button"
                         onClick={() => openModal(article)}
-                        className="text-blue-600 hover:text-blue-800 font-bold text-xs inline-flex items-center gap-0.5 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200"
+                        className="text-blue-700 hover:text-blue-900 font-bold text-xs inline-flex items-center gap-1 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded border border-blue-300 transition-all cursor-pointer"
+                        title="Edit Submission"
                       >
                         <FaEdit /> Edit
                       </button>
                       <button
+                        type="button"
                         onClick={() => handleDelete(article.article_id)}
-                        className="text-red-600 hover:text-red-800 font-bold text-xs inline-flex items-center gap-0.5 bg-red-50 px-1.5 py-0.5 rounded border border-red-200"
+                        className="text-red-700 hover:text-red-900 font-bold text-xs inline-flex items-center gap-1 bg-red-50 hover:bg-red-100 px-2 py-1 rounded border border-red-300 transition-all cursor-pointer"
+                        title="Delete Submission"
                       >
-                        <FaTrash />
+                        <FaTrash /> Delete
                       </button>
                     </td>
 
@@ -1118,6 +1149,9 @@ const PaperSubmissions = () => {
                     <label className="block text-sm font-bold text-gray-600 mb-2">Author *</label>
                     <select required value={formData.author_user_id} onChange={e => setFormData({...formData, author_user_id: e.target.value})} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-400/30 focus:border-gray-400 bg-gray-50 focus:bg-white transition-all">
                       <option value="">Select Author</option>
+                      {formData.author_user_id && !users.some(u => String(u.user_id) === String(formData.author_user_id)) && (
+                        <option value={formData.author_user_id}>{formData.author_name || `Author #${formData.author_user_id}`} ({formData.author_email || 'Author'})</option>
+                      )}
                       {users.map(u => (
                         <option key={u.user_id} value={u.user_id}>{u.display_name} ({u.email})</option>
                       ))}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import AnimatedSection from '../components/AnimatedSection';
 import SEO from '../components/SEO';
@@ -24,19 +24,23 @@ import {
   FaExpandAlt,
   FaTimes,
   FaDownload,
-  FaQrcode
+  FaQrcode,
+  FaLayerGroup,
+  FaPlay,
+  FaPause
 } from 'react-icons/fa';
 
 const featuredSliderPapers = [
   {
     id: 1,
-    title: "BRIDGING CINEMATIC NARRATIVES AND LITERARY DEPTHS: FUSIONS IN CONTEMPORARY MYTHOLOGICAL NOVELS CONCERNING AMISH TRIPATHI’S RAM CHANDRA SERIES",
+    title: "Bridging Cinematic Narratives and Literary Depths: Fusions in Contemporary Mythological Novels Concerning Amish Tripathi’s Ram Chandra Series",
     author: "Garima Singh",
     category: "MYTHOLOGICAL FICTION & CINEMA",
     volume: "Vol I, Issue III (July 2025)",
     pages: "pp. 26-30",
     doi: "10.5281/zenodo.1082326",
     pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_26.pdf",
+    coverImg: "/annousments/image2.png",
     abstract: `Religious texts in the Indian context are perhaps the most utilised and most admired for every generation and genre. Irrespective of belonging to the contemporary age or being placed in the erstwhile era, Indian mythology and its umpteen tributaries have significantly influenced Indian Literature. The recent trends in the last decade have focused on exploring mythical tales in the light of modern literary texts and creating connections between archaeological evidence and mythical stories. The narratives in such works have been constructed as such to enamour a wider audience to take them through an emotionally resonant journey. The vivid descriptions construct a visual experience that mirrors the cinematic composition. Amish Tripathi does this experiment in the Ram Chandra Series and weaves a visual spectacle in a cinematic tapestry. This paper examines the gripping cinematic structure of the Ram Chandra Series by Amish Tripathi and explores the building of gradually diversified and multi-dimensional narratives in contemporary mythical novels. Along with that, it also attempts to analyze the book series from a modern and newly cultured perspective, creating a grand landscape and visual imagery through immersive experiences that construct a live-action substitute through contemporary literary texts.`
   },
   {
@@ -48,6 +52,7 @@ const featuredSliderPapers = [
     pages: "pp. 31-36",
     doi: "10.5281/zenodo.1082327",
     pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_27.pdf",
+    coverImg: "/annousments/image2.png",
     abstract: `Politics forms the backbone of the cinematic visions of Jorge Sanjines and Mrinal Sen, filmmakers from twentieth-century Bolivia and Bengal respectively. This paper examines the potential of cinema as a weapon of resistance by focusing on Sanjines’ El Corajo del Pueblo (1971) and Sen’s Akaler Sandhane (1982). Sanjines reconstructs the events of the 1967 San Juan massacre, where Bolivian government forces violently attacked striking tin miners, while Sen’s film depicts a film crew’s journey to rural Bengal to make a film about the devastating 1943 famine—a man-made tragedy linked to colonial exploitation during World War II. Both films revisit political violence through experimental cinematic forms that blur the boundaries between fiction and documentary. This paper explores how the directors’ direct engagement with oppressed communities becomes a tool for documenting collective memory and resistance. It also analyzes the use of aesthetics—non-linear narratives, montage, and self-reflexivity—as political strategies to foreground the realities of marginalized voices. In examining the coexistence of past and present within the structure of both films, the paper argues that the filmmaking process itself becomes an act of political intervention. Sanjines and Sen use cinema not just to represent, but to participate in resistance, offering a counter-narrative to dominant historical discourses. Their works demonstrate how film can function as a radical medium of protest, solidarity, and remembrance.`
   },
   {
@@ -59,6 +64,7 @@ const featuredSliderPapers = [
     pages: "pp. 37-41",
     doi: "10.5281/zenodo.1082328",
     pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_28.pdf",
+    coverImg: "/annousments/image2.png",
     abstract: `An old woman lingers in Sir Bertilak’s castle, silent and unnoticed. Only at the end of Sir Gawain and the Green Knight is her name revealed—Morgan le Fay. A fleeting presence, a shadow behind the game. But was she merely a sorceress? Or a master of deeper knowledge, a scientist of transformation cloaked in mysticism? This paper reimagines Morgan le Fay through the lens of Le Morte d’Arthur, Vita Merlini, and medieval alchemical-herbal traditions. Far from a mere enchantress, her manipulation of life forms, elemental forces, and bodily change aligns with alchemy’s quest for transmutation, renewal and modern-day Pharmacology. Her creation of the Green Knight is no illusion—it echoes the origins of genetic manipulation. In medieval thought, metals were purified into gold through trial, just as Bertilak becomes a vessel of endurance and near-immortality to test Gawain’s virtue. The Green Knight’s seasonal return and survival of decapitation embody alchemical ideals of regeneration and the Elixir of Life. Could Morgan’s "sorcery" have roots in early proto-scientific knowledge? This interpretation is grounded in The Mirror of Alchemy (Roger Bacon), The Book of Secrets (Pseudo-Albertus Magnus), and The Emerald Tablet (Hermes Trismegistus), texts that blur the natural and the unnatural. Morgan’s imagined experimentations bridge medieval alchemy and modern debates on bioengineering, human enhancement, and life’s ethical boundaries. Perhaps Morgan wasn’t just shaping legend, but prefiguring the science and the dilemmas of the future.`
   },
   {
@@ -70,17 +76,19 @@ const featuredSliderPapers = [
     pages: "pp. 42-47",
     doi: "10.5281/zenodo.1082330",
     pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_30.pdf",
+    coverImg: "/annousments/image2.png",
     abstract: `Kiran Rao’s Laapataa Ladies (2023) is a poignant and satirical exploration of women’s invisibility within the patriarchal fabric of rural India. Set against the backdrop of the early 2000s, the film opens with the accidental switching of two newlywed brides during a train journey—a mix-up that soon unravels into a nuanced commentary on gender, identity, and the oppressive social norms that dictate women's lives. While the plot appears light-hearted on the surface, it subtly challenges the audience to question the deep-rooted structures that normalize the marginalization of women, particularly in rural settings. This review positions Laapataa Ladies within the broader framework of feminist film discourse, examining how the film subverts conventional Bollywood tropes to foreground female subjectivity. Rao’s narrative resists the typical resolution-driven structure and instead prioritizes the internal journeys of the two protagonists as they navigate unexpected freedom, societal expectations, and self-discovery. The film’s portrayal of agency is refreshingly understated; rather than overt rebellion, the characters express resistance through small, meaningful acts that challenge the roles imposed upon them. Furthermore, the review engages with the film’s use of rural sociolinguistic textures, where dialect, humor, and silence serve as powerful tools of characterization and critique. Through authentic dialogues and situational irony, Laapataa Ladies crafts a world that is both specific and universally resonant. In doing so, Kiran Rao offers not just a story of misplaced brides, but a layered reflection on how women often find themselves lost within societal frameworks—and how they might begin to reclaim that space.`
   },
   {
     id: 5,
-    title: "BEYOND THE CHARACTERS: NATURE SHAPES THE STORY IN “ULLOZHUKKU”",
+    title: "Beyond the Characters: Nature Shapes the Story in “Ullozhukku”",
     author: "Dona Joseph",
     category: "ECO-CRITICISM & NARRATIVE",
     volume: "Vol I, Issue III (July 2025)",
     pages: "pp. 55-60",
     doi: "10.5281/zenodo.1082332",
     pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_32.pdf",
+    coverImg: "/annousments/image2.png",
     abstract: `“Ullozhukku” (Under Current) is a 2024 Malayalam language drama film from India featuring female protagonists who represent two generations and the clash of their ideologies, experiences, and agency. It challenges the conventional positioning of women, motherhood, and the commodification of women. The dilemmas faced by the female protagonists, Anju (Parvathy Thiruvothu) and her mother-in-law, Leelamma (Urvashi), are both similar and different. The plot revolves around Anju, who has lost her husband and is pregnant with her lover’s child, and Leelamma, who feels relieved upon hearing the news of the pregnancy, even in the wake of her son’s death, as his lineage will continue. While the female-centered movie does not depict violent retributions, the weight of emotions lingers in the silences and gaps in dialogue. The film opens with the female characters constrained by societal and cultural norms; as the story progresses, they gradually loosen these ties and find solidarity in each other. Nature plays a significant role, a spectator, as the relentless rain and flooded surroundings amplify the characters' psychological distress. The direction, cinematography and narrative style add to the sensitive storyline. It is as if the rainy blues have enveloped the film, awaiting sunlight, as the characters long to breathe freely after the funeral and seek reconciliation.`
   }
 ];
@@ -99,7 +107,7 @@ const callTopics = [
 const defaultArticles = [
   {
     id: 1,
-    title: "BRIDGING CINEMATIC NARRATIVES AND LITERARY DEPTHS: FUSIONS IN CONTEMPORARY MYTHOLOGICAL NOVELS CONCERNING AMISH TRIPATHI’S RAM CHANDRA SERIES.",
+    title: "Bridging Cinematic Narratives and Literary Depths: Fusions in Contemporary Mythological Novels Concerning Amish Tripathi’s Ram Chandra Series",
     author: "Garima Singh",
     pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_26.pdf",
     category: "MYTHOLOGICAL FICTION & CINEMA",
@@ -109,7 +117,7 @@ const defaultArticles = [
   },
   {
     id: 2,
-    title: "Retelling the Past: Cinematic Narratives of Oppression and Resistance in Bolivia and Bengal.",
+    title: "Retelling the Past: Cinematic Narratives of Oppression and Resistance in Bolivia and Bengal",
     author: "Ahana Bhandari",
     pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_27.pdf",
     category: "COMPARATIVE CULTURAL STUDIES",
@@ -129,7 +137,7 @@ const defaultArticles = [
   },
   {
     id: 4,
-    title: "Laapataa Ladies: A Cinematic Satire on Gendered Invisibility and Rural Agency.",
+    title: "Laapataa Ladies: A Cinematic Satire on Gendered Invisibility and Rural Agency",
     author: "Satyam Kumar",
     pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_30.pdf",
     category: "GENDER STUDIES & FILM",
@@ -139,7 +147,7 @@ const defaultArticles = [
   },
   {
     id: 5,
-    title: "Patachitra Tradition and Artist Kalam Pauta: A Theoretical Perspective on Art and Literature.",
+    title: "Patachitra Tradition and Artist Kalam Pauta: A Theoretical Perspective on Art and Literature",
     author: "Dr. Rakesh Kaibartya",
     pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/07/TLS20250103_31.pdf",
     category: "ART, FOLK TRADITION & LITERATURE",
@@ -149,7 +157,7 @@ const defaultArticles = [
   },
   {
     id: 6,
-    title: "BEYOND THE CHARACTERS: NATURE SHAPES THE STORY IN “ULLOZHUKKU”.",
+    title: "Beyond the Characters: Nature Shapes the Story in “Ullozhukku”",
     author: "Dona Joseph",
     pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_32.pdf",
     category: "ECO-CRITICISM & NARRATIVE",
@@ -159,7 +167,7 @@ const defaultArticles = [
   },
   {
     id: 7,
-    title: "How ideology shapes consumption: The case of Oil Palm Industry and Red Meat Production.",
+    title: "How Ideology Shapes Consumption: The Case of Oil Palm Industry and Red Meat Production",
     author: "Souvik Karmakar",
     pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/07/TLS20250103_.33.pdf",
     category: "ENVIRONMENTAL SCIENCES & POLICY",
@@ -169,7 +177,7 @@ const defaultArticles = [
   },
   {
     id: 8,
-    title: "FROM ‘LITTLE MAIDEN’ TO ‘THE WITCH’: EXPLORING THE THEMES OF VAMPIRISM, WITCHCRAFT AND THE FEMALE WANDERER THROUGH A BIOGRAPHICAL READING OF MARY COLERIDGE’S “THE WITCH”.",
+    title: "From ‘Little Maiden’ to ‘The Witch’: Exploring the Themes of Vampirism, Witchcraft and the Female Wanderer Through a Biographical Reading of Mary Coleridge’s “The Witch”",
     author: "Shibangi Ghose",
     pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_34.pdf",
     category: "GOTHIC LITERATURE & GENDER",
@@ -179,7 +187,7 @@ const defaultArticles = [
   },
   {
     id: 9,
-    title: "The Word as Weapon: Language, Power, and Black Male Representation in Morrison’s Narratives.",
+    title: "The Word as Weapon: Language, Power, and Black Male Representation in Morrison’s Narratives",
     author: "Sakshi Virmani",
     pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_37.pdf",
     category: "AFRICAN AMERICAN LITERATURE",
@@ -189,7 +197,7 @@ const defaultArticles = [
   },
   {
     id: 10,
-    title: "Between Nations and Narratives: Transnational Engagement and Flexible Citizenship in American Betiya.",
+    title: "Between Nations and Narratives: Transnational Engagement and Flexible Citizenship in American Betiya",
     author: "Kakoli Debnath and Dr. Binda Sah",
     pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_.38.pdf",
     category: "DIASPORA & TRANSNATIONALISM",
@@ -218,13 +226,29 @@ const defaultPreviousIssues = [
   }
 ];
 
+const formatTitle = (str) => {
+  if (!str) return '';
+  const trimmed = str.trim();
+  const upperCount = (trimmed.match(/[A-Z]/g) || []).length;
+  const letterCount = (trimmed.match(/[A-Za-z]/g) || []).length;
+  if (letterCount > 5 && upperCount / letterCount > 0.65) {
+    return trimmed
+      .toLowerCase()
+      .replace(/(?:^|\s|[-“"'(/\\])\S/g, (c) => c.toUpperCase())
+      .replace(/\b(And|Of|In|On|At|To|For|With|A|An|The|By|From)\b/g, (m, p1, offset) =>
+        offset === 0 ? m : m.toLowerCase()
+      );
+  }
+  return trimmed;
+};
+
 const Home = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeModalPoster, setActiveModalPoster] = useState(null);
   const [activePdfViewer, setActivePdfViewer] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Live Database States (Pre-populated with authentic journal edition structure)
+  // Live Database States
   const [liveArticles, setLiveArticles] = useState(defaultArticles);
   const [currentIssueInfo, setCurrentIssueInfo] = useState({
     title: "Volume I, Issue III (July, 2025)",
@@ -245,26 +269,56 @@ const Home = () => {
 
   // Featured Research Paper Showcase Slider State
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
+  const [slideDirection, setSlideDirection] = useState('right');
   const [isSliderPaused, setIsSliderPaused] = useState(false);
   const [touchStartX, setTouchStartX] = useState(null);
   const [touchEndX, setTouchEndX] = useState(null);
+  const sliderRef = useRef(null);
 
-  // Auto-advance slider every 6.5s unless paused by user interaction
+  const SLIDE_DURATION = 6500; // 6.5s per slide
+
+  const nextSlide = useCallback(() => {
+    setSlideDirection('right');
+    setActiveSlideIndex((prev) => (prev + 1) % featuredSliderPapers.length);
+  }, []);
+
+  const prevSlide = useCallback(() => {
+    setSlideDirection('left');
+    setActiveSlideIndex((prev) => (prev > 0 ? prev - 1 : featuredSliderPapers.length - 1));
+  }, []);
+
+  const goToSlide = (idx) => {
+    if (idx === activeSlideIndex) return;
+    setSlideDirection(idx > activeSlideIndex ? 'right' : 'left');
+    setActiveSlideIndex(idx);
+  };
+
+  // Auto-advance slider
   useEffect(() => {
     if (isSliderPaused) return;
     const timer = setInterval(() => {
-      setActiveSlideIndex((prev) => (prev + 1) % featuredSliderPapers.length);
-    }, 6500);
+      nextSlide();
+    }, SLIDE_DURATION);
     return () => clearInterval(timer);
-  }, [isSliderPaused]);
+  }, [isSliderPaused, nextSlide]);
 
-  const nextSlide = () => {
-    setActiveSlideIndex((prev) => (prev + 1) % featuredSliderPapers.length);
-  };
-
-  const prevSlide = () => {
-    setActiveSlideIndex((prev) => (prev > 0 ? prev - 1 : featuredSliderPapers.length - 1));
-  };
+  // Keyboard navigation for slider
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (activeModalPoster || activePdfViewer || showAnnouncementPopup) return;
+      if (e.key === 'ArrowRight') {
+        nextSlide();
+      } else if (e.key === 'ArrowLeft') {
+        prevSlide();
+      } else if (e.key === 'Escape') {
+        setActiveModalPoster(null);
+        setActivePdfViewer(null);
+        setShowAnnouncementPopup(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [nextSlide, prevSlide, activeModalPoster, activePdfViewer, showAnnouncementPopup]);
 
   const handleTouchStart = (e) => {
     setIsSliderPaused(true);
@@ -316,7 +370,6 @@ const Home = () => {
             }
           });
 
-          // Sort descending by date & issue number so latest published issue (Volume 1 Issue 3) is always index 0
           allIssues.sort((a, b) => {
             const dateA = new Date(a.publication_date || `${a.publication_year}-01-01`).getTime();
             const dateB = new Date(b.publication_date || `${b.publication_year}-01-01`).getTime();
@@ -408,6 +461,8 @@ const Home = () => {
     (article.keywords && article.keywords.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
+  const currentPaper = featuredSliderPapers[activeSlideIndex];
+
   return (
     <div className="flex-grow flex flex-col bg-[#F9F6F0] text-[#2C2C2C]">
       <SEO
@@ -417,211 +472,227 @@ const Home = () => {
         canonical="/"
       />
       
-      {/* 1. FULL-WIDTH JAPANDI CINEMATIC FEATURED PAPERS SLIDER (AUTO-SLIDE OPENING) */}
-      <AnimatedSection animation="fade-in" duration={600}>
-      <section className="w-full bg-[#181B20] text-white border-b border-gray-800 relative z-10 overflow-hidden">
-        {/* Subtle Ambient Glow */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#8E7C68]/10 rounded-full blur-3xl pointer-events-none -mr-32 -mt-32"></div>
+      {/* 1. CINEMATIC FEATURED RESEARCH PAPERS SLIDER */}
+      <section 
+        ref={sliderRef}
+        aria-label="Featured Research Papers"
+        className="w-full bg-[#16191E] text-white border-b border-gray-800/80 relative z-10 overflow-hidden select-none"
+        onMouseEnter={() => setIsSliderPaused(true)}
+        onMouseLeave={() => setIsSliderPaused(false)}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        {/* Subtle Ambient Lighting & Accents */}
+        <div className="absolute top-0 right-0 w-[550px] h-[550px] bg-[#8E7C68]/15 rounded-full blur-3xl pointer-events-none -mr-32 -mt-32"></div>
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-red-950/20 rounded-full blur-3xl pointer-events-none -ml-32 -mb-32"></div>
 
-        <div 
-          onMouseEnter={() => setIsSliderPaused(true)}
-          onMouseLeave={() => setIsSliderPaused(false)}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-          className="w-full relative select-none"
+        {/* Top Progress Bar for Autoplay Timer */}
+        <div className="w-full h-1 bg-white/10 relative overflow-hidden">
+          <div 
+            key={`${activeSlideIndex}-${isSliderPaused}`}
+            className="h-full bg-gradient-to-r from-[#D32F2F] to-[#D4AF37]"
+            style={{
+              width: '100%',
+              animation: isSliderPaused ? 'none' : `progressFill ${SLIDE_DURATION}ms linear forwards`
+            }}
+          />
+        </div>
+
+        {/* Floating Left Arrow Button */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            prevSlide();
+          }}
+          aria-label="Previous Slide"
+          title="Previous Slide (Left Arrow)"
+          className="hidden sm:flex absolute left-3 md:left-6 top-1/2 -translate-y-1/2 z-30 w-11 h-11 md:w-12 md:h-12 rounded-full bg-[#181B20]/85 hover:bg-[#D32F2F] text-white border border-white/20 hover:border-[#D32F2F] shadow-2xl backdrop-blur-md items-center justify-center cursor-pointer transition-all duration-200 active:scale-90 hover:scale-105 group focus:outline-none focus:ring-2 focus:ring-red-500"
         >
-          {/* Floating Left Arrow Button */}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              prevSlide();
-            }}
-            aria-label="Previous Slide"
-            title="Previous Slide"
-            className="absolute left-2 sm:left-4 md:left-6 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#181B20]/80 hover:bg-[#D32F2F] text-white border border-white/20 hover:border-[#D32F2F] shadow-2xl backdrop-blur-md flex items-center justify-center cursor-pointer transition-all duration-200 active:scale-90 hover:scale-105 group focus:outline-none focus:ring-2 focus:ring-red-500"
+          <FaChevronLeft className="text-sm md:text-base group-hover:-translate-x-0.5 transition-transform" />
+        </button>
+
+        {/* Floating Right Arrow Button */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            nextSlide();
+          }}
+          aria-label="Next Slide"
+          title="Next Slide (Right Arrow)"
+          className="hidden sm:flex absolute right-3 md:right-6 top-1/2 -translate-y-1/2 z-30 w-11 h-11 md:w-12 md:h-12 rounded-full bg-[#181B20]/85 hover:bg-[#D32F2F] text-white border border-white/20 hover:border-[#D32F2F] shadow-2xl backdrop-blur-md items-center justify-center cursor-pointer transition-all duration-200 active:scale-90 hover:scale-105 group focus:outline-none focus:ring-2 focus:ring-red-500"
+        >
+          <FaChevronRight className="text-sm md:text-base group-hover:translate-x-0.5 transition-transform" />
+        </button>
+
+        {/* Main Slide Content Grid */}
+        <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-14 py-6 sm:py-8 lg:py-10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center relative z-10 min-h-[380px] lg:min-h-[410px]">
+          
+          {/* Left Column: Visual Cover Card */}
+          <div className="lg:col-span-4 xl:col-span-4 relative flex items-center justify-center">
+            <div 
+              onClick={() => setActiveModalPoster({
+                src: currentPaper.coverImg || "/annousments/image2.png",
+                title: `The Literary Scientist — ${currentPaper.volume}`,
+                subtitle: `Cover Artwork • Featured: ${currentPaper.author}`,
+                downloadName: `The_Literary_Scientist_Paper_${currentPaper.id}_Cover.png`,
+                pdfLink: currentPaper.pdfUrl
+              })}
+              className="relative group cursor-pointer w-full max-w-[220px] sm:max-w-[240px] lg:max-w-[260px] h-[230px] sm:h-[260px] lg:h-[290px] rounded-2xl overflow-hidden shadow-2xl border-2 border-white/15 bg-[#12151A] flex items-center justify-center transform transition-transform duration-300 hover:scale-[1.02]"
+            >
+              <img
+                src={currentPaper.coverImg || "/annousments/image2.png"}
+                alt={`Cover for ${currentPaper.title}`}
+                className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                loading="eager"
+              />
+              {/* Subtle vignette gradients */}
+              <div className="hidden lg:block absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-[#16191E] to-transparent pointer-events-none"></div>
+              <div className="lg:hidden absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#16191E] to-transparent pointer-events-none"></div>
+              
+              {/* Enlarge Hover Overlay */}
+              <div className="absolute inset-0 bg-black/45 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-bold gap-2 backdrop-blur-[2px]">
+                <FaExpandAlt className="text-sm text-[#D4AF37]" />
+                <span>Enlarge Cover</span>
+              </div>
+
+              {/* Volume Badge */}
+              <div className="absolute top-3 left-3 bg-[#1E2530]/90 backdrop-blur-sm border border-white/20 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-md shadow-md flex items-center gap-1.5">
+                <FaAward className="text-[#D4AF37] text-[10px]" />
+                <span>{currentPaper.volume}</span>
+              </div>
+
+              {/* Pages Pill */}
+              <div className="absolute bottom-3 left-3 bg-[#12151A]/80 backdrop-blur-sm border border-white/10 text-gray-300 text-[10px] font-mono px-2 py-0.5 rounded">
+                {currentPaper.pages}
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Paper Typography & Detailed Actions */}
+          <div 
+            key={activeSlideIndex}
+            className={`lg:col-span-8 xl:col-span-8 flex flex-col justify-between space-y-2.5 sm:space-y-3 ${
+              slideDirection === 'right' ? 'animate-slide-in-right' : 'animate-slide-in-left'
+            }`}
           >
-            <FaChevronLeft className="text-sm sm:text-base group-hover:-translate-x-0.5 transition-transform" />
-          </button>
-
-          {/* Floating Right Arrow Button */}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              nextSlide();
-            }}
-            aria-label="Next Slide"
-            title="Next Slide"
-            className="absolute right-2 sm:right-4 md:right-6 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#181B20]/80 hover:bg-[#D32F2F] text-white border border-white/20 hover:border-[#D32F2F] shadow-2xl backdrop-blur-md flex items-center justify-center cursor-pointer transition-all duration-200 active:scale-90 hover:scale-105 group focus:outline-none focus:ring-2 focus:ring-red-500"
-          >
-            <FaChevronRight className="text-sm sm:text-base group-hover:translate-x-0.5 transition-transform" />
-          </button>
-
-          {/* Main Slide Content Grid */}
-          <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-14 py-10 md:py-14 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10">
-            
-            {/* Left Column: Visual Artwork / Cover with subtle cinematic gradient blend */}
-            <div className="lg:col-span-5 relative flex items-center justify-center">
-              <div 
-                onClick={() => setActiveModalPoster({
-                  src: "/annousments/image2.png",
-                  title: "The Literary Scientist — Volume I, Issue III (July 2025)",
-                  subtitle: "Official Issue Cover Artwork • ISSN: 3048-7366 (ONLINE)",
-                  downloadName: "The_Literary_Scientist_Vol1_Issue3_Cover.png",
-                  pdfLink: featuredSliderPapers[activeSlideIndex]?.pdfUrl
-                })}
-                className="relative group cursor-pointer w-full max-w-[340px] lg:max-w-none h-[280px] sm:h-[320px] md:h-[360px] rounded-2xl overflow-hidden shadow-2xl border border-white/10 bg-[#12151A] flex items-center justify-center"
-              >
-                <img
-                  src="/annousments/image2.png"
-                  alt="The Literary Scientist Issue Cover"
-                  className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                  loading="lazy"
-                />
-                {/* Subtle right-side gradient vignette blending into dark background */}
-                <div className="hidden lg:block absolute inset-y-0 right-0 w-28 bg-gradient-to-l from-[#181B20] to-transparent pointer-events-none"></div>
-                {/* Bottom gradient on mobile */}
-                <div className="lg:hidden absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#181B20] to-transparent pointer-events-none"></div>
-                
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-bold gap-1.5">
-                  <FaExpandAlt className="text-sm text-white" />
-                  <span>Enlarge Cover</span>
-                </div>
-
-                <div className="absolute top-3.5 left-3.5 bg-[#181B20]/90 backdrop-blur-sm border border-white/15 text-white text-[11px] font-bold px-3 py-1 rounded shadow">
-                  Vol. I Issue III (2025)
-                </div>
+            {/* Category Tag & Slide Counter */}
+            <div className="flex items-center justify-between gap-3">
+              <span className="inline-flex items-center gap-1.5 px-3 py-0.5 bg-[#D32F2F] text-white text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider rounded-md shadow-sm">
+                <span>{currentPaper.category}</span>
+              </span>
+              
+              <div className="flex items-center gap-1.5 text-xs text-gray-400 font-mono">
+                <span className="text-[#D4AF37] font-bold">{String(activeSlideIndex + 1).padStart(2, '0')}</span>
+                <span>/</span>
+                <span>{String(featuredSliderPapers.length).padStart(2, '0')}</span>
               </div>
             </div>
 
-            {/* Right Column: Paper Typography & Details matching Screenshot */}
-            {(() => {
-              const currentPaper = featuredSliderPapers[activeSlideIndex];
-              return (
-                <div key={activeSlideIndex} className="lg:col-span-7 flex flex-col justify-between space-y-4 animate-fadeIn">
-                  
-                  {/* Category Pill Tag (Vermilion Red matching Screenshot) */}
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="inline-block px-3 py-1 bg-[#D32F2F] text-white text-[11px] sm:text-xs font-extrabold uppercase tracking-wider rounded-xs shadow-sm">
-                      {currentPaper.category || "PERSPECTIVES"}
-                    </span>
-                    <span className="text-xs text-gray-400 font-mono sm:hidden">
-                      {activeSlideIndex + 1} / {featuredSliderPapers.length}
-                    </span>
-                  </div>
+            {/* Main Paper Title (Optimized Size & Line Clamping) */}
+            <h2 className="text-lg sm:text-xl md:text-2xl lg:text-[1.6rem] font-bold text-white font-serif leading-snug tracking-tight line-clamp-2 md:line-clamp-3">
+              {formatTitle(currentPaper.title)}
+            </h2>
 
-                  {/* Main Title */}
-                  <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-white font-serif leading-tight tracking-tight">
-                    {currentPaper.title}
-                  </h2>
-
-                  {/* Author Name */}
-                  <div className="text-base sm:text-lg font-bold text-gray-200 font-serif">
-                    {currentPaper.author}
-                  </div>
-
-                  {/* Abstract Text */}
-                  <p className="text-gray-300 text-sm sm:text-base font-serif leading-relaxed line-clamp-5 lg:line-clamp-6">
-                    {currentPaper.abstract}
-                  </p>
-
-                  {/* Action Buttons */}
-                  <div className="flex flex-wrap items-center gap-3 pt-3">
-                    <a
-                      href={currentPaper.pdfUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#D32F2F] hover:bg-[#B71C1C] text-white text-xs sm:text-sm font-bold rounded shadow transition-colors"
-                    >
-                      <FaFilePdf />
-                      <span>Read Paper (PDF)</span>
-                      <FaExternalLinkAlt className="text-[10px]" />
-                    </a>
-
-                    <button
-                      type="button"
-                      onClick={() => setActivePdfViewer({
-                        url: currentPaper.pdfUrl,
-                        title: currentPaper.title,
-                        author: currentPaper.author,
-                        pages: currentPaper.pages,
-                        doi: currentPaper.doi
-                      })}
-                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#262B34] hover:bg-[#323844] text-white border border-gray-700 text-xs sm:text-sm font-semibold rounded transition-colors"
-                    >
-                      <FaBookOpen className="text-gray-300" />
-                      <span>Quick Preview</span>
-                    </button>
-
-                    <span className="text-xs text-gray-400 font-mono ml-auto hidden sm:inline">
-                      {currentPaper.pages} • {currentPaper.doi}
-                    </span>
-                  </div>
-
-                </div>
-              );
-            })()}
-
-          </div>
-
-          {/* Bottom Navigation Controls & Pagination Bar */}
-          <div className="flex items-center justify-between sm:justify-center gap-3 sm:gap-6 px-4 sm:px-8 py-3.5 bg-[#14171C] border-t border-gray-800/80">
-            {/* Prev Slide Button */}
-            <button
-              type="button"
-              onClick={prevSlide}
-              aria-label="Slide Left"
-              className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-gray-300 hover:text-white bg-[#222730] hover:bg-[#2D333F] border border-gray-700/80 rounded-lg transition-all cursor-pointer active:scale-95 shadow-sm"
-            >
-              <FaChevronLeft className="text-[11px]" />
-              <span>Slide Left</span>
-            </button>
-
-            {/* Pagination Indicators */}
-            <div className="flex items-center gap-1.5 sm:gap-2.5">
-              {featuredSliderPapers.map((_, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => setActiveSlideIndex(idx)}
-                  className="p-1 flex items-center justify-center cursor-pointer transition-all duration-300 group"
-                  title={`Go to slide ${idx + 1}`}
-                  aria-label={`Slide ${idx + 1}`}
-                >
-                  <span 
-                    className={`block h-2 sm:h-2.5 rounded-full transition-all duration-300 ${
-                      idx === activeSlideIndex 
-                        ? 'w-7 sm:w-8 bg-[#D32F2F] shadow-sm shadow-red-500/50' 
-                        : 'w-2 sm:w-2.5 bg-white/60 group-hover:bg-white'
-                    }`}
-                  />
-                </button>
-              ))}
+            {/* Author Attribution */}
+            <div className="flex items-center gap-2 text-sm sm:text-base font-bold text-gray-200 font-serif">
+              <span className="text-[#D4AF37]">By</span>
+              <span>{currentPaper.author}</span>
             </div>
 
-            {/* Slide Counter Badge (Desktop) */}
-            <span className="text-xs font-mono font-bold text-gray-400 bg-black/40 px-2.5 py-1 rounded border border-white/5 hidden md:inline">
-              {activeSlideIndex + 1} / {featuredSliderPapers.length}
-            </span>
+            {/* Abstract Text */}
+            <p className="text-gray-300 text-xs sm:text-sm font-serif leading-relaxed line-clamp-3 sm:line-clamp-4">
+              {currentPaper.abstract}
+            </p>
 
-            {/* Next Slide Button */}
-            <button
-              type="button"
-              onClick={nextSlide}
-              aria-label="Slide Right"
-              className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-gray-300 hover:text-white bg-[#222730] hover:bg-[#2D333F] border border-gray-700/80 rounded-lg transition-all cursor-pointer active:scale-95 shadow-sm"
-            >
-              <span>Slide Right</span>
-              <FaChevronRight className="text-[11px]" />
-            </button>
+            {/* Action Buttons & Metadata */}
+            <div className="flex flex-wrap items-center gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setActivePdfViewer({
+                  url: currentPaper.pdfUrl,
+                  title: formatTitle(currentPaper.title),
+                  author: currentPaper.author,
+                  pages: currentPaper.pages,
+                  doi: currentPaper.doi,
+                  category: currentPaper.category
+                })}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#242933] hover:bg-[#2F3643] text-white border border-gray-700 hover:border-gray-500 text-xs sm:text-sm font-semibold rounded-lg transition-all active:scale-95 cursor-pointer shadow-sm"
+              >
+                <FaBookOpen className="text-gray-300 text-sm" />
+                <span>Quick Preview</span>
+              </button>
+
+              <span className="text-xs text-gray-400 font-mono ml-auto hidden md:inline">
+                DOI: {currentPaper.doi}
+              </span>
+            </div>
+
           </div>
 
         </div>
+
+        {/* Bottom Navigation Controls & Pagination Bar */}
+        <div className="flex items-center justify-between sm:justify-center gap-3 sm:gap-6 px-4 sm:px-8 py-3 bg-[#111317] border-t border-gray-800">
+          {/* Prev Slide Button */}
+          <button
+            type="button"
+            onClick={prevSlide}
+            aria-label="Previous Slide"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-gray-300 hover:text-white bg-[#1E232B] hover:bg-[#282F3A] border border-gray-700 rounded-lg transition-all cursor-pointer active:scale-95"
+          >
+            <FaChevronLeft className="text-[10px]" />
+            <span className="hidden sm:inline">Previous</span>
+          </button>
+
+          {/* Pagination Pill Indicators */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            {featuredSliderPapers.map((paper, idx) => (
+              <button
+                key={paper.id}
+                type="button"
+                onClick={() => goToSlide(idx)}
+                className="p-1 flex items-center justify-center cursor-pointer transition-all duration-300 group"
+                title={`Paper ${idx + 1}: ${paper.title.substring(0, 40)}...`}
+                aria-label={`Slide ${idx + 1}`}
+              >
+                <span 
+                  className={`block h-2 sm:h-2.5 rounded-full transition-all duration-300 ${
+                    idx === activeSlideIndex 
+                      ? 'w-8 sm:w-10 bg-[#D32F2F] shadow-sm shadow-red-500/50' 
+                      : 'w-2 sm:w-2.5 bg-white/40 group-hover:bg-white/80'
+                  }`}
+                />
+              </button>
+            ))}
+          </div>
+
+          {/* Next Slide Button */}
+          <button
+            type="button"
+            onClick={nextSlide}
+            aria-label="Next Slide"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-gray-300 hover:text-white bg-[#1E232B] hover:bg-[#282F3A] border border-gray-700 rounded-lg transition-all cursor-pointer active:scale-95"
+          >
+            <span className="hidden sm:inline">Next</span>
+            <FaChevronRight className="text-[10px]" />
+          </button>
+
+          {/* Auto-play pause toggle indicator */}
+          <button
+            type="button"
+            onClick={() => setIsSliderPaused(!isSliderPaused)}
+            className="p-1.5 text-gray-400 hover:text-white bg-[#1E232B] hover:bg-[#282F3A] border border-gray-700 rounded-md transition-colors text-xs hidden lg:flex items-center justify-center ml-2"
+            title={isSliderPaused ? "Resume Autoplay" : "Pause Autoplay"}
+            aria-label={isSliderPaused ? "Resume Autoplay" : "Pause Autoplay"}
+          >
+            {isSliderPaused ? <FaPlay className="text-[9px] text-emerald-400" /> : <FaPause className="text-[9px]" />}
+          </button>
+        </div>
+
       </section>
-      </AnimatedSection>
 
       {/* 2. JOURNAL INTRODUCTION & MISSION HERO SECTION */}
       <AnimatedSection animation="fade-in" duration={800}>
@@ -656,7 +727,7 @@ const Home = () => {
 
           <AnimatedSection animation="fade-up" delay={300}>
           {/* Subtitle */}
-          <p className="text-xl sm:text-2xl md:text-3xl text-[#8E7C68] font-serif italic max-w-4xl mx-auto mb-8 font-medium">
+          <p className="text-xl sm:text-2xl md:text-3xl text-[#8E7C68] font-serif italic max-w-4xl mx-auto mb-6 font-medium">
             A Multi-Disciplinary Journal for Literature and Science
           </p>
 
@@ -665,7 +736,7 @@ const Home = () => {
 
           <AnimatedSection animation="fade-up" delay={400}>
           {/* Tagline / Brief Mission */}
-          <p className="text-base sm:text-lg text-[#5C5446] max-w-3xl mx-auto leading-relaxed mb-10">
+          <p className="text-base sm:text-lg text-[#5C5446] max-w-3xl mx-auto leading-relaxed mb-10 font-serif">
             Dedicated to fostering cross-disciplinary scholarship, bridging empirical scientific inquiry and creative literary exploration. Published thrice a year online since 2023 with an upcoming print edition.
           </p>
           </AnimatedSection>
@@ -675,7 +746,7 @@ const Home = () => {
           <div className="flex flex-wrap justify-center items-center gap-4">
             <a
               href="#current-issue"
-              className="inline-flex items-center gap-2 px-7 py-3.5 bg-[#1E2530] text-white rounded-lg font-bold text-sm sm:text-base shadow-md hover:bg-[#2C384A] hover:shadow-lg hover:-translate-y-0.5 transition-all"
+              className="inline-flex items-center gap-2 px-7 py-3.5 bg-[#1E2530] text-white rounded-xl font-bold text-sm sm:text-base shadow-md hover:bg-[#2C384A] hover:shadow-lg hover:-translate-y-0.5 transition-all"
             >
               <FaBookOpen /> Browse Current Issue
             </a>
@@ -683,13 +754,13 @@ const Home = () => {
               href="/annousments/Olive-Green-Doodle-Final-Project-Cover-A4-Document.pdf"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-7 py-3.5 bg-[#8E7C68] text-white rounded-lg font-bold text-sm sm:text-base shadow-md hover:bg-[#7D6B57] hover:shadow-lg hover:-translate-y-0.5 transition-all"
+              className="inline-flex items-center gap-2 px-7 py-3.5 bg-[#8E7C68] text-white rounded-xl font-bold text-sm sm:text-base shadow-md hover:bg-[#7D6B57] hover:shadow-lg hover:-translate-y-0.5 transition-all"
             >
               <FaFilePdf /> Call For Contributions (PDF)
             </a>
             <Link
               to="/start-submission"
-              className="inline-flex items-center gap-2 px-7 py-3.5 bg-white border border-[#8E7C68] text-[#1E2530] rounded-lg font-bold text-sm sm:text-base shadow-sm hover:bg-[#FAF7F2] hover:shadow hover:-translate-y-0.5 transition-all"
+              className="inline-flex items-center gap-2 px-7 py-3.5 bg-white border-2 border-[#8E7C68] text-[#1E2530] rounded-xl font-bold text-sm sm:text-base shadow-sm hover:bg-[#FAF7F2] hover:shadow hover:-translate-y-0.5 transition-all"
             >
               <FaUserEdit className="text-[#8E7C68]" /> Submit Manuscript
             </Link>
@@ -697,7 +768,7 @@ const Home = () => {
               href="/Review-Policy-TLS.pdf"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3.5 bg-[#EFE9DF] text-[#5C5446] rounded-lg font-semibold text-sm sm:text-base hover:bg-[#E5DDCF] hover:text-[#2C2C2C] transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3.5 bg-[#EFE9DF] text-[#5C5446] rounded-xl font-semibold text-sm sm:text-base hover:bg-[#E5DDCF] hover:text-[#2C2C2C] transition-all"
             >
               <FaShieldAlt className="text-[#8E7C68]" /> Review Policy <FaExternalLinkAlt className="text-xs opacity-70" />
             </a>
@@ -707,7 +778,7 @@ const Home = () => {
       </section>
       </AnimatedSection>
 
-      {/* 3. NOTIFICATIONS & ANNOUNCEMENTS BANNER (LIVE FROM BACKEND) */}
+      {/* 3. NOTIFICATIONS & ANNOUNCEMENTS BANNER */}
       <AnimatedSection animation="fade-up" delay={100}>
       <section className="max-w-6xl mx-auto px-4 py-6 relative z-20 w-full">
         <div className="bg-white border-2 border-[#8E7C68]/30 rounded-2xl shadow-xl p-6 sm:p-8 md:p-10 backdrop-blur-sm relative">
@@ -748,7 +819,7 @@ const Home = () => {
                           <button
                             type="button"
                             onClick={() => setActiveAnnouncementIndex((prev) => (prev > 0 ? prev - 1 : announcements.length - 1))}
-                            className="text-xs px-2 py-0.5 font-bold hover:bg-[#EAE6DF] rounded"
+                            className="text-xs px-2 py-0.5 font-bold hover:bg-[#EAE6DF] rounded cursor-pointer"
                             title="Previous Announcement"
                           >
                             ◀
@@ -759,7 +830,7 @@ const Home = () => {
                           <button
                             type="button"
                             onClick={() => setActiveAnnouncementIndex((prev) => (prev < announcements.length - 1 ? prev + 1 : 0))}
-                            className="text-xs px-2 py-0.5 font-bold hover:bg-[#EAE6DF] rounded"
+                            className="text-xs px-2 py-0.5 font-bold hover:bg-[#EAE6DF] rounded cursor-pointer"
                             title="Next Announcement"
                           >
                             ▶
@@ -772,7 +843,7 @@ const Home = () => {
                       {currentAnn.title}
                     </h2>
 
-                    <div className="text-sm sm:text-base text-[#5C5446] leading-relaxed whitespace-pre-line">
+                    <div className="text-sm sm:text-base text-[#5C5446] leading-relaxed whitespace-pre-line font-serif">
                       {currentAnn.content}
                     </div>
 
@@ -780,9 +851,9 @@ const Home = () => {
                       <button
                         type="button"
                         onClick={() => setShowAnnouncementPopup(true)}
-                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1E2530] hover:bg-[#2C384A] text-white rounded-lg font-bold text-xs sm:text-sm shadow transition-all"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1E2530] hover:bg-[#2C384A] text-white rounded-xl font-bold text-xs sm:text-sm shadow transition-all cursor-pointer"
                       >
-                        <FaBullhorn className="text-amber-400" /> View Announcement Details & Popup
+                        <FaBullhorn className="text-amber-400" /> View Announcement Details
                       </button>
 
                       {currentAnn.doc_url && (
@@ -790,7 +861,7 @@ const Home = () => {
                           href={resolveFileUrl(currentAnn.doc_url)}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-[#FAF7F2] hover:bg-[#EFE9DF] text-[#1E2530] border border-[#E5E0D8] rounded-lg text-xs sm:text-sm font-semibold transition-all"
+                          className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-[#FAF7F2] hover:bg-[#EFE9DF] text-[#1E2530] border border-[#E5E0D8] rounded-xl text-xs sm:text-sm font-semibold transition-all"
                         >
                           {isPdf ? <FaFilePdf className="text-red-600" /> : <FaExpandAlt className="text-[#8E7C68]" />}
                           <span>{isPdf ? 'Download Attachment (PDF)' : 'View Attachment'}</span>
@@ -821,11 +892,11 @@ const Home = () => {
                   Proud Recipient of ISSN: 3048-7366 (ONLINE)
                 </h2>
 
-                <p className="text-sm sm:text-base text-[#5C5446] leading-relaxed mb-4">
+                <p className="text-sm sm:text-base text-[#5C5446] leading-relaxed mb-4 font-serif">
                   We’re thrilled to announce that <strong>The Literary Scientist</strong> now proudly holds an <strong>ISSN: 3048-7366 (ONLINE)</strong>, marking a significant milestone in our journey. This achievement underscores our commitment to fostering interdisciplinary scholarship and creativity across literature, science, and beyond.
                 </p>
 
-                <p className="text-sm sm:text-base text-[#5C5446] leading-relaxed">
+                <p className="text-sm sm:text-base text-[#5C5446] leading-relaxed font-serif">
                   With this call for contributions, we invite young minds and seasoned researchers alike to explore groundbreaking topics—from micro literature to digital humanities, cultural studies, and more. Be part of a pioneering publication that bridges disciplines and enriches the landscape of academic thought.
                 </p>
               </div>
@@ -836,9 +907,9 @@ const Home = () => {
       </section>
       </AnimatedSection>
 
-      {/* 3. CALL FOR CONTRIBUTIONS (EXACT MATCH TO INPUT UI IMAGE 1) */}
+      {/* 4. CALL FOR CONTRIBUTIONS */}
       <AnimatedSection animation="fade-up" delay={100}>
-      <section className="max-w-6xl mx-auto px-4 py-12 w-full">
+      <section className="max-w-6xl mx-auto px-4 py-10 w-full">
         <div className="bg-[#1E2530] text-white rounded-3xl p-6 sm:p-10 md:p-12 shadow-2xl border border-gray-700/60 relative overflow-hidden">
           <div className="absolute right-0 top-0 translate-x-12 -translate-y-12 w-96 h-96 bg-white/5 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -848,6 +919,7 @@ const Home = () => {
             <div className="lg:col-span-7 space-y-6">
               <div>
                 <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-[#133E32] text-[#25D366] border border-[#1E5D4B] rounded-full text-xs font-bold uppercase tracking-widest mb-4">
+                  <span className="w-2 h-2 rounded-full bg-[#25D366] animate-pulse"></span>
                   CALL FOR CONTRIBUTION IS LIVE
                 </div>
 
@@ -856,7 +928,7 @@ const Home = () => {
                 </h2>
 
                 <p className="text-gray-300 text-sm sm:text-base leading-relaxed font-serif">
-                  We are pleased to announce the launch of our most recent contribution for our upcoming volume. Our Call for Contribution is already live for your upcoming volume. Take a look and share your thought within the time period.
+                  We are pleased to announce the launch of our most recent contribution for our upcoming volume. Our Call for Contribution is already live for our upcoming volume. Take a look and share your thoughts within the submission period.
                 </p>
               </div>
 
@@ -865,7 +937,7 @@ const Home = () => {
                 <h4 className="text-xs uppercase font-bold tracking-wider text-[#D4AF37] mb-3 font-sans">
                   SCOPE OF RESEARCH TOPICS (OPEN FOR SUBMISSIONS):
                 </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs text-gray-300">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs text-gray-300 font-serif">
                   {callTopics.map((topic, i) => (
                     <div key={i} className="flex items-start gap-2">
                       <span className="text-emerald-400 font-bold">•</span>
@@ -875,13 +947,13 @@ const Home = () => {
                 </div>
               </div>
 
-              {/* Action Buttons matching Image 1 */}
+              {/* Action Buttons */}
               <div className="flex flex-wrap items-center gap-3 pt-2">
                 <a
                   href="/annousments/Olive-Green-Doodle-Final-Project-Cover-A4-Document.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-[#8E7C68] hover:bg-[#7D6B57] text-white rounded-xl font-bold text-xs sm:text-sm shadow-md transition-all"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-[#8E7C68] hover:bg-[#7D6B57] text-white rounded-xl font-bold text-xs sm:text-sm shadow-md transition-all cursor-pointer"
                 >
                   <FaFilePdf className="text-sm" />
                   <span>Document Details (PDF)</span>
@@ -897,7 +969,7 @@ const Home = () => {
                     downloadName: "The_Literary_Scientist_Call_For_Contributions_Vol2_Issue1.png",
                     pdfLink: "/annousments/Olive-Green-Doodle-Final-Project-Cover-A4-Document.pdf"
                   })}
-                  className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-[#26303F] hover:bg-[#323F52] text-white border border-gray-600 rounded-xl font-bold text-xs sm:text-sm shadow-md transition-all"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-[#26303F] hover:bg-[#323F52] text-white border border-gray-600 rounded-xl font-bold text-xs sm:text-sm shadow-md transition-all cursor-pointer"
                 >
                   <FaExpandAlt className="text-xs" />
                   <span>View Full Poster</span>
@@ -905,7 +977,7 @@ const Home = () => {
 
                 <Link
                   to="/start-submission"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#009E60] hover:bg-[#008751] text-white rounded-xl font-bold text-xs sm:text-sm shadow-lg hover:shadow-emerald-900/40 transition-all"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#009E60] hover:bg-[#008751] text-white rounded-xl font-bold text-xs sm:text-sm shadow-lg hover:shadow-emerald-900/40 transition-all cursor-pointer"
                 >
                   <span>Submit Paper</span>
                   <FaArrowRight className="text-xs" />
@@ -944,7 +1016,7 @@ const Home = () => {
       </section>
       </AnimatedSection>
 
-      {/* 4. LATEST PUBLISHED ISSUE (EXACT MATCH TO INPUT UI IMAGE 2) */}
+      {/* 5. LATEST PUBLISHED ISSUE & TABLE OF CONTENTS */}
       <AnimatedSection animation="fade-up" delay={100}>
       <section id="current-issue" className="max-w-6xl mx-auto px-4 py-8 w-full">
         
@@ -1010,14 +1082,14 @@ const Home = () => {
                     downloadName: "The_Literary_Scientist_Current_Cover.png",
                     pdfLink: liveArticles[0]?.pdfUrl || null
                   })}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#FAF7F2] hover:bg-[#EFE9DF] text-[#1E2530] border border-[#E5E0D8] rounded-lg text-xs sm:text-sm font-bold transition-all shadow-xs"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#FAF7F2] hover:bg-[#EFE9DF] text-[#1E2530] border border-[#E5E0D8] rounded-lg text-xs sm:text-sm font-bold transition-all shadow-xs cursor-pointer"
                 >
-                  <FaQrcode className="text-[#8E7C68]" /> View Cover & QR
+                  <FaQrcode className="text-[#8E7C68]" /> View Cover & Details
                 </button>
 
                 <a
                   href="#articles-list"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#1E2530] hover:bg-[#2C384A] text-white rounded-lg text-xs sm:text-sm font-bold transition-all shadow-sm"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#1E2530] hover:bg-[#2C384A] text-white rounded-lg text-xs sm:text-sm font-bold transition-all shadow-sm cursor-pointer"
                 >
                   <FaBookOpen /> Jump to Articles ({filteredArticles.length})
                 </a>
@@ -1036,7 +1108,7 @@ const Home = () => {
             <h3 className="text-2xl sm:text-3xl font-extrabold text-[#1E2530] font-serif">
               Published Research Articles
             </h3>
-            <p className="text-[#5C5446] text-xs sm:text-sm mt-1">
+            <p className="text-[#5C5446] text-xs sm:text-sm mt-1 font-serif">
               Select any paper below to view full details and download the peer-reviewed PDF manuscript.
             </p>
           </div>
@@ -1048,22 +1120,22 @@ const Home = () => {
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search articles or authors..."
-                className="w-full pl-9 pr-4 py-2 bg-white border border-[#E5E0D8] rounded-lg text-xs sm:text-sm focus:outline-none focus:border-[#8E7C68] focus:ring-1 focus:ring-[#8E7C68] shadow-xs"
+                placeholder="Search articles, authors, DOI..."
+                className="w-full pl-9 pr-4 py-2 bg-white border border-[#E5E0D8] rounded-xl text-xs sm:text-sm focus:outline-none focus:border-[#8E7C68] focus:ring-1 focus:ring-[#8E7C68] shadow-xs"
               />
               <FaSearch className="absolute left-3 top-3 text-gray-400 text-xs" />
             </div>
           </div>
         </div>
 
-        {/* Articles List Grid (EXACT MATCH TO INPUT UI IMAGE 3) */}
+        {/* Articles List Grid */}
         <div className="space-y-4 mb-10">
           {filteredArticles.length === 0 ? (
-            <div className="bg-white p-12 rounded-xl text-center border border-[#E5E0D8] text-[#5C5446]">
+            <div className="bg-white p-12 rounded-2xl text-center border border-[#E5E0D8] text-[#5C5446]">
               <p className="font-semibold text-lg">No articles found matching "{searchTerm}"</p>
               <button
                 onClick={() => setSearchTerm('')}
-                className="mt-3 text-sm text-[#8E7C68] underline hover:text-[#2C2C2C]"
+                className="mt-3 text-sm text-[#8E7C68] underline hover:text-[#2C2C2C] cursor-pointer"
               >
                 Clear Search
               </button>
@@ -1093,7 +1165,7 @@ const Home = () => {
                     <h3 
                       onClick={() => article.pdfUrl && setActivePdfViewer({
                         url: article.pdfUrl,
-                        title: article.title,
+                        title: formatTitle(article.title),
                         author: article.author,
                         category: article.category,
                         pages: article.pages,
@@ -1101,7 +1173,7 @@ const Home = () => {
                       })}
                       className={`text-base sm:text-lg font-bold text-[#1E2530] leading-snug font-serif ${article.pdfUrl ? 'cursor-pointer hover:text-[#8E7C68]' : ''} transition-colors`}
                     >
-                      {article.title}
+                      {formatTitle(article.title)}
                     </h3>
 
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs sm:text-sm text-[#5C5446]">
@@ -1113,27 +1185,31 @@ const Home = () => {
                           • {article.pages}
                         </span>
                       )}
+                      {article.doi && (
+                        <span className="text-xs text-[#8E7C68] font-mono hidden sm:inline">
+                          • DOI: {article.doi}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
 
-                {/* Download PDF Button matching Image 3 */}
+                {/* Read Article Action */}
                 <div className="flex-shrink-0 w-full md:w-auto pt-2 md:pt-0 border-t md:border-t-0 border-[#F0EBE1] flex items-center gap-2 justify-end">
                   <button
                     type="button"
                     onClick={() => setActivePdfViewer({
                       url: article.pdfUrl,
-                      title: article.title,
+                      title: formatTitle(article.title),
                       author: article.author,
                       category: article.category,
                       pages: article.pages,
                       doi: article.doi
                     })}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-[#FAF7F2] hover:bg-[#EFE9DF] text-[#1E2530] border border-[#E5E0D8] rounded-lg text-xs font-bold transition-all shadow-xs shrink-0 cursor-pointer"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-[#FAF7F2] hover:bg-[#EFE9DF] text-[#1E2530] border border-[#E5E0D8] rounded-xl text-xs font-bold transition-all shadow-xs shrink-0 cursor-pointer"
                   >
-                    <FaFilePdf className="text-red-600 text-sm" />
-                    <span>Download PDF</span>
-                    <FaExternalLinkAlt className="text-[9px] opacity-60 text-gray-500" />
+                    <FaBookOpen className="text-[#8E7C68] text-xs" />
+                    <span>Read Article</span>
                   </button>
                 </div>
               </article>
@@ -1143,9 +1219,9 @@ const Home = () => {
       </section>
       </AnimatedSection>
 
-      {/* 5. PREVIOUS ISSUES SECTION (EXACT MATCH TO INPUT UI IMAGE 4) */}
+      {/* 6. PREVIOUS ISSUES SECTION */}
       <AnimatedSection animation="fade-up" delay={100}>
-      <section className="bg-[#FAF7F2]/40 border-y border-[#E5E0D8] py-16 px-4">
+      <section className="bg-[#FAF7F2]/60 border-y border-[#E5E0D8] py-16 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-extrabold text-[#1E2530] font-serif uppercase tracking-wide mb-3">
@@ -1161,12 +1237,12 @@ const Home = () => {
             {previousIssuesList.map((issue, idx) => (
               <div
                 key={idx}
-                className="bg-[#FAF7F2] border border-[#E5E0D8] rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
+                className="bg-white border border-[#E5E0D8] rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
               >
                 {/* Header Info */}
                 <div>
                   <div className="flex justify-between items-center mb-3">
-                    <span className="px-3 py-1 bg-white border border-[#E5E0D8] text-[#8E7C68] rounded-full text-xs font-bold tracking-wider uppercase shadow-xs">
+                    <span className="px-3 py-1 bg-[#FAF7F2] border border-[#E5E0D8] text-[#8E7C68] rounded-full text-xs font-bold tracking-wider uppercase shadow-xs">
                       {issue.status}
                     </span>
                     <span className="flex items-center gap-1.5 text-xs text-gray-500 font-medium">
@@ -1174,9 +1250,12 @@ const Home = () => {
                     </span>
                   </div>
 
-                  <h3 className="text-xl sm:text-2xl font-bold text-[#1E2530] font-serif tracking-tight mb-6">
+                  <h3 className="text-xl sm:text-2xl font-bold text-[#1E2530] font-serif tracking-tight mb-4">
                     {issue.volume}
                   </h3>
+                  <p className="text-xs sm:text-sm text-[#5C5446] mb-6 font-serif leading-relaxed">
+                    {issue.description}
+                  </p>
                 </div>
 
                 {/* Centered Journal Cover */}
@@ -1189,7 +1268,7 @@ const Home = () => {
                       downloadName: `The_Literary_Scientist_${issue.volume.replace(/[^a-zA-Z0-9]/g, '_')}_Cover.png`,
                       pdfLink: null
                     })}
-                    className="relative cursor-pointer w-full max-w-[240px] rounded-2xl overflow-hidden shadow-lg border-2 border-white bg-white transform hover:scale-[1.03] transition-all duration-300 p-1"
+                    className="relative cursor-pointer w-full max-w-[240px] rounded-2xl overflow-hidden shadow-md border-2 border-white bg-white transform hover:scale-[1.03] transition-all duration-300 p-1"
                   >
                     <div className="rounded-xl overflow-hidden bg-white flex items-center justify-center">
                       <img
@@ -1208,7 +1287,7 @@ const Home = () => {
           <div className="text-center">
             <Link
               to="/archive"
-              className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#1E2530] text-white rounded-lg font-bold text-sm sm:text-base hover:bg-[#2C384A] transition-all shadow"
+              className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#1E2530] text-white rounded-xl font-bold text-sm sm:text-base hover:bg-[#2C384A] transition-all shadow"
             >
               Browse Complete Archive <FaArrowRight className="text-xs" />
             </Link>
@@ -1217,7 +1296,7 @@ const Home = () => {
       </section>
       </AnimatedSection>
 
-      {/* 6. JOURNAL SCOPE, OPEN ACCESS & REVIEW POLICY */}
+      {/* 7. JOURNAL SCOPE, OPEN ACCESS & REVIEW POLICY */}
       <AnimatedSection animation="fade-up" delay={100}>
       <section className="py-16 px-4 max-w-6xl mx-auto w-full">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -1291,7 +1370,7 @@ const Home = () => {
                 <h3 className="text-xl font-bold text-[#1E2530] font-serif mb-3">
                   Review Policy
                 </h3>
-                <p className="text-sm text-[#5C5446] mb-6 leading-relaxed">
+                <p className="text-sm text-[#5C5446] mb-6 leading-relaxed font-serif">
                   Our rigorous double-blind peer-review policy ensures highest standards of academic rigor, novelty, and interdisciplinary integrity.
                 </p>
               </div>
@@ -1300,7 +1379,7 @@ const Home = () => {
                 href="/Review-Policy-TLS.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-[#1E2530] hover:bg-[#8E7C68] text-white rounded-lg font-bold text-sm transition-all shadow text-center"
+                className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-[#1E2530] hover:bg-[#8E7C68] text-white rounded-xl font-bold text-sm transition-all shadow text-center cursor-pointer"
               >
                 <FaFilePdf /> Download Review Policy <FaExternalLinkAlt className="text-xs opacity-70" />
               </a>
@@ -1314,7 +1393,7 @@ const Home = () => {
               <h3 className="text-lg font-bold text-[#1E2530] mb-2 font-serif">
                 Citation & Attribution
               </h3>
-              <p className="text-xs text-[#5C5446] leading-relaxed">
+              <p className="text-xs text-[#5C5446] leading-relaxed font-serif">
                 All articles are freely accessible. Users are required to cite the author(s) and <em>The Literary Scientist</em> in all reproductions and academic references.
               </p>
               <div className="mt-4 pt-4 border-t border-[#E5E0D8]">
@@ -1333,18 +1412,23 @@ const Home = () => {
       </section>
       </AnimatedSection>
 
-      {/* 7. FULLSCREEN LIGHTBOX MODAL FOR ANY POSTER / COVER */}
+      {/* 8. FULLSCREEN LIGHTBOX MODAL FOR ANY POSTER / COVER */}
       {activeModalPoster && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-fade-in">
-          <div className="relative max-w-2xl w-full max-h-[92vh] flex flex-col bg-[#1E2530] border border-gray-700 rounded-2xl overflow-hidden shadow-2xl">
-            
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-fade-in"
+          onClick={() => setActiveModalPoster(null)}
+        >
+          <div 
+            className="relative max-w-2xl w-full max-h-[92vh] flex flex-col bg-[#1E2530] border border-gray-700 rounded-2xl overflow-hidden shadow-2xl animate-scaleUp"
+            onClick={(e) => e.stopPropagation()}
+          >
             {/* Modal Header */}
             <div className="flex justify-between items-center px-5 py-3.5 bg-[#161B22] border-b border-gray-700 text-white">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 min-w-0">
                 <span className="text-xs font-bold uppercase tracking-wider px-2 py-0.5 bg-[#8E7C68] text-white rounded">
                   {activeModalPoster.title.split('—')[0] || "Poster"}
                 </span>
-                <span className="text-sm font-semibold hidden sm:inline text-gray-300 truncate max-w-md">
+                <span className="text-sm font-semibold text-gray-300 truncate max-w-md">
                   {activeModalPoster.subtitle || activeModalPoster.title}
                 </span>
               </div>
@@ -1352,7 +1436,7 @@ const Home = () => {
               <button
                 type="button"
                 onClick={() => setActiveModalPoster(null)}
-                className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
+                className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors cursor-pointer"
                 aria-label="Close modal"
               >
                 <FaTimes className="w-5 h-5" />
@@ -1373,7 +1457,7 @@ const Home = () => {
               <a
                 href={activeModalPoster.src}
                 download={activeModalPoster.downloadName || "poster.png"}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-medium rounded-lg transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-medium rounded-lg transition-colors cursor-pointer"
               >
                 <FaDownload className="text-xs" /> Save Image
               </a>
@@ -1393,10 +1477,16 @@ const Home = () => {
         </div>
       )}
 
-      {/* 8. IN-BROWSER PEER-REVIEWED PDF READER MODAL */}
+      {/* 9. IN-BROWSER PEER-REVIEWED PDF READER MODAL */}
       {activePdfViewer && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-2 sm:p-4 animate-fadeIn">
-          <div className="bg-[#1E2530] border border-gray-700 rounded-2xl w-full max-w-5xl h-[92vh] flex flex-col overflow-hidden shadow-2xl">
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-2 sm:p-4 animate-fadeIn"
+          onClick={() => setActivePdfViewer(null)}
+        >
+          <div 
+            className="bg-[#1E2530] border border-gray-700 rounded-2xl w-full max-w-5xl h-[92vh] flex flex-col overflow-hidden shadow-2xl animate-scaleUp"
+            onClick={(e) => e.stopPropagation()}
+          >
             {/* Reader Header */}
             <div className="bg-[#161B22] px-4 py-3 border-b border-gray-700 flex justify-between items-center text-white">
               <div className="min-w-0 pr-4">
@@ -1421,7 +1511,7 @@ const Home = () => {
                 <button
                   type="button"
                   onClick={() => setActivePdfViewer(null)}
-                  className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
+                  className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors cursor-pointer"
                   aria-label="Close PDF Viewer"
                 >
                   <FaTimes className="w-5 h-5" />
@@ -1441,7 +1531,7 @@ const Home = () => {
         </div>
       )}
 
-      {/* 9. ANNOUNCEMENT POPUP MODAL (AUTO-OPEN ON LOAD & ON-DEMAND CLICK) */}
+      {/* 10. ANNOUNCEMENT POPUP MODAL */}
       {showAnnouncementPopup && announcements.length > 0 && (() => {
         const popupAnn = announcements[activeAnnouncementIndex] || announcements[0];
         const isPdf = popupAnn.doc_url && (popupAnn.doc_url.match(/\.pdf$/i) || popupAnn.mime_type?.includes('pdf'));
@@ -1451,9 +1541,14 @@ const Home = () => {
           : 'Official Journal Notification';
 
         return (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
-            <div className="bg-[#FAF9F6] border-2 border-[#8E7C68] rounded-3xl max-w-2xl w-full max-h-[90vh] shadow-2xl flex flex-col overflow-hidden animate-scaleUp">
-              
+          <div 
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn"
+            onClick={handleCloseAnnouncementPopup}
+          >
+            <div 
+              className="bg-[#FAF9F6] border-2 border-[#8E7C68] rounded-3xl max-w-2xl w-full max-h-[90vh] shadow-2xl flex flex-col overflow-hidden animate-scaleUp"
+              onClick={(e) => e.stopPropagation()}
+            >
               {/* Popup Header */}
               <div className="bg-gradient-to-r from-[#1E2530] to-[#2C384A] text-white p-5 flex justify-between items-center border-b border-gray-700">
                 <div className="flex items-center gap-3">
@@ -1471,7 +1566,7 @@ const Home = () => {
                 <button
                   type="button"
                   onClick={handleCloseAnnouncementPopup}
-                  className="p-2 text-gray-300 hover:text-white rounded-full hover:bg-white/10 transition-colors"
+                  className="p-2 text-gray-300 hover:text-white rounded-full hover:bg-white/10 transition-colors cursor-pointer"
                   aria-label="Close Announcement Popup"
                 >
                   <FaTimes className="w-5 h-5" />
@@ -1484,7 +1579,7 @@ const Home = () => {
                   {popupAnn.title}
                 </h3>
 
-                {/* Attached Image Preview if available */}
+                {/* Attached Image Preview */}
                 {isImg && (
                   <div className="rounded-2xl overflow-hidden border border-[#E5E0D8] bg-white shadow-sm max-h-[280px] flex items-center justify-center">
                     <img
@@ -1527,7 +1622,7 @@ const Home = () => {
                       href={resolveFileUrl(popupAnn.doc_url)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#FAF7F2] hover:bg-[#EFE9DF] text-[#1E2530] border border-[#E5E0D8] rounded-xl text-xs sm:text-sm font-bold transition-all w-full sm:w-auto"
+                      className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#FAF7F2] hover:bg-[#EFE9DF] text-[#1E2530] border border-[#E5E0D8] rounded-xl text-xs sm:text-sm font-bold transition-all w-full sm:w-auto cursor-pointer"
                     >
                       <FaFilePdf className="text-red-600" /> View Document <FaExternalLinkAlt className="text-[10px]" />
                     </a>
@@ -1536,7 +1631,7 @@ const Home = () => {
                   <button
                     type="button"
                     onClick={handleCloseAnnouncementPopup}
-                    className="px-5 py-2.5 bg-[#1E2530] hover:bg-[#2C384A] text-white rounded-xl text-xs sm:text-sm font-bold transition-all w-full sm:w-auto shadow-sm"
+                    className="px-5 py-2.5 bg-[#1E2530] hover:bg-[#2C384A] text-white rounded-xl text-xs sm:text-sm font-bold transition-all w-full sm:w-auto shadow-sm cursor-pointer"
                   >
                     Close
                   </button>

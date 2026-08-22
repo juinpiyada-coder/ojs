@@ -5,6 +5,12 @@ const useScrollAnimation = (options = {}) => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
+    // If IntersectionObserver is not available, immediately show content
+    if (typeof window === 'undefined' || !('IntersectionObserver' in window)) {
+      setIsVisible(true);
+      return;
+    }
+
     const element = ref.current;
     if (!element) return;
 
@@ -16,8 +22,8 @@ const useScrollAnimation = (options = {}) => {
         }
       },
       {
-        threshold: options.threshold || 0.1,
-        rootMargin: options.rootMargin || '0px 0px -50px 0px',
+        threshold: options.threshold || 0.05,
+        rootMargin: options.rootMargin || '50px 0px -20px 0px',
       }
     );
 

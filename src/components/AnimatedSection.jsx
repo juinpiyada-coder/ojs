@@ -1,10 +1,11 @@
+import React from 'react';
 import useScrollAnimation from '../hooks/useScrollAnimation';
 
 const AnimatedSection = ({
   children,
   animation = 'fade-up',
   delay = 0,
-  duration = 700,
+  duration = 600,
   className = '',
   as = 'div',
   ...props
@@ -14,38 +15,38 @@ const AnimatedSection = ({
   const animations = {
     'fade-up': {
       opacity: isVisible ? 1 : 0,
-      transform: isVisible ? 'translateY(0)' : 'translateY(40px)',
+      transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
     },
     'fade-down': {
       opacity: isVisible ? 1 : 0,
-      transform: isVisible ? 'translateY(0)' : 'translateY(-40px)',
+      transform: isVisible ? 'translateY(0)' : 'translateY(-30px)',
     },
     'fade-left': {
       opacity: isVisible ? 1 : 0,
-      transform: isVisible ? 'translateX(0)' : 'translateX(40px)',
+      transform: isVisible ? 'translateX(0)' : 'translateX(30px)',
     },
     'fade-right': {
       opacity: isVisible ? 1 : 0,
-      transform: isVisible ? 'translateX(0)' : 'translateX(-40px)',
+      transform: isVisible ? 'translateX(0)' : 'translateX(-30px)',
     },
     'fade-in': {
       opacity: isVisible ? 1 : 0,
     },
     'scale-up': {
       opacity: isVisible ? 1 : 0,
-      transform: isVisible ? 'scale(1)' : 'scale(0.9)',
+      transform: isVisible ? 'scale(1)' : 'scale(0.95)',
     },
     'scale-down': {
       opacity: isVisible ? 1 : 0,
-      transform: isVisible ? 'scale(1)' : 'scale(1.1)',
+      transform: isVisible ? 'scale(1)' : 'scale(1.05)',
     },
     'blur-in': {
       opacity: isVisible ? 1 : 0,
-      filter: isVisible ? 'blur(0)' : 'blur(10px)',
+      filter: isVisible ? 'blur(0)' : 'blur(8px)',
     },
     'slide-up': {
       opacity: isVisible ? 1 : 0,
-      transform: isVisible ? 'translateY(0)' : 'translateY(60px)',
+      transform: isVisible ? 'translateY(0)' : 'translateY(40px)',
     },
   };
 
@@ -57,7 +58,8 @@ const AnimatedSection = ({
       className={className}
       style={{
         ...animations[animation],
-        transition: `opacity ${duration}ms ease-out ${delay}ms, transform ${duration}ms ease-out ${delay}ms, filter ${duration}ms ease-out ${delay}ms`,
+        willChange: 'opacity, transform',
+        transition: `opacity ${duration}ms cubic-bezier(0.16, 1, 0.3, 1) ${delay}ms, transform ${duration}ms cubic-bezier(0.16, 1, 0.3, 1) ${delay}ms, filter ${duration}ms cubic-bezier(0.16, 1, 0.3, 1) ${delay}ms`,
       }}
       {...props}
     >

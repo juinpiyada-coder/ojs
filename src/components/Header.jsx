@@ -1,11 +1,48 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import {
+  FaBookOpen,
+  FaFilePdf,
+  FaAward,
+  FaSearch,
+  FaUserEdit,
+  FaShieldAlt,
+  FaChevronDown,
+  FaTimes,
+  FaBars,
+  FaUserCircle,
+  FaSignOutAlt,
+  FaExternalLinkAlt,
+  FaInfoCircle,
+  FaUsers,
+  FaFileAlt
+} from 'react-icons/fa';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openMobileDropdown, setOpenMobileDropdown] = useState(null);
+  const [isScrolled, setIsScrolled] = useState(false);
   const { user, logout, isAuthenticated } = useAuth();
+  const location = useLocation();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 15) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+    setOpenMobileDropdown(null);
+  }, [location.pathname]);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -21,343 +58,593 @@ const Header = () => {
     setOpenMobileDropdown(openMobileDropdown === dropdown ? null : dropdown);
   };
 
-  const SHOW_NEW_DESIGN = false; // Hidden at this moment as requested
-
-  if (SHOW_NEW_DESIGN) {
-    return (
-      <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-[#E5E0D8] shadow-sm">
-        <div className="w-full bg-white border-b border-[#F0EBE1] text-[#5C5446] py-1.5">
-          <div className="max-w-7xl mx-auto px-4 flex justify-between items-center text-xs md:text-sm">
-            <div className="font-semibold tracking-wider flex items-center">
-              <span className="opacity-75 mr-2">ISSN:</span> 3048-7366 (online)
-            </div>
-          </div>
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            
-            {/* Logo */}
-            <div className="flex-shrink-0 flex items-center mr-4 lg:mr-8">
-              <Link to="/" className="hover:opacity-80 transition-opacity block h-10 md:h-12 w-[160px] md:w-[200px] lg:w-[240px] overflow-hidden flex items-center justify-center">
-                <img src="/logo.svg" alt="The literary scientist" className="w-full h-auto" />
-              </Link>
-            </div>
-            
-            {/* Desktop Navigation */}
-            <nav className="hidden lg:flex space-x-5 items-center text-[#5C5446] font-semibold text-[0.95rem]">
-              <Link to="/" className="hover:text-[#2C2C2C] transition-colors">Home</Link>
-              <Link to="/about" className="hover:text-[#2C2C2C] transition-colors">About</Link>
-              <Link to="/current-issue" className="hover:text-[#2C2C2C] transition-colors">Current Issue</Link>
-              <Link to="/archive" className="hover:text-[#2C2C2C] transition-colors">Archive</Link>
-              <Link to="/issues" className="hover:text-[#2C2C2C] transition-colors">Articles</Link>
-              <Link to="/author-guidelines" className="hover:text-[#2C2C2C] transition-colors">Authors</Link>
-              <Link to="/become-reviewer" className="hover:text-[#2C2C2C] transition-colors">Reviewers</Link>
-              <Link to="/special-collections" className="hover:text-[#2C2C2C] transition-colors">Special Issues</Link>
-              <Link to="/news" className="hover:text-[#2C2C2C] transition-colors">News</Link>
-              <Link to="/search" className="hover:text-[#2C2C2C] transition-colors" aria-label="Search">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-              </Link>
-            </nav>
-
-            {/* Auth Buttons */}
-            <div className="hidden lg:flex items-center space-x-3 ml-2">
-              <Link to="/start-submission" className="px-5 py-2 bg-red-600 text-white rounded shadow hover:bg-red-700 transition-all font-bold tracking-wide text-sm">
-                Submit
-              </Link>
-              <Link to="/login" className="text-[#5C5446] hover:text-[#2C2C2C] font-semibold text-[0.95rem] transition-colors">
-                Login
-              </Link>
-            </div>
-            
-            {/* Mobile Toggle */}
-            <div className="lg:hidden flex items-center">
-              <button className="text-[#2C2C2C] p-2" onClick={toggleMobileMenu}>
-                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
-    );
-  }
+  const isActive = (path) => location.pathname === path;
+  const isArticlesActive = ['/current-issue', '/issues', '/archive', '/special-collections'].includes(location.pathname);
+  const isSubmissionsActive = ['/author-guidelines', '/template', '/anonymous-review', '/glossa-special-collections', '/start-submission', '/submission'].includes(location.pathname);
+  const isPoliciesActive = ['/journal-policies', '/publisher-policies', '/ethics', '/privacy-policy', '/terms-of-use', '/accessibility'].includes(location.pathname);
+  const isAboutActive = ['/about', '/editorial-board', '/team', '/become-reviewer', '/governance', '/contact'].includes(location.pathname);
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-[#E5E0D8] shadow-sm">
-      {/* Top Bar for ISSN and Social Links */}
-      <div className="w-full bg-white border-b border-[#F0EBE1] text-[#5C5446] py-1.5">
-        <div className="max-w-7xl mx-auto px-4 flex justify-between items-center text-xs md:text-sm">
-          <div className="font-semibold tracking-wider flex items-center">
-            <span className="opacity-75 mr-2">ISSN:</span> 3048-7366 (online)
+    <header className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+      isScrolled 
+        ? 'bg-[#FDFBF7]/95 backdrop-blur-xl shadow-md border-b border-[#E8E2D6]' 
+        : 'bg-white border-b border-[#ECE7DE]'
+    }`}>
+      {/* Top Utility Bar */}
+      <div className="w-full bg-[#FAF8F5] border-b border-[#EAE4D9] text-[#6E6456] py-1.5 px-4 sm:px-8">
+        <div className="max-w-7xl mx-auto flex flex-wrap justify-between items-center text-xs">
+          
+          {/* Left: Clean ISSN & Open Access Indicator */}
+          <div className="flex items-center gap-3">
+            <span className="font-serif text-[#7A6E5E] tracking-wide text-xs">
+              ISSN: <span className="font-bold text-[#1C2024]">3048-7366</span> (online)
+            </span>
+            <span className="hidden sm:inline-block w-1 h-1 rounded-full bg-[#C5BAA8]"></span>
+            <span className="hidden sm:inline-flex items-center gap-1.5 text-[#857766] text-[11px] font-serif">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+              Open Access & Peer-Reviewed
+            </span>
           </div>
-          <div className="flex space-x-4 items-center">
-            <span className="opacity-75 uppercase tracking-widest hidden sm:inline text-[10px]">Share:</span>
-            <a href="#" className="text-[#8E7C68] hover:text-blue-500 transition-colors" aria-label="Facebook">
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M22.675 0h-21.35C.597 0 0 .597 0 1.325v21.351C0 23.403.597 24 1.325 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.73 0 1.323-.597 1.323-1.324V1.325C24 .597 23.403 0 22.675 0z"/></svg>
-            </a>
-            <a href="#" className="text-[#8E7C68] hover:text-blue-400 transition-colors" aria-label="Twitter">
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
-            </a>
-            <a href="#" className="text-[#8E7C68] hover:text-blue-600 transition-colors" aria-label="LinkedIn">
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-            </a>
+
+          {/* Right: Quick Links & Minimal Social Share */}
+          <div className="flex items-center gap-4 sm:gap-6 text-xs text-[#7A6E5E]">
+            <Link 
+              to="/call-for-papers" 
+              className="hover:text-[#1C2024] font-medium transition-colors hidden md:inline"
+            >
+              Call for Papers
+            </Link>
+            <Link 
+              to="/current-issue" 
+              className="hover:text-[#1C2024] font-medium transition-colors hidden md:inline"
+            >
+              Current Issue (Vol. I Issue III)
+            </Link>
+            
+            <div className="flex items-center gap-2 text-[#7A6E5E]">
+              <span className="uppercase tracking-widest text-[10px] font-medium opacity-80 hidden sm:inline">Share:</span>
+              <a 
+                href="#" 
+                className="w-5 h-5 rounded hover:bg-[#EAE3D5] text-[#6E6456] hover:text-[#1C2024] flex items-center justify-center transition-all" 
+                aria-label="Facebook" 
+                title="Facebook"
+              >
+                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M22.675 0h-21.35C.597 0 0 .597 0 1.325v21.351C0 23.403.597 24 1.325 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.73 0 1.323-.597 1.323-1.324V1.325C24 .597 23.403 0 22.675 0z"/></svg>
+              </a>
+              <a 
+                href="#" 
+                className="w-5 h-5 rounded hover:bg-[#EAE3D5] text-[#6E6456] hover:text-[#1C2024] flex items-center justify-center transition-all" 
+                aria-label="Twitter / X" 
+                title="Twitter / X"
+              >
+                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              </a>
+              <a 
+                href="#" 
+                className="w-5 h-5 rounded hover:bg-[#EAE3D5] text-[#6E6456] hover:text-[#1C2024] flex items-center justify-center transition-all" 
+                aria-label="LinkedIn" 
+                title="LinkedIn"
+              >
+                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+              </a>
+            </div>
           </div>
+
         </div>
       </div>
 
       {/* Main Navigation Bar */}
-      <div className="max-w-7xl mx-auto px-4 py-4">
-        <div className="flex justify-between items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-3.5 sm:py-4">
+        <div className="flex justify-between items-center gap-4">
           
-          {/* Logo / Journal Title */}
-          <div className="flex-shrink-0 flex items-center mr-4 lg:mr-8">
-            <Link to="/" className="hover:opacity-80 transition-opacity block h-10 md:h-12 w-[160px] md:w-[200px] lg:w-[240px] overflow-hidden flex items-center justify-center" onClick={closeMobileMenu}>
-              <img src="/logo.svg" alt="The literary scientist" className="w-full h-auto" />
+          {/* Authentic Journal Logo */}
+          <div className="flex-shrink-0 flex items-center">
+            <Link 
+              to="/" 
+              className="hover:opacity-90 transition-opacity flex items-center"
+              onClick={closeMobileMenu}
+              aria-label="The Literary Scientist Home"
+            >
+              <img 
+                src="/logo.png" 
+                alt="The Literary Scientist" 
+                className="h-10 sm:h-11 md:h-12 lg:h-13 w-auto max-w-[220px] sm:max-w-[260px] md:max-w-[300px] lg:max-w-[330px] object-contain" 
+              />
             </Link>
           </div>
           
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex space-x-4 lg:space-x-6 items-center">
+          <nav className="hidden lg:flex items-center space-x-6 xl:space-x-8 flex-nowrap">
             
-            <Link to="/" className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors py-2 font-semibold text-[0.95rem]">Home</Link>
+            {/* Home */}
+            <Link 
+              to="/" 
+              className={`text-sm font-medium transition-colors whitespace-nowrap ${
+                isActive('/') 
+                  ? 'text-[#1C2024] font-bold border-b-2 border-[#1C2024] pb-0.5' 
+                  : 'text-[#4A4237] hover:text-[#1C2024]'
+              }`}
+            >
+              Home
+            </Link>
 
             {/* Articles Dropdown */}
-            <div className="relative group cursor-pointer py-2">
-              <span className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors font-semibold text-[0.95rem] flex items-center">
-                Articles
-                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
-              </span>
-              <div className="absolute left-0 mt-2 w-48 bg-white border border-[#E5E0D8] rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                <Link to="/current-issue" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Current Issue</Link>
-                <Link to="/issues" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">All Issues</Link>
-                <Link to="/archive" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Archive</Link>
-                <Link to="/special-collections" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Special Collections</Link>
+            <div className="relative group py-2 flex-shrink-0">
+              <button 
+                type="button"
+                className={`flex items-center gap-1.5 text-sm font-medium transition-colors cursor-pointer whitespace-nowrap ${
+                  isArticlesActive 
+                    ? 'text-[#1C2024] font-bold border-b-2 border-[#1C2024] pb-0.5' 
+                    : 'text-[#4A4237] hover:text-[#1C2024]'
+                }`}
+              >
+                <span>Articles</span>
+                <FaChevronDown className="text-[10px] transition-transform duration-200 group-hover:rotate-180 opacity-60" />
+              </button>
+              <div className="absolute left-0 mt-2 w-60 bg-white border border-[#E5DFD4] rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 p-2 transform group-hover:translate-y-0 translate-y-1">
+                <Link 
+                  to="/current-issue" 
+                  className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${
+                    isActive('/current-issue') ? 'bg-[#FAF7F2] text-[#1C2024] font-bold' : 'text-[#5A5043] hover:bg-[#FAF7F2] hover:text-[#1C2024]'
+                  }`}
+                >
+                  <FaBookOpen className="text-[#9E8B75] text-xs" />
+                  <span>Current Issue (Vol I, Iss III)</span>
+                </Link>
+                <Link 
+                  to="/issues" 
+                  className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${
+                    isActive('/issues') ? 'bg-[#FAF7F2] text-[#1C2024] font-bold' : 'text-[#5A5043] hover:bg-[#FAF7F2] hover:text-[#1C2024]'
+                  }`}
+                >
+                  <FaFileAlt className="text-[#9E8B75] text-xs" />
+                  <span>All Articles & Directory</span>
+                </Link>
+                <Link 
+                  to="/archive" 
+                  className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${
+                    isActive('/archive') ? 'bg-[#FAF7F2] text-[#1C2024] font-bold' : 'text-[#5A5043] hover:bg-[#FAF7F2] hover:text-[#1C2024]'
+                  }`}
+                >
+                  <FaAward className="text-[#9E8B75] text-xs" />
+                  <span>Archived Volumes</span>
+                </Link>
+                <Link 
+                  to="/special-collections" 
+                  className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${
+                    isActive('/special-collections') ? 'bg-[#FAF7F2] text-[#1C2024] font-bold' : 'text-[#5A5043] hover:bg-[#FAF7F2] hover:text-[#1C2024]'
+                  }`}
+                >
+                  <FaBookOpen className="text-[#9E8B75] text-xs" />
+                  <span>Special Collections</span>
+                </Link>
               </div>
             </div>
 
             {/* Submissions Dropdown */}
-            <div className="relative group cursor-pointer py-2">
-              <span className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors font-semibold text-[0.95rem] flex items-center">
-                Submissions
-                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
-              </span>
-              <div className="absolute left-0 mt-2 w-64 bg-white border border-[#E5E0D8] rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                <Link to="/author-guidelines" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Author Guidelines</Link>
-                <Link to="/template" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Manuscript Template</Link>
-                <Link to="/anonymous-review" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Ensuring An Anonymous Review</Link>
-                <Link to="/glossa-special-collections" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Glossa Special Collections</Link>
-                <Link to="/start-submission" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C] font-semibold text-blue-600">Start Submission</Link>
+            <div className="relative group py-2 flex-shrink-0">
+              <button 
+                type="button"
+                className={`flex items-center gap-1.5 text-sm font-medium transition-colors cursor-pointer whitespace-nowrap ${
+                  isSubmissionsActive 
+                    ? 'text-[#1C2024] font-bold border-b-2 border-[#1C2024] pb-0.5' 
+                    : 'text-[#4A4237] hover:text-[#1C2024]'
+                }`}
+              >
+                <span>Submissions</span>
+                <FaChevronDown className="text-[10px] transition-transform duration-200 group-hover:rotate-180 opacity-60" />
+              </button>
+              <div className="absolute left-0 mt-2 w-68 bg-white border border-[#E5DFD4] rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 p-2 transform group-hover:translate-y-0 translate-y-1">
+                <Link 
+                  to="/start-submission" 
+                  className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold text-[#B83327] bg-[#FCEEEB] hover:bg-[#F8DFDA] transition-colors mb-1"
+                >
+                  <FaUserEdit className="text-[#B83327] text-xs" />
+                  <span>Submit Manuscript Online</span>
+                </Link>
+                <Link 
+                  to="/call-for-papers" 
+                  className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${
+                    isActive('/call-for-papers') ? 'bg-[#FAF7F2] text-[#1C2024] font-bold' : 'text-[#5A5043] hover:bg-[#FAF7F2] hover:text-[#1C2024]'
+                  }`}
+                >
+                  <FaFileAlt className="text-[#9E8B75] text-xs" />
+                  <span>Call For Papers (Vol. II)</span>
+                </Link>
+                <Link 
+                  to="/author-guidelines" 
+                  className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${
+                    isActive('/author-guidelines') ? 'bg-[#FAF7F2] text-[#1C2024] font-bold' : 'text-[#5A5043] hover:bg-[#FAF7F2] hover:text-[#1C2024]'
+                  }`}
+                >
+                  <FaInfoCircle className="text-[#9E8B75] text-xs" />
+                  <span>Author Guidelines</span>
+                </Link>
+                <Link 
+                  to="/template" 
+                  className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${
+                    isActive('/template') ? 'bg-[#FAF7F2] text-[#1C2024] font-bold' : 'text-[#5A5043] hover:bg-[#FAF7F2] hover:text-[#1C2024]'
+                  }`}
+                >
+                  <FaFilePdf className="text-[#9E8B75] text-xs" />
+                  <span>Manuscript Template</span>
+                </Link>
+                <Link 
+                  to="/anonymous-review" 
+                  className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${
+                    isActive('/anonymous-review') ? 'bg-[#FAF7F2] text-[#1C2024] font-bold' : 'text-[#5A5043] hover:bg-[#FAF7F2] hover:text-[#1C2024]'
+                  }`}
+                >
+                  <FaShieldAlt className="text-[#9E8B75] text-xs" />
+                  <span>Ensuring Anonymous Review</span>
+                </Link>
+                <Link 
+                  to="/glossa-special-collections" 
+                  className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${
+                    isActive('/glossa-special-collections') ? 'bg-[#FAF7F2] text-[#1C2024] font-bold' : 'text-[#5A5043] hover:bg-[#FAF7F2] hover:text-[#1C2024]'
+                  }`}
+                >
+                  <FaBookOpen className="text-[#9E8B75] text-xs" />
+                  <span>Glossa Special Collections</span>
+                </Link>
               </div>
             </div>
 
-            {/* Policies Dropdown */}
-            <div className="relative group cursor-pointer py-2">
-              <span className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors font-semibold text-[0.95rem] flex items-center">
-                Policies & Ethics
-                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
-              </span>
-              <div className="absolute left-0 mt-2 w-56 bg-white border border-[#E5E0D8] rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                <Link to="/journal-policies" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Journal Policies</Link>
-                <Link to="/publisher-policies" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Publisher Policies</Link>
-                <Link to="/ethics" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Ethics & Malpractice</Link>
-                <Link to="/privacy-policy" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Privacy Policy</Link>
-                <Link to="/terms-of-use" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Terms of Use</Link>
-                <Link to="/accessibility" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Accessibility</Link>
+            {/* Policies & Ethics Dropdown */}
+            <div className="relative group py-2 flex-shrink-0">
+              <button 
+                type="button"
+                className={`flex items-center gap-1.5 text-sm font-medium transition-colors cursor-pointer whitespace-nowrap ${
+                  isPoliciesActive 
+                    ? 'text-[#1C2024] font-bold border-b-2 border-[#1C2024] pb-0.5' 
+                    : 'text-[#4A4237] hover:text-[#1C2024]'
+                }`}
+              >
+                <span>Policies & Ethics</span>
+                <FaChevronDown className="text-[10px] transition-transform duration-200 group-hover:rotate-180 opacity-60" />
+              </button>
+              <div className="absolute left-0 mt-2 w-56 bg-white border border-[#E5DFD4] rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 p-2 transform group-hover:translate-y-0 translate-y-1">
+                <Link 
+                  to="/journal-policies" 
+                  className={`block px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${
+                    isActive('/journal-policies') ? 'bg-[#FAF7F2] text-[#1C2024] font-bold' : 'text-[#5A5043] hover:bg-[#FAF7F2] hover:text-[#1C2024]'
+                  }`}
+                >
+                  Journal Policies
+                </Link>
+                <Link 
+                  to="/publisher-policies" 
+                  className={`block px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${
+                    isActive('/publisher-policies') ? 'bg-[#FAF7F2] text-[#1C2024] font-bold' : 'text-[#5A5043] hover:bg-[#FAF7F2] hover:text-[#1C2024]'
+                  }`}
+                >
+                  Publisher Policies
+                </Link>
+                <Link 
+                  to="/ethics" 
+                  className={`block px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${
+                    isActive('/ethics') ? 'bg-[#FAF7F2] text-[#1C2024] font-bold' : 'text-[#5A5043] hover:bg-[#FAF7F2] hover:text-[#1C2024]'
+                  }`}
+                >
+                  Ethics & Malpractice
+                </Link>
+                <Link 
+                  to="/privacy-policy" 
+                  className={`block px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${
+                    isActive('/privacy-policy') ? 'bg-[#FAF7F2] text-[#1C2024] font-bold' : 'text-[#5A5043] hover:bg-[#FAF7F2] hover:text-[#1C2024]'
+                  }`}
+                >
+                  Privacy Policy
+                </Link>
+                <Link 
+                  to="/terms-of-use" 
+                  className={`block px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${
+                    isActive('/terms-of-use') ? 'bg-[#FAF7F2] text-[#1C2024] font-bold' : 'text-[#5A5043] hover:bg-[#FAF7F2] hover:text-[#1C2024]'
+                  }`}
+                >
+                  Terms of Use
+                </Link>
+                <Link 
+                  to="/accessibility" 
+                  className={`block px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${
+                    isActive('/accessibility') ? 'bg-[#FAF7F2] text-[#1C2024] font-bold' : 'text-[#5A5043] hover:bg-[#FAF7F2] hover:text-[#1C2024]'
+                  }`}
+                >
+                  Accessibility
+                </Link>
               </div>
             </div>
 
             {/* About Dropdown */}
-            <div className="relative group cursor-pointer py-2">
-              <Link to="/about" className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors font-semibold text-[0.95rem] flex items-center">
-                About
-                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
-              </Link>
-              <div className="absolute left-0 mt-2 w-52 bg-white border border-[#E5E0D8] rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                <Link to="/about" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Aim & Scope</Link>
-                <Link to="/editorial-board" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Editorial Board</Link>
-                <Link to="/team" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Our Team</Link>
-                <Link to="/become-reviewer" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Become A Reviewer</Link>
-                <Link to="/governance" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Governance</Link>
-                <Link to="/contact" className="block px-4 py-2 text-sm text-[#5C5446] hover:bg-[#F9F6F0] hover:text-[#2C2C2C]">Contact</Link>
+            <div className="relative group py-2 flex-shrink-0">
+              <button 
+                type="button"
+                className={`flex items-center gap-1.5 text-sm font-medium transition-colors cursor-pointer whitespace-nowrap ${
+                  isAboutActive 
+                    ? 'text-[#1C2024] font-bold border-b-2 border-[#1C2024] pb-0.5' 
+                    : 'text-[#4A4237] hover:text-[#1C2024]'
+                }`}
+              >
+                <span>About</span>
+                <FaChevronDown className="text-[10px] transition-transform duration-200 group-hover:rotate-180 opacity-60" />
+              </button>
+              <div className="absolute left-0 mt-2 w-56 bg-white border border-[#E5DFD4] rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 p-2 transform group-hover:translate-y-0 translate-y-1">
+                <Link 
+                  to="/about" 
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${
+                    isActive('/about') ? 'bg-[#FAF7F2] text-[#1C2024] font-bold' : 'text-[#5A5043] hover:bg-[#FAF7F2] hover:text-[#1C2024]'
+                  }`}
+                >
+                  <FaInfoCircle className="text-[#9E8B75] text-xs" />
+                  <span>Aim & Scope</span>
+                </Link>
+                <Link 
+                  to="/editorial-board" 
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${
+                    isActive('/editorial-board') ? 'bg-[#FAF7F2] text-[#1C2024] font-bold' : 'text-[#5A5043] hover:bg-[#FAF7F2] hover:text-[#1C2024]'
+                  }`}
+                >
+                  <FaUsers className="text-[#9E8B75] text-xs" />
+                  <span>Editorial Board</span>
+                </Link>
+                <Link 
+                  to="/team" 
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${
+                    isActive('/team') ? 'bg-[#FAF7F2] text-[#1C2024] font-bold' : 'text-[#5A5043] hover:bg-[#FAF7F2] hover:text-[#1C2024]'
+                  }`}
+                >
+                  <FaUsers className="text-[#9E8B75] text-xs" />
+                  <span>Our Team</span>
+                </Link>
+                <Link 
+                  to="/become-reviewer" 
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${
+                    isActive('/become-reviewer') ? 'bg-[#FAF7F2] text-[#1C2024] font-bold' : 'text-[#5A5043] hover:bg-[#FAF7F2] hover:text-[#1C2024]'
+                  }`}
+                >
+                  <FaShieldAlt className="text-[#9E8B75] text-xs" />
+                  <span>Become A Reviewer</span>
+                </Link>
+                <Link 
+                  to="/governance" 
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${
+                    isActive('/governance') ? 'bg-[#FAF7F2] text-[#1C2024] font-bold' : 'text-[#5A5043] hover:bg-[#FAF7F2] hover:text-[#1C2024]'
+                  }`}
+                >
+                  <FaAward className="text-[#9E8B75] text-xs" />
+                  <span>Governance</span>
+                </Link>
+                <Link 
+                  to="/contact" 
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${
+                    isActive('/contact') ? 'bg-[#FAF7F2] text-[#1C2024] font-bold' : 'text-[#5A5043] hover:bg-[#FAF7F2] hover:text-[#1C2024]'
+                  }`}
+                >
+                  <FaExternalLinkAlt className="text-[#9E8B75] text-xs" />
+                  <span>Contact Editorial Office</span>
+                </Link>
               </div>
             </div>
             
-            {/* Search Icon */}
-            <Link to="/search" className="text-[#5C5446] hover:text-[#2C2C2C] transition-colors py-2" aria-label="Search">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            {/* Search Icon Button - Boxed like Image 1 */}
+            <Link 
+              to="/search" 
+              className={`w-9 h-9 rounded-lg border border-[#D5CDC0] text-[#5A5043] hover:text-[#1C2024] hover:border-[#1C2024] hover:bg-white flex items-center justify-center transition-all shadow-2xs flex-shrink-0 ${
+                isActive('/search') ? 'bg-white border-[#1C2024] text-[#1C2024]' : 'bg-[#FAF8F5]'
+              }`}
+              aria-label="Search Journal"
+              title="Search Journal Articles"
+            >
+              <FaSearch className="w-3.5 h-3.5" />
             </Link>
           </nav>
 
-          {/* Auth Buttons */}
-          <div className="hidden lg:flex items-center space-x-3 ml-2">
+          {/* Right Auth Block */}
+          <div className="hidden lg:flex items-center space-x-4 flex-shrink-0">
             {isAuthenticated ? (
-              <>
-                <Link to="/user/dashboard" className="flex items-center gap-2 text-[#5C5446] hover:text-[#2C2C2C] font-semibold text-[0.95rem] transition-colors">
+              <div className="flex items-center gap-2 pl-3 border-l border-[#E2DBD0] flex-shrink-0">
+                <Link 
+                  to="/user/dashboard" 
+                  className="flex items-center gap-2 text-[#5A5043] hover:text-[#1C2024] font-semibold text-xs transition-colors p-1.5 hover:bg-[#FAF7F2] rounded-lg whitespace-nowrap"
+                >
                   {user?.photoURL ? (
-                    <img src={user.photoURL} alt={user.displayName} className="w-7 h-7 rounded-full object-cover" />
+                    <img src={user.photoURL} alt={user.displayName || 'User'} className="w-6 h-6 rounded-full object-cover ring-1 ring-[#D5CDC0]" />
                   ) : (
-                    <div className="w-7 h-7 rounded-full bg-[#8E7C68] text-white flex items-center justify-center text-xs font-bold">
-                      {user?.displayName?.charAt(0) || user?.email?.charAt(0) || 'U'}
-                    </div>
+                    <FaUserCircle className="w-6 h-6 text-[#9E8B75]" />
                   )}
-                  <span className="hidden xl:inline">{user?.displayName || user?.email?.split('@')[0]}</span>
+                  <span className="hidden xl:inline max-w-[110px] truncate">{user?.displayName || user?.email?.split('@')[0]}</span>
                 </Link>
                 <button
                   onClick={logout}
-                  className="text-[#5C5446] hover:text-red-600 font-semibold text-[0.95rem] transition-colors"
+                  className="p-1.5 text-gray-400 hover:text-red-600 transition-colors rounded-lg hover:bg-red-50"
+                  title="Sign Out"
                 >
-                  Sign Out
+                  <FaSignOutAlt className="w-4 h-4" />
                 </button>
-              </>
+              </div>
             ) : (
-              <>
-                <Link to="/register" className="text-[#5C5446] hover:text-[#2C2C2C] font-semibold text-[0.95rem] transition-colors">
+              <div className="flex items-center gap-3.5 flex-shrink-0">
+                <Link 
+                  to="/register" 
+                  className="text-sm font-medium text-[#5A5043] hover:text-[#1C2024] transition-colors whitespace-nowrap"
+                >
                   Register
                 </Link>
-                <Link to="/login" className="px-5 py-2 bg-white border border-[#E5E0D8] text-[#2C2C2C] rounded shadow-sm hover:bg-[#F9F6F0] hover:shadow transition-all font-bold tracking-wide text-sm">
+                <Link 
+                  to="/login" 
+                  className="px-5 py-2 text-sm font-semibold text-[#1C2024] bg-white hover:bg-[#FAF8F5] border border-[#D5CDC0] hover:border-[#1C2024] rounded-lg transition-all shadow-2xs whitespace-nowrap"
+                >
                   Login
                 </Link>
-              </>
+              </div>
             )}
           </div>
           
-          {/* Mobile Menu Button (Hamburger) */}
-          <div className="lg:hidden flex items-center">
+          {/* Mobile Hamburger Button */}
+          <div className="lg:hidden flex items-center gap-2 flex-shrink-0">
+            <Link 
+              to="/search" 
+              className="p-2 text-[#5A5043] hover:text-[#1C2024] rounded-lg" 
+              aria-label="Search"
+            >
+              <FaSearch className="w-4 h-4" />
+            </Link>
             <button 
-              className="text-[#2C2C2C] focus:outline-none p-2" 
+              className="text-[#1C2024] p-2 rounded-lg hover:bg-[#FAF7F2] transition-colors" 
               onClick={toggleMobileMenu}
               aria-label="Toggle menu"
             >
-              {isMobileMenuOpen ? (
-                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-              ) : (
-                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                </svg>
-              )}
+              {isMobileMenuOpen ? <FaTimes className="w-6 h-6" /> : <FaBars className="w-6 h-6" />}
             </button>
           </div>
 
         </div>
       </div>
 
-      {/* Mobile Navigation Menu */}
+      {/* Mobile Navigation Drawer */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden bg-white border-t border-[#E5E0D8] absolute w-full shadow-xl max-h-[80vh] overflow-y-auto left-0 z-50">
-          <nav className="flex flex-col px-4 py-2 space-y-1">
+        <div className="lg:hidden bg-[#FDFBF7] border-t border-[#E8E2D6] shadow-2xl max-h-[85vh] overflow-y-auto w-full animate-fadeIn">
+          <nav className="flex flex-col p-4 space-y-2">
             
-            {/* Search (Mobile) */}
-            <Link to="/search" className="flex items-center text-[#2C2C2C] font-semibold text-[1.1rem] py-3 border-b border-[#F0EBE1]" onClick={closeMobileMenu}>
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-              Search
+            {/* Direct Links */}
+            <Link 
+              to="/" 
+              className={`p-3 rounded-xl font-bold text-sm flex items-center justify-between ${
+                isActive('/') ? 'bg-[#FAF7F2] text-[#1C2024]' : 'text-[#5A5043]'
+              }`}
+              onClick={closeMobileMenu}
+            >
+              <span>Home</span>
             </Link>
 
-            <Link to="/" className="text-[#2C2C2C] font-semibold text-[1.1rem] py-3 border-b border-[#F0EBE1]" onClick={closeMobileMenu}>Home</Link>
-
-            {/* Articles */}
-            <div>
-              <button onClick={() => toggleMobileDropdown('articles')} className="w-full flex justify-between items-center text-[#2C2C2C] font-semibold text-[1.1rem] py-3 border-b border-[#F0EBE1]">
-                Articles
-                <svg className={`w-5 h-5 transform transition-transform ${openMobileDropdown === 'articles' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+            {/* Articles Accordion */}
+            <div className="border border-[#E5DFD4] rounded-xl overflow-hidden bg-white/60">
+              <button 
+                onClick={() => toggleMobileDropdown('articles')} 
+                className="w-full flex justify-between items-center p-3 text-sm font-bold text-[#1C2024] bg-[#FAF7F2]/80"
+              >
+                <span>Articles</span>
+                <FaChevronDown className={`text-xs transition-transform ${openMobileDropdown === 'articles' ? 'rotate-180' : ''}`} />
               </button>
               {openMobileDropdown === 'articles' && (
-                <div className="bg-[#F9F6F0] pl-6 py-2 flex flex-col space-y-3">
-                  <Link to="/current-issue" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Current Issue</Link>
-                  <Link to="/issues" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>All Issues</Link>
-                  <Link to="/archive" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Archive</Link>
-                  <Link to="/special-collections" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Special Collections</Link>
+                <div className="p-2 bg-white flex flex-col space-y-1 border-t border-[#E5DFD4]">
+                  <Link to="/current-issue" className="p-2 text-xs font-semibold text-[#5A5043] hover:text-[#1C2024] hover:bg-[#FAF7F2] rounded-lg" onClick={closeMobileMenu}>Current Issue (Vol I, Iss III)</Link>
+                  <Link to="/issues" className="p-2 text-xs font-semibold text-[#5A5043] hover:text-[#1C2024] hover:bg-[#FAF7F2] rounded-lg" onClick={closeMobileMenu}>All Articles & Directory</Link>
+                  <Link to="/archive" className="p-2 text-xs font-semibold text-[#5A5043] hover:text-[#1C2024] hover:bg-[#FAF7F2] rounded-lg" onClick={closeMobileMenu}>Archived Volumes</Link>
+                  <Link to="/special-collections" className="p-2 text-xs font-semibold text-[#5A5043] hover:text-[#1C2024] hover:bg-[#FAF7F2] rounded-lg" onClick={closeMobileMenu}>Special Collections</Link>
                 </div>
               )}
             </div>
 
-            {/* Submissions */}
-            <div>
-              <button onClick={() => toggleMobileDropdown('submissions')} className="w-full flex justify-between items-center text-[#2C2C2C] font-semibold text-[1.1rem] py-3 border-b border-[#F0EBE1]">
-                Submissions
-                <svg className={`w-5 h-5 transform transition-transform ${openMobileDropdown === 'submissions' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+            {/* Submissions Accordion */}
+            <div className="border border-[#E5DFD4] rounded-xl overflow-hidden bg-white/60">
+              <button 
+                onClick={() => toggleMobileDropdown('submissions')} 
+                className="w-full flex justify-between items-center p-3 text-sm font-bold text-[#1C2024] bg-[#FAF7F2]/80"
+              >
+                <span>Submissions</span>
+                <FaChevronDown className={`text-xs transition-transform ${openMobileDropdown === 'submissions' ? 'rotate-180' : ''}`} />
               </button>
               {openMobileDropdown === 'submissions' && (
-                <div className="bg-[#F9F6F0] pl-6 py-2 flex flex-col space-y-3">
-                  <Link to="/author-guidelines" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Author Guidelines</Link>
-                  <Link to="/template" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Manuscript Template</Link>
-                  <Link to="/anonymous-review" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Ensuring An Anonymous Review</Link>
-                  <Link to="/glossa-special-collections" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Glossa Special Collections</Link>
-                  <Link to="/start-submission" className="text-blue-600 font-semibold" onClick={closeMobileMenu}>Start Submission</Link>
+                <div className="p-2 bg-white flex flex-col space-y-1 border-t border-[#E5DFD4]">
+                  <Link to="/start-submission" className="p-2 text-xs font-bold text-[#B83327] bg-[#FCEEEB] rounded-lg" onClick={closeMobileMenu}>Submit Manuscript Online</Link>
+                  <Link to="/call-for-papers" className="p-2 text-xs font-semibold text-[#5A5043] hover:text-[#1C2024] hover:bg-[#FAF7F2] rounded-lg" onClick={closeMobileMenu}>Call For Papers (Vol. II)</Link>
+                  <Link to="/author-guidelines" className="p-2 text-xs font-semibold text-[#5A5043] hover:text-[#1C2024] hover:bg-[#FAF7F2] rounded-lg" onClick={closeMobileMenu}>Author Guidelines</Link>
+                  <Link to="/template" className="p-2 text-xs font-semibold text-[#5A5043] hover:text-[#1C2024] hover:bg-[#FAF7F2] rounded-lg" onClick={closeMobileMenu}>Manuscript Template</Link>
+                  <Link to="/anonymous-review" className="p-2 text-xs font-semibold text-[#5A5043] hover:text-[#1C2024] hover:bg-[#FAF7F2] rounded-lg" onClick={closeMobileMenu}>Ensuring Anonymous Review</Link>
+                  <Link to="/glossa-special-collections" className="p-2 text-xs font-semibold text-[#5A5043] hover:text-[#1C2024] hover:bg-[#FAF7F2] rounded-lg" onClick={closeMobileMenu}>Glossa Special Collections</Link>
                 </div>
               )}
             </div>
 
-            {/* Policies & Ethics */}
-            <div>
-              <button onClick={() => toggleMobileDropdown('policies')} className="w-full flex justify-between items-center text-[#2C2C2C] font-semibold text-[1.1rem] py-3 border-b border-[#F0EBE1]">
-                Policies & Ethics
-                <svg className={`w-5 h-5 transform transition-transform ${openMobileDropdown === 'policies' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+            {/* Policies Accordion */}
+            <div className="border border-[#E5DFD4] rounded-xl overflow-hidden bg-white/60">
+              <button 
+                onClick={() => toggleMobileDropdown('policies')} 
+                className="w-full flex justify-between items-center p-3 text-sm font-bold text-[#1C2024] bg-[#FAF7F2]/80"
+              >
+                <span>Policies & Ethics</span>
+                <FaChevronDown className={`text-xs transition-transform ${openMobileDropdown === 'policies' ? 'rotate-180' : ''}`} />
               </button>
               {openMobileDropdown === 'policies' && (
-                <div className="bg-[#F9F6F0] pl-6 py-2 flex flex-col space-y-3">
-                  <Link to="/journal-policies" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Journal Policies</Link>
-                  <Link to="/publisher-policies" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Publisher Policies</Link>
-                  <Link to="/ethics" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Ethics & Malpractice</Link>
-                  <Link to="/privacy-policy" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Privacy Policy</Link>
-                  <Link to="/terms-of-use" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Terms of Use</Link>
-                  <Link to="/accessibility" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Accessibility</Link>
+                <div className="p-2 bg-white flex flex-col space-y-1 border-t border-[#E5DFD4]">
+                  <Link to="/journal-policies" className="p-2 text-xs font-semibold text-[#5A5043] hover:text-[#1C2024] hover:bg-[#FAF7F2] rounded-lg" onClick={closeMobileMenu}>Journal Policies</Link>
+                  <Link to="/publisher-policies" className="p-2 text-xs font-semibold text-[#5A5043] hover:text-[#1C2024] hover:bg-[#FAF7F2] rounded-lg" onClick={closeMobileMenu}>Publisher Policies</Link>
+                  <Link to="/ethics" className="p-2 text-xs font-semibold text-[#5A5043] hover:text-[#1C2024] hover:bg-[#FAF7F2] rounded-lg" onClick={closeMobileMenu}>Ethics & Malpractice</Link>
+                  <Link to="/privacy-policy" className="p-2 text-xs font-semibold text-[#5A5043] hover:text-[#1C2024] hover:bg-[#FAF7F2] rounded-lg" onClick={closeMobileMenu}>Privacy Policy</Link>
+                  <Link to="/terms-of-use" className="p-2 text-xs font-semibold text-[#5A5043] hover:text-[#1C2024] hover:bg-[#FAF7F2] rounded-lg" onClick={closeMobileMenu}>Terms of Use</Link>
+                  <Link to="/accessibility" className="p-2 text-xs font-semibold text-[#5A5043] hover:text-[#1C2024] hover:bg-[#FAF7F2] rounded-lg" onClick={closeMobileMenu}>Accessibility</Link>
                 </div>
               )}
             </div>
 
-            {/* About */}
-            <div>
-              <button onClick={() => toggleMobileDropdown('about')} className="w-full flex justify-between items-center text-[#2C2C2C] font-semibold text-[1.1rem] py-3 border-b border-[#F0EBE1]">
-                About
-                <svg className={`w-5 h-5 transform transition-transform ${openMobileDropdown === 'about' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+            {/* About Accordion */}
+            <div className="border border-[#E5DFD4] rounded-xl overflow-hidden bg-white/60">
+              <button 
+                onClick={() => toggleMobileDropdown('about')} 
+                className="w-full flex justify-between items-center p-3 text-sm font-bold text-[#1C2024] bg-[#FAF7F2]/80"
+              >
+                <span>About</span>
+                <FaChevronDown className={`text-xs transition-transform ${openMobileDropdown === 'about' ? 'rotate-180' : ''}`} />
               </button>
               {openMobileDropdown === 'about' && (
-                <div className="bg-[#F9F6F0] pl-6 py-2 flex flex-col space-y-3">
-                  <Link to="/about" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Aim & Scope</Link>
-                  <Link to="/editorial-board" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Editorial Board</Link>
-                  <Link to="/team" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Our Team</Link>
-                  <Link to="/become-reviewer" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Become A Reviewer</Link>
-                  <Link to="/governance" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Governance</Link>
-                  <Link to="/contact" className="text-[#5C5446] hover:text-[#2C2C2C]" onClick={closeMobileMenu}>Contact</Link>
+                <div className="p-2 bg-white flex flex-col space-y-1 border-t border-[#E5DFD4]">
+                  <Link to="/about" className="p-2 text-xs font-semibold text-[#5A5043] hover:text-[#1C2024] hover:bg-[#FAF7F2] rounded-lg" onClick={closeMobileMenu}>Aim & Scope</Link>
+                  <Link to="/editorial-board" className="p-2 text-xs font-semibold text-[#5A5043] hover:text-[#1C2024] hover:bg-[#FAF7F2] rounded-lg" onClick={closeMobileMenu}>Editorial Board</Link>
+                  <Link to="/team" className="p-2 text-xs font-semibold text-[#5A5043] hover:text-[#1C2024] hover:bg-[#FAF7F2] rounded-lg" onClick={closeMobileMenu}>Our Team</Link>
+                  <Link to="/become-reviewer" className="p-2 text-xs font-semibold text-[#5A5043] hover:text-[#1C2024] hover:bg-[#FAF7F2] rounded-lg" onClick={closeMobileMenu}>Become A Reviewer</Link>
+                  <Link to="/governance" className="p-2 text-xs font-semibold text-[#5A5043] hover:text-[#1C2024] hover:bg-[#FAF7F2] rounded-lg" onClick={closeMobileMenu}>Governance</Link>
+                  <Link to="/contact" className="p-2 text-xs font-semibold text-[#5A5043] hover:text-[#1C2024] hover:bg-[#FAF7F2] rounded-lg" onClick={closeMobileMenu}>Contact Editorial Office</Link>
                 </div>
               )}
             </div>
 
-            <div className="pt-4 pb-6 flex flex-col space-y-3">
+            {/* Mobile Auth Actions */}
+            <div className="pt-4 flex flex-col gap-2">
+              <Link 
+                to="/start-submission" 
+                className="w-full py-3 bg-[#B83327] text-white text-center rounded-xl font-bold text-xs uppercase tracking-wider shadow"
+                onClick={closeMobileMenu}
+              >
+                Submit Manuscript
+              </Link>
+
               {isAuthenticated ? (
-                <>
-                  <div className="flex items-center justify-center gap-2 px-6 py-3 bg-[#FAF9F6] border border-[#E5E0D8] rounded">
-                    {user?.photoURL ? (
-                      <img src={user.photoURL} alt={user.displayName} className="w-6 h-6 rounded-full object-cover" />
-                    ) : (
-                      <div className="w-6 h-6 rounded-full bg-[#8E7C68] text-white flex items-center justify-center text-xs font-bold">
-                        {user?.displayName?.charAt(0) || user?.email?.charAt(0) || 'U'}
-                      </div>
-                    )}
-                    <span className="text-[#2C2C2C] font-semibold text-sm">{user?.displayName || user?.email}</span>
-                  </div>
-                  <Link to="/user/dashboard" className="block text-center w-full px-6 py-3 bg-[#2C2C2C] text-white rounded font-bold tracking-wide" onClick={closeMobileMenu}>
-                    Dashboard
+                <div className="flex flex-col gap-2 pt-2 border-t border-[#E5DFD4]">
+                  <Link 
+                    to="/user/dashboard" 
+                    className="w-full py-2.5 bg-[#1C2024] text-white text-center rounded-xl font-bold text-xs"
+                    onClick={closeMobileMenu}
+                  >
+                    Go to Dashboard
                   </Link>
-                  <button onClick={() => { logout(); closeMobileMenu(); }} className="block text-center w-full px-6 py-3 bg-white border border-red-300 text-red-600 rounded font-bold tracking-wide">
+                  <button 
+                    onClick={() => { logout(); closeMobileMenu(); }} 
+                    className="w-full py-2 bg-white border border-red-200 text-[#B83327] rounded-xl font-bold text-xs"
+                  >
                     Sign Out
                   </button>
-                </>
+                </div>
               ) : (
-                <>
-                  <Link to="/register" className="block text-center w-full px-6 py-3 bg-white border border-[#2C2C2C] text-[#2C2C2C] rounded font-bold tracking-wide" onClick={closeMobileMenu}>
-                    Register
-                  </Link>
-                  <Link to="/login" className="block text-center w-full px-6 py-3 bg-[#2C2C2C] text-white rounded font-bold tracking-wide" onClick={closeMobileMenu}>
+                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#E5DFD4]">
+                  <Link 
+                    to="/login" 
+                    className="py-2.5 bg-white border border-[#D5CDC0] text-[#1C2024] text-center rounded-xl font-bold text-xs shadow-2xs"
+                    onClick={closeMobileMenu}
+                  >
                     Login
                   </Link>
-                </>
+                  <Link 
+                    to="/register" 
+                    className="py-2.5 bg-[#1C2024] text-white text-center rounded-xl font-bold text-xs"
+                    onClick={closeMobileMenu}
+                  >
+                    Register
+                  </Link>
+                </div>
               )}
             </div>
+
           </nav>
         </div>
       )}
@@ -366,4 +653,3 @@ const Header = () => {
 };
 
 export default Header;
-

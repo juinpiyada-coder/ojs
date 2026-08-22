@@ -95,19 +95,38 @@ const DashboardLayout = ({ title }) => {
     return location.pathname === toPath || location.pathname.startsWith(`${toPath}/`);
   };
 
+  const accentColor = brand?.admin_dash_accent_hex || '#107C41';
+  const sidebarBg = brand?.admin_dash_bg_hex || '#FFFFFF';
+
+  // Helper to compute optimal high-contrast text color (white or dark) for the accent background
+  const getContrastColor = (hex) => {
+    if (!hex || !hex.startsWith('#') || hex.length < 7) return '#FFFFFF';
+    const r = parseInt(hex.slice(1, 3), 16) || 0;
+    const g = parseInt(hex.slice(3, 5), 16) || 0;
+    const b = parseInt(hex.slice(5, 7), 16) || 0;
+    const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+    return yiq >= 160 ? '#1E2530' : '#FFFFFF';
+  };
+
+  const activeTextColor = getContrastColor(accentColor);
+
   const renderNavItem = (to, Icon, label) => {
     const active = isLinkActive(to);
     return (
       <Link
         to={to}
         onClick={() => setIsMobileMenuOpen(false)}
+        style={active ? { backgroundColor: accentColor, color: activeTextColor } : {}}
         className={`flex items-center px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 ${
           active
-            ? 'bg-[#1E2530] text-white shadow-xs font-bold'
-            : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            ? 'shadow-xs font-bold'
+            : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
         }`}
       >
-        <Icon className={`w-4 h-4 mr-3 transition-colors ${active ? 'text-[#D4AF37]' : 'text-slate-400 group-hover:text-slate-600'}`} />
+        <Icon 
+          className="w-4 h-4 mr-3 transition-colors shrink-0" 
+          style={active ? { color: activeTextColor } : { color: '#94A3B8' }}
+        />
         <span className="truncate">{label}</span>
       </Link>
     );
@@ -125,21 +144,32 @@ const DashboardLayout = ({ title }) => {
       )}
       
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 flex flex-col transition-transform duration-300 md:relative md:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} shadow-xs`}>
+      <aside 
+        style={{ backgroundColor: sidebarBg }}
+        className={`fixed inset-y-0 left-0 z-50 w-64 border-r border-slate-200 flex flex-col transition-transform duration-300 md:relative md:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} shadow-xs`}
+      >
         
         {/* Brand Header */}
-        <div className="px-5 py-4 flex items-center justify-between border-b border-slate-100 bg-[#FAF9F6]">
-          <Link to="/" className="text-sm font-bold tracking-tight text-slate-900 hover:opacity-80 transition-opacity flex items-center gap-2.5">
-            {brand.logo_url ? (
-              <img src={resolveFileUrl(brand.logo_url)} alt="Logo" className="h-6 w-auto object-contain rounded" />
+        <div 
+          className="px-5 py-4 flex items-center justify-between border-b border-slate-100"
+          style={{ backgroundColor: sidebarBg }}
+        >
+          <Link to="/" className="text-sm font-bold tracking-tight text-slate-900 hover:opacity-80 transition-opacity flex items-center gap-2.5 min-w-0">
+            {brand?.logo_url ? (
+              <img src={resolveFileUrl(brand.logo_url)} alt="Logo" className="h-6 w-auto max-w-[120px] object-contain rounded" />
             ) : (
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+              <span 
+                className="w-3 h-3 rounded-full shrink-0 shadow-xs" 
+                style={{ backgroundColor: accentColor }}
+              />
             )}
-            <span className="truncate">{brand.journal_title || 'Open Journal System'}</span>
+            <span className="truncate font-bold text-slate-900 text-sm" title={brand?.journal_title}>
+              {brand?.journal_title || 'Open Journal System'}
+            </span>
           </Link>
           <button 
             onClick={() => setIsMobileMenuOpen(false)}
-            className="md:hidden text-slate-400 hover:text-slate-600 p-1"
+            className="md:hidden text-slate-400 hover:text-slate-600 p-1 cursor-pointer"
           >
             <FaTimes className="w-4 h-4" />
           </button>
@@ -174,7 +204,7 @@ const DashboardLayout = ({ title }) => {
         </nav>
         
         {/* Logout Footer */}
-        <div className="p-3 border-t border-slate-100 bg-[#FAF9F6]">
+        <div className="p-3 border-t border-slate-100" style={{ backgroundColor: sidebarBg }}>
           <button 
             onClick={handleLogout} 
             className="flex items-center w-full px-3.5 py-2.5 text-slate-600 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-all duration-150 font-semibold text-xs group cursor-pointer"

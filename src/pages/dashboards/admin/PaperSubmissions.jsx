@@ -655,7 +655,7 @@ const PaperSubmissions = () => {
                 <th className="py-1.5 px-3 font-bold text-[11px] border-r border-slate-300 tracking-wider uppercase text-slate-800 text-center">
                   <span className="text-emerald-800 mr-1 font-bold text-[10px]">G</span> Status
                 </th>
-                <th className="py-1.5 px-3 font-bold text-[11px] border-r border-slate-300 tracking-wider uppercase text-slate-800 text-center min-w-[280px]">
+                <th className="py-1.5 px-3 font-bold text-[11px] border-l-2 border-slate-400 tracking-wider uppercase text-slate-800 text-center min-w-[260px] sticky right-0 z-30 bg-[#E2E8F0] shadow-[-4px_0_6px_-1px_rgba(0,0,0,0.1)] select-none">
                   <span className="text-emerald-800 mr-1 font-bold text-[10px]">H</span> Actions
                 </th>
               </tr>
@@ -788,40 +788,42 @@ const PaperSubmissions = () => {
                       {getStatusBadge(article.status)}
                     </td>
 
-                    {/* Actions */}
-                    <td className="py-2 px-3 border-r border-slate-200 border-b border-slate-200 text-center space-x-1.5 whitespace-nowrap font-sans min-w-[280px]">
-                      <button
-                        type="button"
-                        onClick={() => setRedactorArticle(article)}
-                        className="inline-flex items-center gap-1 px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 rounded text-xs font-bold transition-all shadow-xs cursor-pointer"
-                        title="Auto-Redact Author & Assign Reviewer"
-                      >
-                        <FaShieldAlt className="text-amber-700" /> Redact
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => openWorkflowModal(article)}
-                        className="inline-flex items-center gap-1 px-2 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded text-xs font-bold transition-all shadow-xs cursor-pointer"
-                        title="Manage Lifecycle & Reviewers"
-                      >
-                        <FaHistory /> Workflow
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => openModal(article)}
-                        className="text-blue-700 hover:text-blue-900 font-bold text-xs inline-flex items-center gap-1 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded border border-blue-300 transition-all cursor-pointer"
-                        title="Edit Submission"
-                      >
-                        <FaEdit /> Edit
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleDelete(article.article_id)}
-                        className="text-red-700 hover:text-red-900 font-bold text-xs inline-flex items-center gap-1 bg-red-50 hover:bg-red-100 px-2 py-1 rounded border border-red-300 transition-all cursor-pointer"
-                        title="Delete Submission"
-                      >
-                        <FaTrash /> Delete
-                      </button>
+                    {/* Sticky Actions Column */}
+                    <td className={`py-2 px-3 border-l-2 border-slate-300 border-b border-slate-200 text-center whitespace-nowrap font-sans min-w-[260px] sticky right-0 z-20 shadow-[-4px_0_6px_-1px_rgba(0,0,0,0.06)] ${rIdx % 2 === 0 ? 'bg-white' : 'bg-[#FBFBFC]'}`}>
+                      <div className="flex items-center justify-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => openModal(article)}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-300 rounded text-xs font-bold transition-all shadow-xs cursor-pointer"
+                          title="Edit Submission Details"
+                        >
+                          <FaEdit /> Edit
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(article.article_id)}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-700 border border-red-300 rounded text-xs font-bold transition-all shadow-xs cursor-pointer"
+                          title="Delete Submission"
+                        >
+                          <FaTrash /> Delete
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => openWorkflowModal(article)}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded text-xs font-bold transition-all shadow-xs cursor-pointer"
+                          title="Manage Lifecycle & Reviewers"
+                        >
+                          <FaHistory /> Workflow
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setRedactorArticle(article)}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 rounded text-xs font-bold transition-all shadow-xs cursor-pointer"
+                          title="Auto-Redact Author & Assign Reviewer"
+                        >
+                          <FaShieldAlt className="text-amber-700" /> Redact
+                        </button>
+                      </div>
                     </td>
 
                   </tr>
@@ -1094,21 +1096,47 @@ const PaperSubmissions = () => {
               </div>
 
               {/* Footer CTA */}
-              <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
-                <button
-                  type="button"
-                  onClick={() => setManagingArticle(null)}
-                  className="px-5 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={workflowLoading}
-                  className="px-6 py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-xl text-xs font-bold transition-all shadow disabled:opacity-50"
-                >
-                  {workflowLoading ? 'Saving Workflow...' : 'Save Assignments & Update Status'}
-                </button>
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-gray-100">
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const art = managingArticle;
+                      setManagingArticle(null);
+                      openModal(art);
+                    }}
+                    className="px-3 py-2 text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-300 rounded-xl transition-all inline-flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <FaEdit /> Edit Details
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const aid = managingArticle.article_id;
+                      setManagingArticle(null);
+                      handleDelete(aid);
+                    }}
+                    className="px-3 py-2 text-xs font-bold text-red-700 bg-red-50 hover:bg-red-100 border border-red-300 rounded-xl transition-all inline-flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <FaTrash /> Delete
+                  </button>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setManagingArticle(null)}
+                    className="px-4 py-2 text-xs font-bold text-gray-600 hover:bg-gray-100 rounded-xl transition-colors cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={workflowLoading}
+                    className="px-5 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-xl text-xs font-bold transition-all shadow disabled:opacity-50 cursor-pointer"
+                  >
+                    {workflowLoading ? 'Saving...' : 'Save Workflow'}
+                  </button>
+                </div>
               </div>
 
             </form>
@@ -1233,11 +1261,26 @@ const PaperSubmissions = () => {
               </form>
             </div>
 
-            <div className="px-8 py-5 border-t border-gray-100 bg-gray-50 rounded-b-2xl flex justify-end space-x-4 shrink-0">
-              <button type="button" onClick={closeModal} className="px-6 py-2.5 text-gray-600 hover:bg-gray-200 rounded-lg font-bold transition-colors">Cancel</button>
-              <button type="submit" form="articleForm" disabled={formLoading} className="px-6 py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-lg font-bold transition-all shadow-sm hover:shadow disabled:opacity-50">
-                {formLoading ? 'Saving...' : isEditing ? 'Save Changes' : 'Create Submission'}
-              </button>
+            <div className="px-8 py-5 border-t border-gray-100 bg-gray-50 rounded-b-2xl flex justify-between items-center shrink-0">
+              {isEditing ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const id = formData.article_id;
+                    closeModal();
+                    handleDelete(id);
+                  }}
+                  className="px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-50 border border-red-200 rounded-xl transition-all inline-flex items-center gap-1.5 cursor-pointer"
+                >
+                  <FaTrash /> Delete Submission
+                </button>
+              ) : <div />}
+              <div className="flex space-x-3">
+                <button type="button" onClick={closeModal} className="px-5 py-2 text-gray-600 hover:bg-gray-200 rounded-xl text-xs font-bold transition-colors cursor-pointer">Cancel</button>
+                <button type="submit" form="articleForm" disabled={formLoading} className="px-6 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-xl text-xs font-bold transition-all shadow disabled:opacity-50 cursor-pointer">
+                  {formLoading ? 'Saving...' : isEditing ? 'Save Changes' : 'Create Submission'}
+                </button>
+              </div>
             </div>
 
           </div>

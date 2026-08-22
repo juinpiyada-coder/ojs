@@ -52,10 +52,16 @@ const DashboardLayout = ({ title }) => {
   };
   const dashPrefix = getDashboardPrefix();
 
-  const [brand, setBrand] = useState({
-    journal_title: 'The Literary Scientist',
-    admin_dash_bg_hex: '#FFFFFF',
-    admin_dash_accent_hex: '#1E2530'
+  const [brand, setBrand] = useState(() => {
+    try {
+      const saved = localStorage.getItem('ojs_white_label');
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return {
+      journal_title: 'The Literary Scientist',
+      admin_dash_bg_hex: '#FFFFFF',
+      admin_dash_accent_hex: '#1E2530'
+    };
   });
 
   useEffect(() => {
@@ -64,12 +70,23 @@ const DashboardLayout = ({ title }) => {
         const res = await apiFetch('/branding');
         if (res.data && res.data.length > 0) {
           setBrand(res.data[0]);
+          localStorage.setItem('ojs_white_label', JSON.stringify(res.data[0]));
         }
       } catch (err) {
         console.error('Failed to fetch branding context', err);
       }
     };
     fetchBranding();
+
+    const handleBrandEvent = (e) => {
+      if (e.detail) {
+        setBrand(e.detail);
+      } else {
+        fetchBranding();
+      }
+    };
+    window.addEventListener('brand-updated', handleBrandEvent);
+    return () => window.removeEventListener('brand-updated', handleBrandEvent);
   }, []);
 
   const handleLogout = () => {
@@ -122,8 +139,12 @@ const DashboardLayout = ({ title }) => {
         
         {/* Brand Header */}
         <div className="px-5 py-4 flex items-center justify-between border-b border-slate-100 bg-[#FAF9F6]">
-          <Link to="/" className="text-sm font-bold tracking-tight text-slate-900 hover:opacity-80 transition-opacity flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-600"></span>
+          <Link to="/" className="text-sm font-bold tracking-tight text-slate-900 hover:opacity-80 transition-opacity flex items-center gap-2.5">
+            {brand.logo_url ? (
+              <img src={resolveFileUrl(brand.logo_url)} alt="Logo" className="h-6 w-auto object-contain rounded" />
+            ) : (
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+            )}
             <span className="truncate">{brand.journal_title || 'Open Journal System'}</span>
           </Link>
           <button 

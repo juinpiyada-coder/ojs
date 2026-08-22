@@ -30,16 +30,43 @@ const DashboardLayout = ({ title }) => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const res = await apiFetch('/profile');
-        if (res.user_data) {
-          setUser(res.user_data);
-          localStorage.setItem('user', JSON.stringify(res.user_data));
+        const stored = JSON.parse(localStorage.getItem('user')) || {};
+        const targetId = stored.user_id;
+        
+        let freshUser = null;
+        if (targetId) {
+          try {
+            const uRes = await apiFetch(`/users?id=${targetId}`);
+            if (uRes && uRes.data) {
+              freshUser = uRes.data;
+            }
+          } catch {}
+        }
+        
+        if (!freshUser) {
+          const res = await apiFetch('/profile');
+          if (res && res.user_data) {
+            freshUser = res.user_data;
+          }
+        }
+
+        if (freshUser) {
+          setUser(prev => ({ ...prev, ...freshUser }));
+          localStorage.setItem('user', JSON.stringify({ ...stored, ...freshUser }));
         }
       } catch (err) {
         console.error('Failed to sync profile in DashboardLayout', err);
       }
     };
     fetchUserProfile();
+
+    const handleUserUpdate = (e) => {
+      if (e.detail) {
+        setUser(prev => ({ ...prev, ...e.detail }));
+      }
+    };
+    window.addEventListener('user-profile-updated', handleUserUpdate);
+    return () => window.removeEventListener('user-profile-updated', handleUserUpdate);
   }, []);
 
   const getDashboardPrefix = () => {
@@ -180,10 +207,10 @@ const DashboardLayout = ({ title }) => {
               <p className="text-[10px] text-slate-400 font-mono uppercase">{user.role_name || 'Admin'}</p>
             </div>
             
-            {user.avatar_url ? (
+            {(user.avatar_url || user.photoURL || user.photo_url) ? (
               <img 
-                src={resolveImageUrl(user.avatar_url)} 
-                alt="Profile" 
+                src={resolveImageUrl(user.avatar_url || user.photoURL || user.photo_url)} 
+                alt={user.display_name || 'Profile'} 
                 onClick={() => navigate(`${dashPrefix}/profile`)}
                 className="w-9 h-9 rounded-full object-cover ring-2 ring-slate-200 hover:ring-[#1E2530] transition-all cursor-pointer shadow-xs" 
               />

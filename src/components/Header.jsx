@@ -472,8 +472,12 @@ const Header = () => {
                   to="/user/dashboard" 
                   className="flex items-center gap-2 text-[#5A5043] hover:text-[#1C2024] font-semibold text-xs transition-colors p-1.5 hover:bg-[#FAF7F2] rounded-lg whitespace-nowrap"
                 >
-                  {user?.photoURL ? (
-                    <img src={user.photoURL} alt={user.displayName || 'User'} className="w-6 h-6 rounded-full object-cover ring-1 ring-[#D5CDC0]" />
+                  {(user?.avatar_url || user?.photoURL || user?.photo_url) ? (
+                    <img 
+                      src={resolveImageUrl(user.avatar_url || user.photoURL || user.photo_url)} 
+                      alt={user.displayName || user.display_name || 'User'} 
+                      className="w-6 h-6 rounded-full object-cover ring-1 ring-[#D5CDC0]" 
+                    />
                   ) : (
                     <FaUserCircle className="w-6 h-6 text-[#9E8B75]" />
                   )}

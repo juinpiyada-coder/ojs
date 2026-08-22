@@ -91,19 +91,21 @@ const AdminProfile = () => {
         body: payload
       });
 
-      const updatedUser = patchRes.data || (await apiFetch(`/users?id=${targetUserId}`)).data;
+      const freshRes = await apiFetch(`/users?id=${targetUserId}`);
+      const updatedUser = (freshRes && freshRes.data) ? freshRes.data : (patchRes && patchRes.data ? patchRes.data : null);
       if (updatedUser) {
         setProfile({ ...updatedUser, password: '' });
         setFile(null);
         setPreviewUrl(null);
         localStorage.setItem('user', JSON.stringify(updatedUser));
+        window.dispatchEvent(new CustomEvent('user-profile-updated', { detail: updatedUser }));
       }
       
       toast.success('Profile updated successfully!');
       
       setTimeout(() => {
         window.location.reload();
-      }, 700);
+      }, 500);
       
     } catch (err) {
       console.error('Failed to update profile:', err);

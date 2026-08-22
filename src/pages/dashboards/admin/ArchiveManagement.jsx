@@ -47,8 +47,9 @@ const ArchiveManagement = () => {
             <FaEdit />
           </button>
           <button
-            onClick={() => handleDeleteArticle(art.article_id)}
-            className="text-red-500 hover:text-red-700 text-xs font-bold bg-red-50 px-2 py-0.5 rounded border border-red-200 inline-flex items-center gap-1"
+            onClick={() => handleDelete(art.article_id)}
+            className="text-red-500 hover:text-red-700 text-xs font-bold bg-red-50 px-2 py-0.5 rounded border border-red-200 inline-flex items-center gap-1 cursor-pointer"
+            title="Delete Publication"
           >
             <FaTrash />
           </button>
@@ -336,15 +337,23 @@ const ArchiveManagement = () => {
 
   // Delete Article
   const handleDelete = async (articleId) => {
+    if (!articleId) {
+      toast.error('Invalid article ID');
+      return;
+    }
     if (!window.confirm('Are you sure you want to delete this publication from archives?')) return;
     try {
       await apiFetch(`/articles?id=${articleId}`, { method: 'DELETE' });
       toast.success('Publication deleted successfully');
-      setArticles(prev => prev.filter(a => a.article_id !== articleId));
+      setArticles(prev => prev.filter(a => String(a.article_id) !== String(articleId)));
+      fetchData();
     } catch (err) {
+      console.error('Failed to delete publication:', err);
       toast.error(err.message || 'Failed to delete publication');
     }
   };
+
+  const handleDeleteArticle = handleDelete;
 
   // Preview PDF Modal
   const handlePreviewPdf = (url, title) => {

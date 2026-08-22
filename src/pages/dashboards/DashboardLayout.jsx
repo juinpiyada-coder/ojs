@@ -1,13 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
-import { FaHome, FaUser, FaUsers, FaCog, FaPaintBrush, FaClipboardList, FaBullhorn, FaSignOutAlt, FaFileAlt, FaLayerGroup, FaArchive } from 'react-icons/fa';
+import { 
+  FaHome, 
+  FaUser, 
+  FaUsers, 
+  FaCog, 
+  FaPaintBrush, 
+  FaClipboardList, 
+  FaBullhorn, 
+  FaSignOutAlt, 
+  FaFileAlt, 
+  FaLayerGroup, 
+  FaArchive,
+  FaBars,
+  FaTimes
+} from 'react-icons/fa';
 import { apiFetch, resolveImageUrl } from '../../utils/api';
 
 const DashboardLayout = ({ title }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState(() => JSON.parse(localStorage.getItem('user')) || {});
-  const isAdmin = user.role_name === 'Admin';
+  const isAdmin = (user.role_name || '').toLowerCase() === 'admin';
   
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -39,9 +53,9 @@ const DashboardLayout = ({ title }) => {
   const dashPrefix = getDashboardPrefix();
 
   const [brand, setBrand] = useState({
-    journal_title: 'OJS',
+    journal_title: 'The Literary Scientist',
     admin_dash_bg_hex: '#FFFFFF',
-    admin_dash_accent_hex: '#8E7C68'
+    admin_dash_accent_hex: '#1E2530'
   });
 
   useEffect(() => {
@@ -64,138 +78,145 @@ const DashboardLayout = ({ title }) => {
     navigate('/login');
   };
 
+  // Helper to accurately determine active tab state
+  const isLinkActive = (toPath) => {
+    // Exact match for the root dashboard:
+    if (toPath === dashPrefix) {
+      return location.pathname === dashPrefix || location.pathname === `${dashPrefix}/`;
+    }
+    // Sub-route match
+    return location.pathname === toPath || location.pathname.startsWith(`${toPath}/`);
+  };
+
+  const renderNavItem = (to, Icon, label) => {
+    const active = isLinkActive(to);
+    return (
+      <Link
+        to={to}
+        onClick={() => setIsMobileMenuOpen(false)}
+        className={`flex items-center px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 ${
+          active
+            ? 'bg-[#1E2530] text-white shadow-xs font-bold'
+            : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+        }`}
+      >
+        <Icon className={`w-4 h-4 mr-3 transition-colors ${active ? 'text-[#D4AF37]' : 'text-slate-400 group-hover:text-slate-600'}`} />
+        <span className="truncate">{label}</span>
+      </Link>
+    );
+  };
+
   return (
-    <div 
-      className="min-h-screen flex bg-white font-sans relative"
-      style={{
-        '--brand-sidebar-bg': brand.admin_dash_bg_hex,
-        '--brand-accent': brand.admin_dash_accent_hex
-      }}
-    >
-      <style>{`
-        .brand-sidebar { background-color: var(--brand-sidebar-bg) !important; }
-        .brand-link:hover { background-color: #E5E7EB !important; color: #111827 !important; }
-        .brand-link.active { background-color: #E5E7EB !important; color: #111827 !important; font-weight: 600; }
-        .brand-text-accent { color: var(--brand-accent) !important; }
-      `}</style>
+    <div className="min-h-screen flex bg-slate-50 font-sans relative">
       
+      {/* Mobile backdrop */}
       {isMobileMenuOpen && (
         <div 
-          className="fixed inset-0 bg-black/30 z-40 md:hidden backdrop-blur-sm"
+          className="fixed inset-0 bg-black/40 z-40 md:hidden backdrop-blur-xs"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
       
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#FAFAFA] border-r border-gray-200 flex flex-col transition-transform duration-300 md:relative md:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="px-5 py-5 flex items-center border-b border-gray-200">
-          <Link to="/" className="text-sm font-bold tracking-tight text-gray-900 hover:opacity-70 transition-opacity">
-            {brand.journal_title.substring(0, 20)}
+      {/* Sidebar */}
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 flex flex-col transition-transform duration-300 md:relative md:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} shadow-xs`}>
+        
+        {/* Brand Header */}
+        <div className="px-5 py-4 flex items-center justify-between border-b border-slate-100 bg-[#FAF9F6]">
+          <Link to="/" className="text-sm font-bold tracking-tight text-slate-900 hover:opacity-80 transition-opacity flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-600"></span>
+            <span className="truncate">{brand.journal_title || 'Open Journal System'}</span>
           </Link>
+          <button 
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="md:hidden text-slate-400 hover:text-slate-600 p-1"
+          >
+            <FaTimes className="w-4 h-4" />
+          </button>
         </div>
         
-        <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
-          <Link to={dashPrefix} className="flex items-center px-3 py-2 bg-gray-200/70 text-gray-900 font-semibold text-sm rounded-md transition-all duration-150">
-            <FaHome className="w-4 h-4 mr-3 text-gray-500" />
-            Dashboard
-          </Link>
-          <Link to={`${dashPrefix}/profile`} className="brand-link flex items-center px-3 py-2 text-gray-600 font-medium text-sm rounded-md transition-all duration-150">
-            <FaUser className="w-4 h-4 mr-3 text-gray-400" />
-            My Profile
-          </Link>
+        {/* Navigation Items */}
+        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+          {renderNavItem(dashPrefix, FaHome, 'Dashboard')}
+          {renderNavItem(`${dashPrefix}/profile`, FaUser, 'My Profile')}
           
           {isAdmin && (
             <>
-              <div className="pt-4 pb-1.5">
-                <p className="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Content</p>
+              <div className="pt-4 pb-1.5 px-3">
+                <p className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">Content Management</p>
               </div>
               
-              <Link to="/admin/dashboard/volumes-issues" className="brand-link flex items-center px-3 py-2 text-gray-600 font-medium text-sm rounded-md transition-all duration-150">
-                <FaLayerGroup className="w-4 h-4 mr-3 text-gray-400" />
-                Volumes & Issues
-              </Link>
-              
-              <Link to="/admin/dashboard/archives" className="brand-link flex items-center px-3 py-2 text-gray-600 font-medium text-sm rounded-md transition-all duration-150">
-                <FaArchive className="w-4 h-4 mr-3 text-gray-400" />
-                Archives
-              </Link>
+              {renderNavItem('/admin/dashboard/volumes-issues', FaLayerGroup, 'Volumes & Issues')}
+              {renderNavItem('/admin/dashboard/archives', FaArchive, 'Archives')}
+              {renderNavItem('/admin/dashboard/submissions', FaFileAlt, 'Submissions')}
 
-              <Link to="/admin/dashboard/submissions" className="brand-link flex items-center px-3 py-2 text-gray-600 font-medium text-sm rounded-md transition-all duration-150">
-                <FaFileAlt className="w-4 h-4 mr-3 text-gray-400" />
-                Submissions
-              </Link>
-
-              <div className="pt-4 pb-1.5">
-                <p className="px-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest">System</p>
+              <div className="pt-4 pb-1.5 px-3">
+                <p className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">System Administration</p>
               </div>
               
-              <Link to="/admin/dashboard/users" className="brand-link flex items-center px-3 py-2 text-gray-600 font-medium text-sm rounded-md transition-all duration-150">
-                <FaUsers className="w-4 h-4 mr-3 text-gray-400" />
-                Users
-              </Link>
-              <Link to="/admin/dashboard/settings" className="brand-link flex items-center px-3 py-2 text-gray-600 font-medium text-sm rounded-md transition-all duration-150">
-                <FaCog className="w-4 h-4 mr-3 text-gray-400" />
-                Settings
-              </Link>
-              <Link to="/admin/dashboard/branding" className="brand-link flex items-center px-3 py-2 text-gray-600 font-medium text-sm rounded-md transition-all duration-150">
-                <FaPaintBrush className="w-4 h-4 mr-3 text-gray-400" />
-                Branding
-              </Link>
-              <Link to="/admin/dashboard/audit-logs" className="brand-link flex items-center px-3 py-2 text-gray-600 font-medium text-sm rounded-md transition-all duration-150">
-                <FaClipboardList className="w-4 h-4 mr-3 text-gray-400" />
-                Audit Logs
-              </Link>
-              <Link to="/admin/dashboard/announcements" className="brand-link flex items-center px-3 py-2 text-gray-600 font-medium text-sm rounded-md transition-all duration-150">
-                <FaBullhorn className="w-4 h-4 mr-3 text-gray-400" />
-                Announcements
-              </Link>
+              {renderNavItem('/admin/dashboard/users', FaUsers, 'Users')}
+              {renderNavItem('/admin/dashboard/settings', FaCog, 'Settings')}
+              {renderNavItem('/admin/dashboard/branding', FaPaintBrush, 'Branding')}
+              {renderNavItem('/admin/dashboard/audit-logs', FaClipboardList, 'Audit Logs')}
+              {renderNavItem('/admin/dashboard/announcements', FaBullhorn, 'Announcements')}
             </>
           )}
         </nav>
         
-        <div className="p-3 border-t border-gray-200 mt-auto">
-          <button onClick={handleLogout} className="flex items-center w-full px-3 py-2 text-gray-500 hover:text-gray-900 hover:bg-gray-200/50 rounded-md transition-all duration-150 font-medium text-sm group">
-            <FaSignOutAlt className="w-4 h-4 mr-3 group-hover:-translate-x-0.5 transition-transform duration-150" />
-            Logout
+        {/* Logout Footer */}
+        <div className="p-3 border-t border-slate-100 bg-[#FAF9F6]">
+          <button 
+            onClick={handleLogout} 
+            className="flex items-center w-full px-3.5 py-2.5 text-slate-600 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-all duration-150 font-semibold text-xs group cursor-pointer"
+          >
+            <FaSignOutAlt className="w-4 h-4 mr-3 group-hover:-translate-x-0.5 transition-transform duration-150 text-slate-400 group-hover:text-rose-600" />
+            <span>Logout</span>
           </button>
         </div>
       </aside>
 
+      {/* Main Content Area */}
       <main className="flex-1 flex flex-col min-h-0 overflow-hidden relative">
-        <header className="bg-white border-b border-gray-200 h-14 flex items-center justify-between px-4 sm:px-8 shrink-0 z-10">
+        
+        {/* Top Navbar */}
+        <header className="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-4 sm:px-8 shrink-0 z-10 shadow-2xs">
           <div className="flex items-center">
             <button 
-              className="md:hidden mr-3 p-1.5 text-gray-500 hover:bg-gray-100 rounded-md transition-colors"
+              className="md:hidden mr-3 p-2 text-slate-500 hover:bg-slate-100 rounded-xl transition-colors"
               onClick={() => setIsMobileMenuOpen(true)}
+              aria-label="Open menu"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+              <FaBars className="w-4 h-4" />
             </button>
-            <h1 className="text-base font-semibold text-gray-900 tracking-tight truncate max-w-[200px] sm:max-w-none">{title}</h1>
+            <h1 className="text-base font-bold text-slate-900 tracking-tight truncate max-w-[200px] sm:max-w-none">{title}</h1>
           </div>
+          
           <div className="flex items-center space-x-3">
             <div className="text-right hidden sm:block">
-               <p className="text-xs font-semibold text-gray-900">{user.display_name || 'User'}</p>
-               <p className="text-[10px] text-gray-400">{user.email || ''}</p>
+              <p className="text-xs font-bold text-slate-900">{user.display_name || user.email?.split('@')[0] || 'User'}</p>
+              <p className="text-[10px] text-slate-400 font-mono uppercase">{user.role_name || 'Admin'}</p>
             </div>
+            
             {user.avatar_url ? (
               <img 
                 src={resolveImageUrl(user.avatar_url)} 
                 alt="Profile" 
                 onClick={() => navigate(`${dashPrefix}/profile`)}
-                className="w-8 h-8 rounded-full object-cover border border-gray-200 hover:opacity-80 transition-opacity cursor-pointer" 
+                className="w-9 h-9 rounded-full object-cover ring-2 ring-slate-200 hover:ring-[#1E2530] transition-all cursor-pointer shadow-xs" 
               />
             ) : (
               <div 
                 onClick={() => navigate(`${dashPrefix}/profile`)}
-                className="w-8 h-8 rounded-full flex items-center justify-center bg-gray-900 text-white text-[10px] font-bold hover:opacity-80 transition-opacity cursor-pointer"
+                className="w-9 h-9 rounded-full flex items-center justify-center bg-[#1E2530] text-[#FAF7F2] text-xs font-bold ring-2 ring-slate-200 hover:ring-[#1E2530] transition-all cursor-pointer shadow-xs"
               >
-                {(user.display_name || 'U').substring(0, 2).toUpperCase()}
+                {(user.display_name || user.email || 'A').substring(0, 2).toUpperCase()}
               </div>
             )}
           </div>
         </header>
 
-        <div className="flex-1 overflow-auto p-4 sm:p-6 relative bg-gray-50/50">
-           <Outlet />
+        {/* Page Body */}
+        <div className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8 relative bg-slate-50/70">
+          <Outlet />
         </div>
       </main>
     </div>

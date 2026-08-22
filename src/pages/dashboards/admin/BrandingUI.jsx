@@ -144,12 +144,13 @@ const BrandingUI = () => {
       });
 
       if (docRes && docRes.data && docRes.data.doc_id) {
+        const logoUrl = docRes.data.s3_url || '';
         setBrand(prev => ({
           ...prev,
           logo_doc_id: docRes.data.doc_id,
-          logo_url: docRes.data.s3_url || URL.createObjectURL(file)
+          logo_url: logoUrl
         }));
-        toast.success('Brand logo uploaded successfully!');
+        toast.success('Brand logo uploaded successfully! Click "Save White-Labeling" to persist.');
       }
     } catch (err) {
       console.error('Logo upload error:', err);
@@ -159,33 +160,13 @@ const BrandingUI = () => {
     }
   };
 
-  const handleFaviconUpload = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    try {
-      const docPayload = new FormData();
-      docPayload.append('uploaded_by', 1);
-      docPayload.append('file', file);
-      docPayload.append('folder', 'branding');
-
-      const docRes = await apiFetch('/docs', {
-        method: 'POST',
-        body: docPayload
-      });
-
-      if (docRes && docRes.data && docRes.data.doc_id) {
-        setBrand(prev => ({
-          ...prev,
-          favicon_doc_id: docRes.data.doc_id,
-          favicon_url: docRes.data.s3_url || URL.createObjectURL(file)
-        }));
-        toast.success('Brand favicon uploaded successfully!');
-      }
-    } catch (err) {
-      console.error('Favicon upload error:', err);
-      toast.error('Failed to upload favicon: ' + (err.message || 'Server error'));
-    }
+  const handleRemoveLogo = () => {
+    setBrand(prev => ({
+      ...prev,
+      logo_doc_id: null,
+      logo_url: ''
+    }));
+    toast.info('Custom logo removed. Click "Save White-Labeling" to persist.');
   };
 
   const { updateBrand: syncGlobalBrand } = useBrand();
@@ -203,7 +184,6 @@ const BrandingUI = () => {
       brand_id: brand.brand_id || 1,
       journal_title: brand.journal_title.trim(),
       logo_doc_id: brand.logo_doc_id ? parseInt(brand.logo_doc_id) : null,
-      favicon_doc_id: brand.favicon_doc_id ? parseInt(brand.favicon_doc_id) : null,
       public_primary_hex: brand.public_primary_hex || '#0F5132',
       public_secondary_hex: brand.public_secondary_hex || '#F0FDF4',
       admin_dash_bg_hex: brand.admin_dash_bg_hex || '#FFFFFF',
@@ -338,54 +318,49 @@ const BrandingUI = () => {
           {/* Logo & Favicon Card */}
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-6">
             <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">
-              <FaImage className="text-emerald-600" /> Logo & Favicon Assets
+              <FaImage className="text-emerald-600" /> Brand Logo Asset
             </h2>
 
             {/* Logo Upload */}
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
-                Brand Logo (PNG, SVG, JPG)
-              </label>
-              <div className="flex items-center gap-4">
-                <input
-                  type="file"
-                  accept="image/png,image/jpeg,image/svg+xml,image/webp"
-                  onChange={handleLogoUpload}
-                  className="text-xs text-slate-600 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-slate-100 file:text-slate-800 hover:file:bg-slate-200 cursor-pointer"
-                />
-                {uploadingLogo && <span className="text-xs text-emerald-600 font-bold animate-pulse">Uploading...</span>}
-              </div>
-              {brand.logo_url && (
-                <div className="mt-3 p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center gap-3">
-                  <img src={resolveFileUrl(brand.logo_url)} alt="Logo Preview" className="h-10 w-auto object-contain rounded" />
-                  <div className="text-xs">
-                    <p className="font-bold text-slate-800">Current Logo</p>
-                    <p className="text-[10px] text-slate-500 font-mono truncate max-w-xs">{brand.logo_url}</p>
-                  </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+                  Upload Journal Logo (PNG, SVG, JPG, WebP)
+                </label>
+                <div className="flex items-center gap-4">
+                  <input
+                    type="file"
+                    accept="image/png,image/jpeg,image/svg+xml,image/webp"
+                    onChange={handleLogoUpload}
+                    className="text-xs text-slate-600 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-slate-100 file:text-slate-800 hover:file:bg-slate-200 cursor-pointer"
+                  />
+                  {uploadingLogo && <span className="text-xs text-emerald-600 font-bold animate-pulse">Uploading...</span>}
                 </div>
-              )}
-            </div>
-
-            {/* Favicon Upload */}
-            <div className="pt-2 border-t border-slate-100">
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
-                Browser Favicon (ICO, PNG)
-              </label>
-              <div className="flex items-center gap-4">
-                <input
-                  type="file"
-                  accept="image/png,image/x-icon,image/svg+xml"
-                  onChange={handleFaviconUpload}
-                  className="text-xs text-slate-600 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-slate-100 file:text-slate-800 hover:file:bg-slate-200 cursor-pointer"
-                />
+                <p className="text-xs text-slate-500 mt-1.5">
+                  Displays in the public navbar header and the administration dashboard sidebar.
+                </p>
               </div>
-              {brand.favicon_url && (
-                <div className="mt-3 p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center gap-3">
-                  <img src={resolveFileUrl(brand.favicon_url)} alt="Favicon Preview" className="h-6 w-6 object-contain rounded" />
-                  <div className="text-xs">
-                    <p className="font-bold text-slate-800">Active Favicon</p>
-                    <p className="text-[10px] text-slate-500 font-mono truncate max-w-xs">{brand.favicon_url}</p>
+
+              {brand.logo_url && (
+                <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <img 
+                      src={resolveFileUrl(brand.logo_url)} 
+                      alt="Logo Preview" 
+                      className="h-12 w-auto max-w-[140px] object-contain rounded bg-white p-1 border border-slate-200 shadow-2xs" 
+                    />
+                    <div className="text-xs min-w-0">
+                      <p className="font-bold text-slate-800">Active Brand Logo</p>
+                      <p className="text-[10px] text-slate-500 font-mono truncate max-w-xs">{brand.logo_url}</p>
+                    </div>
                   </div>
+                  <button
+                    type="button"
+                    onClick={handleRemoveLogo}
+                    className="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg text-xs font-bold transition-all cursor-pointer shrink-0"
+                  >
+                    Remove Logo
+                  </button>
                 </div>
               )}
             </div>

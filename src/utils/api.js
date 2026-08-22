@@ -349,7 +349,7 @@ export const resolveFileUrl = (url) => {
 
   // If relative backend path
   if (finalUrl.startsWith('/')) {
-    if (/^\/(journals|manuscripts|avatars|s3_img|uploads|storage|api)\//i.test(finalUrl)) {
+    if (/^\/(journals|manuscripts|avatars|branding|s3_img|uploads|storage|api)\//i.test(finalUrl)) {
       finalUrl = `${baseUrl}${finalUrl}`;
     } else {
       finalUrl = finalUrl;

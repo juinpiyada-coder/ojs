@@ -133,18 +133,18 @@ const ExcelDataSheet = ({
 
       {/* 3. Excel Spreadsheet Data Grid */}
       <div className="overflow-x-auto overflow-y-auto max-h-[650px] bg-slate-100">
-        <table className="w-full border-collapse text-left font-mono text-xs select-text">
+        <table className="min-w-[1100px] w-full border-collapse text-left font-mono text-xs select-text">
           
           {/* Column Header Ribbon (A, B, C, D...) */}
           <thead>
             <tr className="bg-[#E9EDF4] border-b-2 border-slate-400 text-slate-700 sticky top-0 z-10 shadow-xs">
-              <th className="w-10 text-center py-1.5 px-2 font-bold text-[11px] border-r border-slate-300 bg-[#DCE2EC] text-slate-600 select-none">
+              <th className="w-10 text-center py-2 px-2 font-bold text-[11px] border-r border-slate-300 bg-[#DCE2EC] text-slate-600 select-none">
                 #
               </th>
               {columns.map((col, cIdx) => (
                 <th
                   key={cIdx}
-                  className={`py-1.5 px-3 font-bold text-[11px] border-r border-slate-300 tracking-wider uppercase text-slate-800 ${col.width || ''}`}
+                  className={`py-2 px-3 font-bold text-[11px] border-r border-slate-300 tracking-wider uppercase text-slate-800 ${col.width || ''}`}
                   onClick={() => setSelectedCell(`${columnLetters[cIdx] || 'A'}1`)}
                 >
                   <div className="flex items-center justify-between gap-1">
@@ -185,7 +185,7 @@ const ExcelDataSheet = ({
                   onClick={() => setSelectedCell(`A${rIdx + 1}`)}
                 >
                   {/* Row Number Index Column */}
-                  <td className="text-center py-1.5 px-2 font-bold text-[11px] border-r border-slate-300 bg-[#F0F3F7] text-slate-500 select-none border-b border-slate-200">
+                  <td className="text-center py-2 px-2 font-bold text-[11px] border-r border-slate-300 bg-[#F0F3F7] text-slate-500 select-none border-b border-slate-200">
                     {rIdx + 1}
                   </td>
 
@@ -193,7 +193,7 @@ const ExcelDataSheet = ({
                   {columns.map((col, cIdx) => (
                     <td
                       key={cIdx}
-                      className="py-1.5 px-3 border-r border-slate-200 border-b border-slate-200 text-slate-900 text-xs truncate max-w-md font-sans"
+                      className={`py-2 px-3 border-r border-slate-200 border-b border-slate-200 text-slate-900 text-xs font-sans ${col.truncate !== false ? 'truncate max-w-md' : 'whitespace-nowrap'} ${col.width || ''}`}
                     >
                       {col.render ? col.render(row[col.key], row, rIdx) : (row[col.key] !== undefined ? String(row[col.key]) : '')}
                     </td>

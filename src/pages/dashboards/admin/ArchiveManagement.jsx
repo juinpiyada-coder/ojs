@@ -22,36 +22,41 @@ const ArchiveManagement = () => {
   const [viewMode, setViewMode] = useState('sheet'); // 'sheet' | 'cards'
   
   const archiveColumns = [
-    { key: 'article_id', label: 'ID', width: 'w-16', render: (v) => <span className="font-mono font-bold text-slate-700">#{v}</span> },
-    { key: 'title', label: 'Publication Title', render: (v) => <span className="font-bold text-slate-900 truncate block max-w-sm">{v}</span> },
+    { key: 'article_id', label: 'ID', width: 'w-16 text-center', render: (v) => <span className="font-mono font-bold text-slate-700">#{v}</span> },
+    { key: 'title', label: 'Publication Title', render: (v) => <span className="font-bold text-slate-900 line-clamp-1">{v}</span> },
     { key: 'author_name', label: 'Author(s)', render: (v) => <span className="text-slate-800 font-medium">{v || 'Anonymous'}</span> },
-    { key: 'volume_number', label: 'Vol / Issue', render: (_, r) => r.volume_number && r.issue_number ? <span className="font-mono text-[11px] bg-slate-100 px-1.5 py-0.5 rounded border border-slate-300">Vol {r.volume_number}, Iss {r.issue_number}</span> : <span className="text-slate-400 italic">Unassigned</span> },
-    { key: 'doi', label: 'DOI', render: (v) => v ? <span className="font-mono text-[10px] text-amber-900 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">{v}</span> : <span className="text-slate-400 italic">None</span> },
-    { key: 'status', label: 'Status', render: (v) => <span className="px-2 py-0.5 text-[10px] font-mono font-bold rounded border bg-[#E6F4EA] text-[#137333] border-[#CEEAD6]">{String(v || 'PUBLISHED').toUpperCase()}</span> },
-    { key: 'actions', label: 'Actions', width: 'w-32', render: (_, art) => {
+    { key: 'volume_number', label: 'Vol / Issue', width: 'w-32 text-center', render: (_, r) => r.volume_number && r.issue_number ? <span className="font-mono text-[11px] bg-slate-100 px-1.5 py-0.5 rounded border border-slate-300 font-bold text-slate-700">Vol {r.volume_number}, Iss {r.issue_number}</span> : <span className="text-slate-400 italic">Unassigned</span> },
+    { key: 'doi', label: 'DOI', width: 'w-44', render: (v) => v ? <span className="font-mono text-[10px] text-amber-900 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">{v}</span> : <span className="text-slate-400 italic">None</span> },
+    { key: 'status', label: 'Status', width: 'w-28 text-center', render: (v) => <span className="px-2 py-0.5 text-[10px] font-mono font-bold rounded border bg-[#E6F4EA] text-[#137333] border-[#CEEAD6]">{String(v || 'PUBLISHED').toUpperCase()}</span> },
+    { key: 'actions', label: 'Actions', width: 'min-w-[210px] text-center', truncate: false, render: (_, art) => {
       const pdfUrl = art.published_url || art.manuscript_url;
       return (
-        <div className="flex items-center gap-1.5">
-          {pdfUrl && (
+        <div className="flex items-center justify-center gap-1.5 whitespace-nowrap">
+          {pdfUrl ? (
             <button
+              type="button"
               onClick={() => handlePreviewPdf(pdfUrl, art.title)}
-              className="text-blue-600 hover:text-blue-800 text-xs font-bold bg-blue-50 px-2 py-0.5 rounded border border-blue-200 inline-flex items-center gap-1"
+              className="text-blue-700 hover:text-blue-900 text-xs font-bold bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded border border-blue-300 inline-flex items-center gap-1 cursor-pointer transition-all shadow-xs"
+              title="View Publication PDF"
             >
               <FaEye /> PDF
             </button>
-          )}
+          ) : null}
           <button
+            type="button"
             onClick={() => handleOpenEditModal(art)}
-            className="text-slate-700 hover:text-slate-900 text-xs font-bold bg-slate-100 px-2 py-0.5 rounded border border-slate-300 inline-flex items-center gap-1"
+            className="text-slate-800 hover:text-slate-950 text-xs font-bold bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded border border-slate-300 inline-flex items-center gap-1 cursor-pointer transition-all shadow-xs"
+            title="Edit Publication"
           >
-            <FaEdit />
+            <FaEdit /> Edit
           </button>
           <button
+            type="button"
             onClick={() => handleDelete(art.article_id)}
-            className="text-red-500 hover:text-red-700 text-xs font-bold bg-red-50 px-2 py-0.5 rounded border border-red-200 inline-flex items-center gap-1 cursor-pointer"
+            className="text-red-700 hover:text-red-900 text-xs font-bold bg-red-50 hover:bg-red-100 px-2.5 py-1 rounded border border-red-300 inline-flex items-center gap-1 cursor-pointer transition-all shadow-xs"
             title="Delete Publication"
           >
-            <FaTrash />
+            <FaTrash /> Delete
           </button>
         </div>
       );

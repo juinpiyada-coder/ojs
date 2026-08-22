@@ -246,6 +246,8 @@ const Home = () => {
   // Featured Research Paper Showcase Slider State
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   const [isSliderPaused, setIsSliderPaused] = useState(false);
+  const [touchStartX, setTouchStartX] = useState(null);
+  const [touchEndX, setTouchEndX] = useState(null);
 
   // Auto-advance slider every 6.5s unless paused by user interaction
   useEffect(() => {
@@ -262,6 +264,31 @@ const Home = () => {
 
   const prevSlide = () => {
     setActiveSlideIndex((prev) => (prev > 0 ? prev - 1 : featuredSliderPapers.length - 1));
+  };
+
+  const handleTouchStart = (e) => {
+    setIsSliderPaused(true);
+    setTouchStartX(e.targetTouches[0].clientX);
+    setTouchEndX(null);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEndX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    setIsSliderPaused(false);
+    if (touchStartX !== null && touchEndX !== null) {
+      const distance = touchStartX - touchEndX;
+      const minSwipeDistance = 40;
+      if (distance > minSwipeDistance) {
+        nextSlide();
+      } else if (distance < -minSwipeDistance) {
+        prevSlide();
+      }
+    }
+    setTouchStartX(null);
+    setTouchEndX(null);
   };
 
   useEffect(() => {
@@ -400,10 +427,41 @@ const Home = () => {
         <div 
           onMouseEnter={() => setIsSliderPaused(true)}
           onMouseLeave={() => setIsSliderPaused(false)}
-          className="w-full relative"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          className="w-full relative select-none"
         >
+          {/* Floating Left Arrow Button */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              prevSlide();
+            }}
+            aria-label="Previous Slide"
+            title="Previous Slide"
+            className="absolute left-2 sm:left-4 md:left-6 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#181B20]/80 hover:bg-[#D32F2F] text-white border border-white/20 hover:border-[#D32F2F] shadow-2xl backdrop-blur-md flex items-center justify-center cursor-pointer transition-all duration-200 active:scale-90 hover:scale-105 group focus:outline-none focus:ring-2 focus:ring-red-500"
+          >
+            <FaChevronLeft className="text-sm sm:text-base group-hover:-translate-x-0.5 transition-transform" />
+          </button>
+
+          {/* Floating Right Arrow Button */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              nextSlide();
+            }}
+            aria-label="Next Slide"
+            title="Next Slide"
+            className="absolute right-2 sm:right-4 md:right-6 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#181B20]/80 hover:bg-[#D32F2F] text-white border border-white/20 hover:border-[#D32F2F] shadow-2xl backdrop-blur-md flex items-center justify-center cursor-pointer transition-all duration-200 active:scale-90 hover:scale-105 group focus:outline-none focus:ring-2 focus:ring-red-500"
+          >
+            <FaChevronRight className="text-sm sm:text-base group-hover:translate-x-0.5 transition-transform" />
+          </button>
+
           {/* Main Slide Content Grid */}
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-14 py-10 md:py-14 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10">
             
             {/* Left Column: Visual Artwork / Cover with subtle cinematic gradient blend */}
             <div className="lg:col-span-5 relative flex items-center justify-center">
@@ -446,9 +504,12 @@ const Home = () => {
                 <div key={activeSlideIndex} className="lg:col-span-7 flex flex-col justify-between space-y-4 animate-fadeIn">
                   
                   {/* Category Pill Tag (Vermilion Red matching Screenshot) */}
-                  <div>
+                  <div className="flex items-center justify-between gap-2">
                     <span className="inline-block px-3 py-1 bg-[#D32F2F] text-white text-[11px] sm:text-xs font-extrabold uppercase tracking-wider rounded-xs shadow-sm">
                       {currentPaper.category || "PERSPECTIVES"}
+                    </span>
+                    <span className="text-xs text-gray-400 font-mono sm:hidden">
+                      {activeSlideIndex + 1} / {featuredSliderPapers.length}
                     </span>
                   </div>
 
@@ -506,22 +567,56 @@ const Home = () => {
 
           </div>
 
-          {/* Bottom Center Pagination Bar matching Screenshot */}
-          <div className="flex items-center justify-center gap-2.5 py-4 bg-[#14171C] border-t border-gray-800/80">
-            {featuredSliderPapers.map((_, idx) => (
-              <button
-                key={idx}
-                type="button"
-                onClick={() => setActiveSlideIndex(idx)}
-                className={`h-2.5 transition-all duration-300 rounded-xs ${
-                  idx === activeSlideIndex 
-                    ? 'w-7 bg-[#D32F2F] shadow-sm shadow-red-500/50' 
-                    : 'w-2.5 bg-white/70 hover:bg-white'
-                }`}
-                title={`Go to slide ${idx + 1}`}
-                aria-label={`Slide ${idx + 1}`}
-              />
-            ))}
+          {/* Bottom Navigation Controls & Pagination Bar */}
+          <div className="flex items-center justify-between sm:justify-center gap-3 sm:gap-6 px-4 sm:px-8 py-3.5 bg-[#14171C] border-t border-gray-800/80">
+            {/* Prev Slide Button */}
+            <button
+              type="button"
+              onClick={prevSlide}
+              aria-label="Slide Left"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-gray-300 hover:text-white bg-[#222730] hover:bg-[#2D333F] border border-gray-700/80 rounded-lg transition-all cursor-pointer active:scale-95 shadow-sm"
+            >
+              <FaChevronLeft className="text-[11px]" />
+              <span>Slide Left</span>
+            </button>
+
+            {/* Pagination Indicators */}
+            <div className="flex items-center gap-1.5 sm:gap-2.5">
+              {featuredSliderPapers.map((_, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => setActiveSlideIndex(idx)}
+                  className="p-1 flex items-center justify-center cursor-pointer transition-all duration-300 group"
+                  title={`Go to slide ${idx + 1}`}
+                  aria-label={`Slide ${idx + 1}`}
+                >
+                  <span 
+                    className={`block h-2 sm:h-2.5 rounded-full transition-all duration-300 ${
+                      idx === activeSlideIndex 
+                        ? 'w-7 sm:w-8 bg-[#D32F2F] shadow-sm shadow-red-500/50' 
+                        : 'w-2 sm:w-2.5 bg-white/60 group-hover:bg-white'
+                    }`}
+                  />
+                </button>
+              ))}
+            </div>
+
+            {/* Slide Counter Badge (Desktop) */}
+            <span className="text-xs font-mono font-bold text-gray-400 bg-black/40 px-2.5 py-1 rounded border border-white/5 hidden md:inline">
+              {activeSlideIndex + 1} / {featuredSliderPapers.length}
+            </span>
+
+            {/* Next Slide Button */}
+            <button
+              type="button"
+              onClick={nextSlide}
+              aria-label="Slide Right"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-gray-300 hover:text-white bg-[#222730] hover:bg-[#2D333F] border border-gray-700/80 rounded-lg transition-all cursor-pointer active:scale-95 shadow-sm"
+            >
+              <span>Slide Right</span>
+              <FaChevronRight className="text-[11px]" />
+            </button>
           </div>
 
         </div>

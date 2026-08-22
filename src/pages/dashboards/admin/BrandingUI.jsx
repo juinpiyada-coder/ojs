@@ -5,6 +5,7 @@ import {
 } from 'react-icons/fa';
 import { apiFetch, resolveFileUrl } from '../../../utils/api';
 import { toast } from 'react-toastify';
+import { useBrand } from '../../../context/BrandingContext';
 
 const PRESET_PALETTES = [
   {
@@ -187,6 +188,8 @@ const BrandingUI = () => {
     }
   };
 
+  const { updateBrand: syncGlobalBrand } = useBrand();
+
   const handleSubmit = async (e) => {
     e?.preventDefault();
     if (!brand.journal_title?.trim()) {
@@ -201,28 +204,18 @@ const BrandingUI = () => {
       journal_title: brand.journal_title.trim(),
       logo_doc_id: brand.logo_doc_id ? parseInt(brand.logo_doc_id) : null,
       favicon_doc_id: brand.favicon_doc_id ? parseInt(brand.favicon_doc_id) : null,
-      public_primary_hex: brand.public_primary_hex || '#2C2C2C',
-      public_secondary_hex: brand.public_secondary_hex || '#F9F6F0',
+      public_primary_hex: brand.public_primary_hex || '#0F5132',
+      public_secondary_hex: brand.public_secondary_hex || '#F0FDF4',
       admin_dash_bg_hex: brand.admin_dash_bg_hex || '#FFFFFF',
-      admin_dash_accent_hex: brand.admin_dash_accent_hex || '#1E2530',
+      admin_dash_accent_hex: brand.admin_dash_accent_hex || '#107C41',
       user_dash_bg_hex: brand.user_dash_bg_hex || '#FFFFFF',
-      user_dash_accent_hex: brand.user_dash_accent_hex || '#8E7C68',
+      user_dash_accent_hex: brand.user_dash_accent_hex || '#059669',
       last_updated_by: 1
     };
 
     try {
-      const res = await apiFetch(`/branding?id=${payload.brand_id}`, {
-        method: 'PUT',
-        body: payload
-      });
-
-      const updated = res.data || payload;
-      setBrand(prev => ({ ...prev, ...updated }));
-
-      // Propagate update globally in browser
-      localStorage.setItem('ojs_white_label', JSON.stringify(updated));
-      window.dispatchEvent(new CustomEvent('brand-updated', { detail: updated }));
-
+      const updated = await syncGlobalBrand(payload);
+      setBrand(prev => ({ ...prev, ...(updated || payload) }));
       toast.success('White-labeling & branding updated successfully across all portals!');
     } catch (err) {
       console.error('Branding save error:', err);

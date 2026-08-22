@@ -18,49 +18,16 @@ import {
   FaUsers,
   FaFileAlt
 } from 'react-icons/fa';
-import { apiFetch, resolveFileUrl } from '../utils/api';
+import { resolveFileUrl } from '../utils/api';
+import { useBrand } from '../context/BrandingContext';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openMobileDropdown, setOpenMobileDropdown] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [brand, setBrand] = useState(() => {
-    try {
-      const saved = localStorage.getItem('ojs_white_label');
-      if (saved) return JSON.parse(saved);
-    } catch {}
-    return {
-      journal_title: 'The Literary Scientist',
-      logo_url: '/logo.png'
-    };
-  });
+  const { brand } = useBrand();
   const { user, logout, isAuthenticated } = useAuth();
   const location = useLocation();
-
-  useEffect(() => {
-    const fetchBranding = async () => {
-      try {
-        const res = await apiFetch('/branding');
-        if (res.data && res.data.length > 0) {
-          setBrand(res.data[0]);
-          localStorage.setItem('ojs_white_label', JSON.stringify(res.data[0]));
-        }
-      } catch (err) {
-        console.error('Failed to fetch branding in header', err);
-      }
-    };
-    fetchBranding();
-
-    const handleBrandEvent = (e) => {
-      if (e.detail) {
-        setBrand(e.detail);
-      } else {
-        fetchBranding();
-      }
-    };
-    window.addEventListener('brand-updated', handleBrandEvent);
-    return () => window.removeEventListener('brand-updated', handleBrandEvent);
-  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -173,19 +140,41 @@ const Header = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-3.5 sm:py-4">
         <div className="flex justify-between items-center gap-4">
           
-          {/* Authentic Journal Logo */}
+          {/* Authentic Journal Logo & Title */}
           <div className="flex-shrink-0 flex items-center">
             <Link 
               to="/" 
-              className="hover:opacity-90 transition-opacity flex items-center gap-2"
+              className="hover:opacity-90 transition-opacity flex items-center gap-3"
               onClick={closeMobileMenu}
-              aria-label={brand.journal_title || "The Literary Scientist Home"}
+              aria-label={brand?.journal_title || "The Literary Scientist"}
             >
-              <img 
-                src={brand.logo_url ? resolveFileUrl(brand.logo_url) : "/logo.png"} 
-                alt={brand.journal_title || "The Literary Scientist"} 
-                className="h-10 sm:h-11 md:h-12 lg:h-13 w-auto max-w-[220px] sm:max-w-[260px] md:max-w-[300px] lg:max-w-[330px] object-contain" 
-              />
+              {brand?.logo_url ? (
+                <img 
+                  src={resolveFileUrl(brand.logo_url)} 
+                  alt={brand?.journal_title || "Journal Logo"} 
+                  className="h-10 sm:h-11 md:h-12 w-auto max-w-[220px] sm:max-w-[280px] object-contain" 
+                />
+              ) : (
+                <div className="flex items-center gap-2.5">
+                  <div 
+                    className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-white shadow-xs"
+                    style={{ backgroundColor: brand?.public_primary_hex || '#0F5132' }}
+                  >
+                    <FaBookOpen className="w-5 h-5" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span 
+                      className="font-serif font-bold text-base sm:text-lg md:text-xl tracking-tight leading-tight"
+                      style={{ color: brand?.public_primary_hex || '#1C2024' }}
+                    >
+                      {brand?.journal_title || 'The Literary Scientist'}
+                    </span>
+                    <span className="text-[9px] sm:text-[10px] tracking-widest uppercase text-slate-500 font-sans font-semibold">
+                      Academic Peer-Reviewed Journal
+                    </span>
+                  </div>
+                </div>
+              )}
             </Link>
           </div>
           

@@ -15,11 +15,13 @@ import {
   FaBars,
   FaTimes
 } from 'react-icons/fa';
-import { apiFetch, resolveImageUrl } from '../../utils/api';
+import { apiFetch, resolveFileUrl, resolveImageUrl } from '../../utils/api';
+import { useBrand } from '../../context/BrandingContext';
 
 const DashboardLayout = ({ title }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { brand } = useBrand();
   const [user, setUser] = useState(() => JSON.parse(localStorage.getItem('user')) || {});
   const isAdmin = (user.role_name || '').toLowerCase() === 'admin';
   
@@ -28,66 +30,27 @@ const DashboardLayout = ({ title }) => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const storedUser = JSON.parse(localStorage.getItem('user')) || {};
-        if (!storedUser.user_id) return;
-        const res = await apiFetch(`/users?id=${storedUser.user_id}`);
-        if (res && res.data) {
-          setUser(res.data);
-          localStorage.setItem('user', JSON.stringify(res.data));
+        const res = await apiFetch('/profile');
+        if (res.user_data) {
+          setUser(res.user_data);
+          localStorage.setItem('user', JSON.stringify(res.user_data));
         }
       } catch (err) {
-        console.error('Failed to refresh user profile:', err);
+        console.error('Failed to sync profile in DashboardLayout', err);
       }
     };
     fetchUserProfile();
-  }, [location.pathname]);
+  }, []);
 
   const getDashboardPrefix = () => {
     const roleStr = (user.role_name || '').toLowerCase();
     if (roleStr.includes('admin')) return '/admin/dashboard';
-    if (roleStr.includes('assistant')) return '/assistant-editor/dashboard';
-    if (roleStr.includes('editor')) return '/editor/dashboard';
+    if (roleStr.includes('editor') && !roleStr.includes('assistant')) return '/editor/dashboard';
+    if (roleStr.includes('assistant') || roleStr.includes('sub_editor')) return '/assistant-editor/dashboard';
     if (roleStr.includes('reviewer')) return '/reviewer/dashboard';
     return '/user/dashboard';
   };
   const dashPrefix = getDashboardPrefix();
-
-  const [brand, setBrand] = useState(() => {
-    try {
-      const saved = localStorage.getItem('ojs_white_label');
-      if (saved) return JSON.parse(saved);
-    } catch {}
-    return {
-      journal_title: 'The Literary Scientist',
-      admin_dash_bg_hex: '#FFFFFF',
-      admin_dash_accent_hex: '#1E2530'
-    };
-  });
-
-  useEffect(() => {
-    const fetchBranding = async () => {
-      try {
-        const res = await apiFetch('/branding');
-        if (res.data && res.data.length > 0) {
-          setBrand(res.data[0]);
-          localStorage.setItem('ojs_white_label', JSON.stringify(res.data[0]));
-        }
-      } catch (err) {
-        console.error('Failed to fetch branding context', err);
-      }
-    };
-    fetchBranding();
-
-    const handleBrandEvent = (e) => {
-      if (e.detail) {
-        setBrand(e.detail);
-      } else {
-        fetchBranding();
-      }
-    };
-    window.addEventListener('brand-updated', handleBrandEvent);
-    return () => window.removeEventListener('brand-updated', handleBrandEvent);
-  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');

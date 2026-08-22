@@ -302,15 +302,26 @@ const BrandingUI = () => {
 
             {/* Quick Live Preview Snippet */}
             <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2">
-              <span className="text-[11px] font-bold uppercase text-slate-500 tracking-wider">Live Title Preview</span>
+              <span className="text-[11px] font-bold uppercase text-slate-500 tracking-wider">Live Title & Logo Preview</span>
               <div className="bg-[#1E2530] text-white p-3 rounded-lg flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded bg-emerald-500 flex items-center justify-center font-bold text-xs text-white">
-                    {brand.journal_title.charAt(0) || 'J'}
-                  </div>
-                  <span className="font-bold text-sm tracking-tight">{brand.journal_title || 'Journal Title'}</span>
+                <div className="flex items-center gap-2.5 min-w-0">
+                  {brand?.logo_url ? (
+                    <img 
+                      src={resolveFileUrl(brand.logo_url)} 
+                      alt="Logo" 
+                      className="h-7 w-auto max-w-[100px] object-contain rounded bg-white/10 p-0.5" 
+                    />
+                  ) : (
+                    <div 
+                      className="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs text-white"
+                      style={{ backgroundColor: brand?.admin_dash_accent_hex || '#107C41' }}
+                    >
+                      {brand.journal_title.charAt(0) || 'J'}
+                    </div>
+                  )}
+                  <span className="font-bold text-sm tracking-tight truncate">{brand.journal_title || 'Journal Title'}</span>
                 </div>
-                <span className="text-[10px] bg-white/20 px-2 py-0.5 rounded font-mono">LIVE PREVIEW</span>
+                <span className="text-[10px] bg-white/20 px-2 py-0.5 rounded font-mono shrink-0">LIVE PREVIEW</span>
               </div>
             </div>
           </div>

@@ -151,19 +151,23 @@ const DashboardLayout = ({ title }) => {
         
         {/* Brand Header */}
         <div 
-          className="px-5 py-4 flex items-center justify-between border-b border-slate-100"
+          className="px-5 py-4.5 flex items-center justify-between border-b border-slate-100"
           style={{ backgroundColor: sidebarBg }}
         >
           <Link to="/" className="text-sm font-bold tracking-tight text-slate-900 hover:opacity-80 transition-opacity flex items-center gap-2.5 min-w-0">
             {brand?.logo_url ? (
-              <img src={resolveFileUrl(brand.logo_url)} alt="Logo" className="h-6 w-auto max-w-[120px] object-contain rounded" />
+              <img 
+                src={resolveFileUrl(brand.logo_url)} 
+                alt="Logo" 
+                className="h-8 max-h-8 w-auto max-w-[130px] object-contain rounded shrink-0" 
+              />
             ) : (
               <span 
-                className="w-3 h-3 rounded-full shrink-0 shadow-xs" 
+                className="w-3.5 h-3.5 rounded-full shrink-0 shadow-xs" 
                 style={{ backgroundColor: accentColor }}
               />
             )}
-            <span className="truncate font-bold text-slate-900 text-sm" title={brand?.journal_title}>
+            <span className="truncate font-bold text-slate-900 text-sm tracking-tight" title={brand?.journal_title}>
               {brand?.journal_title || 'Open Journal System'}
             </span>
           </Link>

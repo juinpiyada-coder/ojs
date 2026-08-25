@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiFetch } from '../../utils/api';
-import { FaBook, FaLayerGroup, FaFileAlt, FaUsers, FaPlus, FaArrowRight, FaFileExcel } from 'react-icons/fa';
-import ExcelDataSheet from '../../components/ExcelDataSheet';
+import { FaBook, FaLayerGroup, FaFileAlt, FaUsers, FaPlus } from 'react-icons/fa';
+import Pagination from '../../components/Pagination';
+
+const ITEMS_PER_PAGE = 5;
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -10,6 +12,9 @@ const AdminDashboard = () => {
   const [recentUsers, setRecentUsers] = useState([]);
   const [recentSubmissions, setRecentSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const [submissionsPage, setSubmissionsPage] = useState(1);
+  const [usersPage, setUsersPage] = useState(1);
 
   const fetchDashboardData = async () => {
     try {
@@ -45,55 +50,26 @@ const AdminDashboard = () => {
     fetchDashboardData();
   }, []);
 
-  const submissionColumns = [
-    { key: 'article_id', label: 'ID', width: 'w-16', render: (v) => <span className="font-mono font-bold text-slate-700">#{v}</span> },
-    { key: 'title', label: 'Paper Title', render: (v) => <span className="font-bold text-slate-900 truncate block max-w-xs">{v}</span> },
-    { key: 'author_name', label: 'Author', render: (v, r) => <span className="text-slate-700">{v || r.author_user_id}</span> },
-    { key: 'volume_number', label: 'Vol / Issue', render: (_, r) => r.volume_number && r.issue_number ? <span className="font-mono text-[11px] bg-slate-100 px-1.5 py-0.5 rounded border border-slate-300">Vol {r.volume_number}, Iss {r.issue_number}</span> : <span className="text-slate-400 italic">Unassigned</span> },
-    { key: 'status', label: 'Status', render: (v) => {
-      const isPub = v === 'published';
-      const isRev = v === 'in_review' || v === 'under_review';
-      const isRej = v === 'rejected';
-      return (
-        <span className={`px-2 py-0.5 text-[10px] font-mono font-bold rounded border ${
-          isPub ? 'bg-[#E6F4EA] text-[#137333] border-[#CEEAD6]' :
-          isRev ? 'bg-[#E8F0FE] text-[#1A73E8] border-[#D2E3FC]' :
-          isRej ? 'bg-[#FCE8E6] text-[#C5221F] border-[#FAD2CF]' :
-          'bg-[#F1F3F4] text-[#3C4043] border-[#DADCE0]'
-        }`}>
-          {String(v || '').toUpperCase()}
-        </span>
-      );
-    }}
-  ];
+  const submissionsTotalPages = Math.ceil(recentSubmissions.length / ITEMS_PER_PAGE);
+  const paginatedSubmissions = recentSubmissions.slice((submissionsPage - 1) * ITEMS_PER_PAGE, submissionsPage * ITEMS_PER_PAGE);
 
-  const userColumns = [
-    { key: 'user_id', label: 'UID', width: 'w-16', render: (v) => <span className="font-mono font-bold text-slate-700">#{v}</span> },
-    { key: 'display_name', label: 'Name', render: (v) => <span className="font-bold text-slate-900">{v}</span> },
-    { key: 'email', label: 'Email', render: (v) => <span className="text-slate-600 font-mono text-[11px]">{v}</span> },
-    { key: 'role_name', label: 'Role', render: (v, r) => <span className="font-mono text-[10px] uppercase font-bold bg-slate-100 px-1.5 py-0.5 rounded border border-slate-300">{v || r.role_id}</span> },
-    { key: 'account_status', label: 'Status', render: (v) => <span className={`px-2 py-0.5 text-[10px] font-mono font-bold rounded border ${v === 'active' ? 'bg-[#E6F4EA] text-[#137333] border-[#CEEAD6]' : 'bg-[#FCE8E6] text-[#C5221F] border-[#FAD2CF]'}`}>{String(v || '').toUpperCase()}</span> }
-  ];
+  const usersTotalPages = Math.ceil(recentUsers.length / ITEMS_PER_PAGE);
+  const paginatedUsers = recentUsers.slice((usersPage - 1) * ITEMS_PER_PAGE, usersPage * ITEMS_PER_PAGE);
 
   return (
     <div className="space-y-6 pb-12">
       {/* Header Banner */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
         <div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Admin Overview & Database Sheets</h2>
-            <span className="px-2 py-0.5 bg-[#107C41] text-white text-[10px] font-mono font-bold rounded flex items-center gap-1">
-              <FaFileExcel /> EXCEL_SHEET_OUTPUT
-            </span>
-          </div>
-          <p className="text-slate-500 text-xs mt-1">Live data streams formatted in spreadsheet grid style with instant CSV export.</p>
+          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Admin Overview</h2>
+          <p className="text-slate-500 text-xs mt-1">Live data streams from the journal database.</p>
         </div>
         <div className="flex items-center gap-2">
           <button 
             onClick={() => navigate('/admin/dashboard/submissions')}
             className="px-4 py-2 bg-[#107C41] hover:bg-[#0E6E38] text-white rounded-lg text-xs font-bold transition-all shadow-xs flex items-center gap-1.5"
           >
-            <FaFileExcel /> All Papers Sheet
+            All Papers
           </button>
           <button 
             onClick={() => navigate('/admin/dashboard/volumes-issues')}
@@ -115,7 +91,6 @@ const AdminDashboard = () => {
             <div className="w-8 h-8 bg-emerald-50 text-emerald-700 rounded-lg flex items-center justify-center border border-emerald-200">
                <FaFileAlt className="text-sm" />
             </div>
-            <span className="text-[10px] font-mono font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">SHEET_A</span>
           </div>
           <p className="text-slate-500 text-[11px] font-mono font-bold uppercase tracking-wider">Total Papers</p>
           <p className="text-2xl font-bold font-mono text-slate-900">{stats.articles}</p>
@@ -129,7 +104,6 @@ const AdminDashboard = () => {
             <div className="w-8 h-8 bg-amber-50 text-amber-700 rounded-lg flex items-center justify-center border border-amber-200">
                <FaBook className="text-sm" />
             </div>
-            <span className="text-[10px] font-mono font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">SHEET_B</span>
           </div>
           <p className="text-slate-500 text-[11px] font-mono font-bold uppercase tracking-wider">Volumes</p>
           <p className="text-2xl font-bold font-mono text-slate-900">{stats.volumes}</p>
@@ -143,7 +117,6 @@ const AdminDashboard = () => {
             <div className="w-8 h-8 bg-purple-50 text-purple-700 rounded-lg flex items-center justify-center border border-purple-200">
                <FaLayerGroup className="text-sm" />
             </div>
-            <span className="text-[10px] font-mono font-bold text-purple-800 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">SHEET_C</span>
           </div>
           <p className="text-slate-500 text-[11px] font-mono font-bold uppercase tracking-wider">Issues</p>
           <p className="text-2xl font-bold font-mono text-slate-900">{stats.issues}</p>
@@ -157,42 +130,120 @@ const AdminDashboard = () => {
             <div className="w-8 h-8 bg-blue-50 text-blue-700 rounded-lg flex items-center justify-center border border-blue-200">
                <FaUsers className="text-sm" />
             </div>
-            <span className="text-[10px] font-mono font-bold text-blue-800 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">SHEET_D</span>
           </div>
           <p className="text-slate-500 text-[11px] font-mono font-bold uppercase tracking-wider">Total Users</p>
           <p className="text-2xl font-bold font-mono text-slate-900">{stats.users}</p>
         </div>
       </div>
 
-      {/* Spreadsheet Grids Section */}
+      {/* Data Tables Section */}
       <div className="space-y-6">
-        {/* 1. Submissions Spreadsheet Grid */}
-        <ExcelDataSheet
-          sheetName="Submissions_Master"
-          workbookName="OJS_Manuscripts_Master.xlsx"
-          columns={submissionColumns}
-          data={recentSubmissions}
-          loading={loading}
-          onRefresh={fetchDashboardData}
-          formulaText={`=SUBMISSIONS_DB!A1:E${recentSubmissions.length} [STATUS=ALL]`}
-          emptyMessage="No paper submissions found in database."
-        />
+        {/* Submissions Table */}
+        <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
+          <div className="px-5 py-4 border-b border-slate-200 flex justify-between items-center">
+            <h3 className="text-sm font-bold text-slate-900">Recent Submissions</h3>
+            <button onClick={() => navigate('/admin/dashboard/submissions')} className="text-xs font-bold text-[#107C41] hover:underline">View All</button>
+          </div>
+          {loading ? (
+            <div className="p-8 text-center text-slate-500 text-sm">Loading...</div>
+          ) : recentSubmissions.length === 0 ? (
+            <div className="p-8 text-center text-slate-400 text-sm">No submissions found.</div>
+          ) : (
+            <>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-50 border-b border-slate-200">
+                    <tr>
+                      <th className="px-4 py-3 font-bold text-slate-600 uppercase tracking-wider">ID</th>
+                      <th className="px-4 py-3 font-bold text-slate-600 uppercase tracking-wider">Title</th>
+                      <th className="px-4 py-3 font-bold text-slate-600 uppercase tracking-wider">Author</th>
+                      <th className="px-4 py-3 font-bold text-slate-600 uppercase tracking-wider">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {paginatedSubmissions.map(art => (
+                      <tr key={art.article_id} className="hover:bg-slate-50">
+                        <td className="px-4 py-3 font-mono font-bold text-slate-700">#{art.article_id}</td>
+                        <td className="px-4 py-3 font-bold text-slate-900 truncate max-w-xs">{art.title}</td>
+                        <td className="px-4 py-3 text-slate-700">{art.author_name || art.author_user_id}</td>
+                        <td className="px-4 py-3">
+                          <span className={`px-2 py-0.5 text-[10px] font-mono font-bold rounded border ${
+                            art.status === 'published' ? 'bg-[#E6F4EA] text-[#137333] border-[#CEEAD6]' :
+                            art.status === 'under_review' || art.status === 'in_review' ? 'bg-[#E8F0FE] text-[#1A73E8] border-[#D2E3FC]' :
+                            'bg-[#F1F3F4] text-[#3C4043] border-[#DADCE0]'
+                          }`}>
+                            {String(art.status || '').toUpperCase()}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <Pagination
+                currentPage={submissionsPage}
+                totalPages={submissionsTotalPages}
+                onPageChange={setSubmissionsPage}
+                itemsPerPage={ITEMS_PER_PAGE}
+                totalItems={recentSubmissions.length}
+              />
+            </>
+          )}
+        </div>
 
-        {/* 2. User Accounts Spreadsheet Grid */}
-        <ExcelDataSheet
-          sheetName="User_Accounts"
-          workbookName="OJS_User_Accounts.xlsx"
-          columns={userColumns}
-          data={recentUsers}
-          loading={loading}
-          onRefresh={fetchDashboardData}
-          formulaText={`=USERS_DB!A1:E${recentUsers.length} [ROLES=ALL]`}
-          emptyMessage="No user accounts found in database."
-        />
+        {/* User Accounts Table */}
+        <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
+          <div className="px-5 py-4 border-b border-slate-200 flex justify-between items-center">
+            <h3 className="text-sm font-bold text-slate-900">User Accounts</h3>
+            <button onClick={() => navigate('/admin/dashboard/users')} className="text-xs font-bold text-[#107C41] hover:underline">View All</button>
+          </div>
+          {loading ? (
+            <div className="p-8 text-center text-slate-500 text-sm">Loading...</div>
+          ) : recentUsers.length === 0 ? (
+            <div className="p-8 text-center text-slate-400 text-sm">No users found.</div>
+          ) : (
+            <>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-50 border-b border-slate-200">
+                    <tr>
+                      <th className="px-4 py-3 font-bold text-slate-600 uppercase tracking-wider">ID</th>
+                      <th className="px-4 py-3 font-bold text-slate-600 uppercase tracking-wider">Name</th>
+                      <th className="px-4 py-3 font-bold text-slate-600 uppercase tracking-wider">Email</th>
+                      <th className="px-4 py-3 font-bold text-slate-600 uppercase tracking-wider">Role</th>
+                      <th className="px-4 py-3 font-bold text-slate-600 uppercase tracking-wider">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {paginatedUsers.map(u => (
+                      <tr key={u.user_id} className="hover:bg-slate-50">
+                        <td className="px-4 py-3 font-mono font-bold text-slate-700">#{u.user_id}</td>
+                        <td className="px-4 py-3 font-bold text-slate-900">{u.display_name}</td>
+                        <td className="px-4 py-3 text-slate-600 font-mono text-[11px]">{u.email}</td>
+                        <td className="px-4 py-3 font-mono text-[10px] uppercase font-bold bg-slate-100 px-1.5 py-0.5 rounded border border-slate-300 inline-block">{u.role_name || u.role_id}</td>
+                        <td className="px-4 py-3">
+                          <span className={`px-2 py-0.5 text-[10px] font-mono font-bold rounded border ${u.account_status === 'active' ? 'bg-[#E6F4EA] text-[#137333] border-[#CEEAD6]' : 'bg-[#FCE8E6] text-[#C5221F] border-[#FAD2CF]'}`}>
+                            {String(u.account_status || '').toUpperCase()}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <Pagination
+                currentPage={usersPage}
+                totalPages={usersTotalPages}
+                onPageChange={setUsersPage}
+                itemsPerPage={ITEMS_PER_PAGE}
+                totalItems={recentUsers.length}
+              />
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
 };
 
 export default AdminDashboard;
-

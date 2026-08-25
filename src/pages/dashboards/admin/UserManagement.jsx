@@ -2,13 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../../../utils/api';
 import { toast } from 'react-toastify';
 import { FaEdit, FaTrash } from 'react-icons/fa';
-import ExcelDataSheet from '../../../components/ExcelDataSheet';
+import Pagination from '../../../components/Pagination';
+
+const ITEMS_PER_PAGE = 10;
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
   const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
@@ -118,68 +121,92 @@ const UserManagement = () => {
   if (loading) return <div className="p-8 text-gray-500 text-sm">Loading users...</div>;
   if (error) return <div className="p-8 text-red-500 text-sm">Error: {error}</div>;
 
-  const userColumns = [
-    { key: 'user_id', label: 'UID', width: 'w-16', render: (v) => <span className="font-mono font-bold text-slate-700">#{v}</span> },
-    { key: 'display_name', label: 'Display Name', render: (v) => <span className="font-bold text-slate-900">{v}</span> },
-    { key: 'email', label: 'Email Address', render: (v) => <span className="text-slate-600 font-mono text-[11px]">{v}</span> },
-    { key: 'role_name', label: 'Assigned Role', render: (v, r) => <span className="font-mono text-[10px] uppercase font-bold bg-slate-100 px-2 py-0.5 rounded border border-slate-300">{v || r.role_id}</span> },
-    { key: 'account_status', label: 'Account Status', render: (v) => (
-      <span className={`px-2 py-0.5 text-[10px] font-mono font-bold rounded border ${
-        v === 'active' ? 'bg-[#E6F4EA] text-[#137333] border-[#CEEAD6]' : 'bg-[#FCE8E6] text-[#C5221F] border-[#FAD2CF]'
-      }`}>
-        {String(v || '').toUpperCase()}
-      </span>
-    )},
-    { key: 'actions', label: 'Actions / Edit', width: 'w-32', render: (_, user) => (
-      <div className="flex items-center gap-2">
-        <button 
-          onClick={() => openModal(user)} 
-          className="text-blue-600 hover:text-blue-800 text-xs font-semibold inline-flex items-center gap-1 bg-blue-50 px-2 py-0.5 rounded border border-blue-200"
-        >
-          <FaEdit /> Edit
-        </button>
-        <button 
-          onClick={() => handleDelete(user.user_id)} 
-          className="text-red-500 hover:text-red-700 text-xs font-semibold inline-flex items-center gap-1 bg-red-50 px-2 py-0.5 rounded border border-red-200"
-        >
-          <FaTrash /> Del
-        </button>
-      </div>
-    )}
-  ];
+  const totalPages = Math.ceil(users.length / ITEMS_PER_PAGE);
+  const paginatedUsers = users.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
   return (
     <div className="space-y-6 pb-12">
       {/* Header Banner */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
         <div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-xl font-bold text-slate-900">User Management Data Sheet</h2>
-            <span className="px-2 py-0.5 bg-[#107C41] text-white text-[10px] font-mono font-bold rounded">
-              EXCEL_VIEW
-            </span>
-          </div>
-          <p className="text-xs text-slate-500 mt-0.5">Manage all system users, credentials, and roles in spreadsheet view</p>
+          <h2 className="text-xl font-bold text-slate-900">User Management</h2>
+          <p className="text-xs text-slate-500 mt-0.5">Manage all system users, credentials, and roles</p>
         </div>
         <button 
           onClick={() => openModal()}
           className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold transition-all shadow-xs"
         >
-          + Add New User Row
+          + Add New User
         </button>
       </div>
 
-      {/* Excel Data Grid */}
-      <ExcelDataSheet
-        sheetName="Users_Master"
-        workbookName="OJS_User_Directory.xlsx"
-        columns={userColumns}
-        data={users}
-        loading={loading}
-        onRefresh={fetchUsers}
-        formulaText={`=USERS_TABLE!A1:F${users.length} [AUTO_SYNC=TRUE]`}
-        emptyMessage="No users found in database spreadsheet."
-      />
+      {/* Users Table */}
+      <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
+        {loading ? (
+          <div className="p-8 text-center text-slate-500 text-sm">Loading users...</div>
+        ) : users.length === 0 ? (
+          <div className="p-8 text-center text-slate-400 text-sm">No users found.</div>
+        ) : (
+          <>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-slate-50 border-b border-slate-200">
+                <tr>
+                  <th className="px-4 py-3 font-bold text-slate-600 uppercase tracking-wider">ID</th>
+                  <th className="px-4 py-3 font-bold text-slate-600 uppercase tracking-wider">Name</th>
+                  <th className="px-4 py-3 font-bold text-slate-600 uppercase tracking-wider">Email</th>
+                  <th className="px-4 py-3 font-bold text-slate-600 uppercase tracking-wider">Role</th>
+                  <th className="px-4 py-3 font-bold text-slate-600 uppercase tracking-wider">Status</th>
+                  <th className="px-4 py-3 font-bold text-slate-600 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {paginatedUsers.map(user => (
+                  <tr key={user.user_id} className="hover:bg-slate-50">
+                    <td className="px-4 py-3 font-mono font-bold text-slate-700">#{user.user_id}</td>
+                    <td className="px-4 py-3 font-bold text-slate-900">{user.display_name}</td>
+                    <td className="px-4 py-3 text-slate-600 font-mono text-[11px]">{user.email}</td>
+                    <td className="px-4 py-3">
+                      <span className="font-mono text-[10px] uppercase font-bold bg-slate-100 px-2 py-0.5 rounded border border-slate-300">{user.role_name || user.role_id}</span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={`px-2 py-0.5 text-[10px] font-mono font-bold rounded border ${
+                        user.account_status === 'active' ? 'bg-[#E6F4EA] text-[#137333] border-[#CEEAD6]' : 'bg-[#FCE8E6] text-[#C5221F] border-[#FAD2CF]'
+                      }`}>
+                        {String(user.account_status || '').toUpperCase()}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <button 
+                          onClick={() => openModal(user)} 
+                          className="text-blue-600 hover:text-blue-800 text-xs font-semibold inline-flex items-center gap-1 bg-blue-50 px-2 py-0.5 rounded border border-blue-200"
+                        >
+                          <FaEdit /> Edit
+                        </button>
+                        <button 
+                          onClick={() => handleDelete(user.user_id)} 
+                          className="text-red-500 hover:text-red-700 text-xs font-semibold inline-flex items-center gap-1 bg-red-50 px-2 py-0.5 rounded border border-red-200"
+                        >
+                          <FaTrash /> Del
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            itemsPerPage={ITEMS_PER_PAGE}
+            totalItems={users.length}
+          />
+          </>
+        )}
+      </div>
 
       {showModal && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-[100] p-4">

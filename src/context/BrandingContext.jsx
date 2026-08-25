@@ -26,7 +26,7 @@ const BrandingContext = createContext({
 export const BrandingProvider = ({ children }) => {
   const [brand, setBrand] = useState(() => {
     try {
-      const saved = localStorage.getItem('ojs_white_label');
+      const saved = localStorage.getItem('white_label');
       if (saved) return JSON.parse(saved);
     } catch {}
     return DEFAULT_BRAND;
@@ -77,7 +77,7 @@ export const BrandingProvider = ({ children }) => {
         const item = res.data[0];
         setBrand(item);
         applyThemeVariables(item);
-        localStorage.setItem('ojs_white_label', JSON.stringify(item));
+        localStorage.setItem('white_label', JSON.stringify(item));
       }
     } catch (err) {
       console.warn('[BrandingContext] Could not fetch remote branding, using cached/default:', err.message);
@@ -111,7 +111,7 @@ export const BrandingProvider = ({ children }) => {
     const updated = res.data || payload;
     setBrand(updated);
     applyThemeVariables(updated);
-    localStorage.setItem('ojs_white_label', JSON.stringify(updated));
+    localStorage.setItem('white_label', JSON.stringify(updated));
     window.dispatchEvent(new CustomEvent('brand-updated', { detail: updated }));
     return updated;
   };

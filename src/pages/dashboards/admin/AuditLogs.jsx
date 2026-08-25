@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { apiFetch } from '../../../utils/api';
 import { toast } from 'react-toastify';
-import ExcelDataSheet from '../../../components/ExcelDataSheet';
 import { 
   FaHistory, 
   FaFilter, 
@@ -14,6 +13,9 @@ import {
   FaFileCode,
   FaTimes
 } from 'react-icons/fa';
+import Pagination from '../../../components/Pagination';
+
+const ITEMS_PER_PAGE = 10;
 
 // Standard fallback audit logs representing journal lifecycle events
 const DEFAULT_AUDIT_LOGS = [
@@ -22,7 +24,7 @@ const DEFAULT_AUDIT_LOGS = [
     user_id: 1,
     user_name: 'Administrator',
     action_type: 'LOGIN',
-    table_name: 'ojs_master_user',
+    table_name: 'master_user',
     record_id: 1,
     ip_address: '127.0.0.1',
     created_at: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
@@ -34,7 +36,7 @@ const DEFAULT_AUDIT_LOGS = [
     user_id: 2,
     user_name: 'Prof. Dr. Binda Sah',
     action_type: 'UPDATE',
-    table_name: 'ojs_review_assignment',
+    table_name: 'review_assignment',
     record_id: 1,
     ip_address: '182.73.12.90',
     created_at: new Date(Date.now() - 1000 * 60 * 65).toISOString(),
@@ -46,7 +48,7 @@ const DEFAULT_AUDIT_LOGS = [
     user_id: 1,
     user_name: 'Chief Editor',
     action_type: 'INSERT',
-    table_name: 'ojs_article',
+    table_name: 'article',
     record_id: 10,
     ip_address: '127.0.0.1',
     created_at: '2025-07-20T12:00:15Z',
@@ -58,7 +60,7 @@ const DEFAULT_AUDIT_LOGS = [
     user_id: 1,
     user_name: 'Chief Editor',
     action_type: 'INSERT',
-    table_name: 'ojs_article',
+    table_name: 'article',
     record_id: 9,
     ip_address: '127.0.0.1',
     created_at: '2025-07-20T11:55:40Z',
@@ -70,7 +72,7 @@ const DEFAULT_AUDIT_LOGS = [
     user_id: 1,
     user_name: 'Chief Editor',
     action_type: 'INSERT',
-    table_name: 'ojs_article',
+    table_name: 'article',
     record_id: 8,
     ip_address: '127.0.0.1',
     created_at: '2025-07-20T11:50:00Z',
@@ -82,7 +84,7 @@ const DEFAULT_AUDIT_LOGS = [
     user_id: 1,
     user_name: 'Chief Editor',
     action_type: 'INSERT',
-    table_name: 'ojs_article',
+    table_name: 'article',
     record_id: 7,
     ip_address: '127.0.0.1',
     created_at: '2025-07-20T11:45:30Z',
@@ -94,7 +96,7 @@ const DEFAULT_AUDIT_LOGS = [
     user_id: 1,
     user_name: 'Chief Editor',
     action_type: 'INSERT',
-    table_name: 'ojs_article',
+    table_name: 'article',
     record_id: 6,
     ip_address: '127.0.0.1',
     created_at: '2025-07-20T11:40:00Z',
@@ -106,7 +108,7 @@ const DEFAULT_AUDIT_LOGS = [
     user_id: 1,
     user_name: 'Chief Editor',
     action_type: 'INSERT',
-    table_name: 'ojs_article',
+    table_name: 'article',
     record_id: 5,
     ip_address: '127.0.0.1',
     created_at: '2025-07-20T11:35:00Z',
@@ -118,7 +120,7 @@ const DEFAULT_AUDIT_LOGS = [
     user_id: 1,
     user_name: 'Chief Editor',
     action_type: 'INSERT',
-    table_name: 'ojs_article',
+    table_name: 'article',
     record_id: 4,
     ip_address: '127.0.0.1',
     created_at: '2025-07-20T11:30:00Z',
@@ -130,7 +132,7 @@ const DEFAULT_AUDIT_LOGS = [
     user_id: 1,
     user_name: 'Chief Editor',
     action_type: 'INSERT',
-    table_name: 'ojs_article',
+    table_name: 'article',
     record_id: 3,
     ip_address: '127.0.0.1',
     created_at: '2025-07-20T11:25:00Z',
@@ -142,7 +144,7 @@ const DEFAULT_AUDIT_LOGS = [
     user_id: 1,
     user_name: 'Chief Editor',
     action_type: 'INSERT',
-    table_name: 'ojs_article',
+    table_name: 'article',
     record_id: 2,
     ip_address: '127.0.0.1',
     created_at: '2025-07-20T11:20:00Z',
@@ -154,7 +156,7 @@ const DEFAULT_AUDIT_LOGS = [
     user_id: 1,
     user_name: 'Chief Editor',
     action_type: 'INSERT',
-    table_name: 'ojs_article',
+    table_name: 'article',
     record_id: 1,
     ip_address: '127.0.0.1',
     created_at: '2025-07-20T11:15:00Z',
@@ -166,7 +168,7 @@ const DEFAULT_AUDIT_LOGS = [
     user_id: 1,
     user_name: 'Administrator',
     action_type: 'INSERT',
-    table_name: 'ojs_volume',
+    table_name: 'volume',
     record_id: 3,
     ip_address: '127.0.0.1',
     created_at: '2025-07-20T11:00:00Z',
@@ -178,7 +180,7 @@ const DEFAULT_AUDIT_LOGS = [
     user_id: 2,
     user_name: 'Editor In Chief',
     action_type: 'LOGIN',
-    table_name: 'ojs_master_user',
+    table_name: 'master_user',
     record_id: 2,
     ip_address: '182.73.12.90',
     created_at: '2025-07-20T10:30:12Z',
@@ -190,7 +192,7 @@ const DEFAULT_AUDIT_LOGS = [
     user_id: 1,
     user_name: 'System Root',
     action_type: 'UPDATE',
-    table_name: 'ojs_system_settings',
+    table_name: 'system_settings',
     record_id: 1,
     ip_address: '127.0.0.1',
     created_at: '2025-07-20T10:14:22Z',
@@ -206,6 +208,7 @@ const AuditLogs = () => {
   const [tableFilter, setTableFilter] = useState('ALL');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedLog, setSelectedLog] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const fetchLogs = async () => {
     try {
@@ -244,6 +247,9 @@ const AuditLogs = () => {
     });
   }, [logs, actionFilter, tableFilter, searchTerm]);
 
+  const totalPages = Math.ceil(filteredLogs.length / ITEMS_PER_PAGE);
+  const paginatedLogs = filteredLogs.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
   // Summary Metrics
   const stats = useMemo(() => {
     return {
@@ -254,81 +260,6 @@ const AuditLogs = () => {
       uniqueUsers: new Set(logs.map(l => l.user_name || l.user_id)).size
     };
   }, [logs]);
-
-  const auditColumns = [
-    { 
-      key: 'log_id', 
-      label: 'Log ID', 
-      width: 'w-20', 
-      render: (v) => <span className="font-mono font-bold text-slate-700">#{v}</span> 
-    },
-    { 
-      key: 'created_at', 
-      label: 'Timestamp', 
-      width: 'w-44',
-      render: (v) => <span className="font-mono text-slate-600 text-xs">{new Date(v).toLocaleString()}</span> 
-    },
-    { 
-      key: 'user_name', 
-      label: 'Operator User', 
-      render: (v, r) => (
-        <span className="font-bold text-slate-800 flex items-center gap-1.5">
-          <FaUserShield className="text-slate-400 text-xs" />
-          {v || 'System'} {r.user_id ? <span className="text-slate-400 text-[11px] font-normal">(ID #{r.user_id})</span> : ''}
-        </span>
-      )
-    },
-    { 
-      key: 'action_type', 
-      label: 'Action Executed', 
-      width: 'w-32',
-      render: (v) => {
-        let badgeColor = 'bg-slate-100 text-slate-700 border-slate-300';
-        if (v === 'INSERT') badgeColor = 'bg-emerald-50 text-emerald-700 border-emerald-300';
-        if (v === 'UPDATE') badgeColor = 'bg-blue-50 text-blue-700 border-blue-300';
-        if (v === 'DELETE') badgeColor = 'bg-rose-50 text-rose-700 border-rose-300';
-        if (v === 'LOGIN') badgeColor = 'bg-purple-50 text-purple-700 border-purple-300';
-        return (
-          <span className={`font-mono font-bold text-[11px] px-2 py-0.5 rounded border uppercase ${badgeColor}`}>
-            {v}
-          </span>
-        );
-      }
-    },
-    { 
-      key: 'table_name', 
-      label: 'Target Table & ID', 
-      render: (v, r) => (
-        <span className="font-mono text-xs text-slate-700 font-semibold flex items-center gap-1">
-          <FaDatabase className="text-slate-400 text-[10px]" />
-          <span>{v}</span>
-          <span className="text-slate-400 font-normal">[ID: {r.record_id}]</span>
-        </span>
-      )
-    },
-    { 
-      key: 'ip_address', 
-      label: 'IP Address', 
-      width: 'w-32',
-      render: (v) => <span className="font-mono text-slate-500 text-xs">{v || '127.0.0.1'}</span> 
-    },
-    {
-      key: 'details',
-      label: 'Payload',
-      width: 'w-24',
-      render: (_, r) => (
-        <button
-          type="button"
-          onClick={() => setSelectedLog(r)}
-          className="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-xs font-semibold flex items-center gap-1 transition-colors"
-          title="Inspect JSON Payload"
-        >
-          <FaFileCode className="text-slate-500" />
-          <span>View</span>
-        </button>
-      )
-    }
-  ];
 
   return (
     <div className="space-y-6 pb-12">
@@ -357,9 +288,6 @@ const AuditLogs = () => {
             <FaSyncAlt className={`text-xs ${loading ? 'animate-spin' : ''}`} />
             <span>Refresh Logs</span>
           </button>
-          <span className="px-2.5 py-1 bg-[#107C41] text-white text-[11px] font-mono font-bold rounded-lg shadow-2xs">
-            EXCEL_SHEET_VIEW
-          </span>
         </div>
       </div>
 
@@ -393,7 +321,7 @@ const AuditLogs = () => {
             </span>
             <select
               value={actionFilter}
-              onChange={(e) => setActionFilter(e.target.value)}
+              onChange={(e) => { setActionFilter(e.target.value); setCurrentPage(1); }}
               className="px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-800 focus:outline-hidden focus:ring-1 focus:ring-slate-400"
             >
               <option value="ALL">All Actions</option>
@@ -411,15 +339,15 @@ const AuditLogs = () => {
             </span>
             <select
               value={tableFilter}
-              onChange={(e) => setTableFilter(e.target.value)}
+              onChange={(e) => { setTableFilter(e.target.value); setCurrentPage(1); }}
               className="px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-800 focus:outline-hidden focus:ring-1 focus:ring-slate-400"
             >
               <option value="ALL">All Tables</option>
-              <option value="ojs_article">ojs_article</option>
-              <option value="ojs_volume">ojs_volume</option>
-              <option value="ojs_master_user">ojs_master_user</option>
-              <option value="ojs_review_assignment">ojs_review_assignment</option>
-              <option value="ojs_system_settings">ojs_system_settings</option>
+              <option value="article">article</option>
+              <option value="volume">volume</option>
+              <option value="master_user">master_user</option>
+              <option value="review_assignment">review_assignment</option>
+              <option value="system_settings">system_settings</option>
             </select>
           </div>
         </div>
@@ -431,23 +359,82 @@ const AuditLogs = () => {
             type="text"
             placeholder="Search by user, table, ID..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
             className="w-full pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 focus:outline-hidden focus:ring-1 focus:ring-slate-400"
           />
         </div>
       </div>
 
-      {/* Excel Sheet Data Grid */}
-      <ExcelDataSheet
-        sheetName="Audit_Trail"
-        workbookName="OJS_Audit_Logs.xlsx"
-        columns={auditColumns}
-        data={filteredLogs}
-        loading={loading}
-        onRefresh={fetchLogs}
-        formulaText={`=AUDIT_LOGS!A1:G${filteredLogs.length} [FILTERED_TOTAL=${filteredLogs.length}]`}
-        emptyMessage="No audit logs matched your current filter criteria."
-      />
+      {/* Audit Logs Table */}
+      <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
+        {loading ? (
+          <div className="p-8 text-center text-slate-500 text-sm">Loading audit logs...</div>
+        ) : filteredLogs.length === 0 ? (
+          <div className="p-8 text-center text-slate-400 text-sm">No audit logs matched your current filter criteria.</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-slate-50 border-b border-slate-200">
+                <tr>
+                  <th className="px-4 py-3 font-bold text-slate-600 uppercase tracking-wider">Log ID</th>
+                  <th className="px-4 py-3 font-bold text-slate-600 uppercase tracking-wider">Timestamp</th>
+                  <th className="px-4 py-3 font-bold text-slate-600 uppercase tracking-wider">Operator</th>
+                  <th className="px-4 py-3 font-bold text-slate-600 uppercase tracking-wider">Action</th>
+                  <th className="px-4 py-3 font-bold text-slate-600 uppercase tracking-wider">Table & Record</th>
+                  <th className="px-4 py-3 font-bold text-slate-600 uppercase tracking-wider">IP Address</th>
+                  <th className="px-4 py-3 font-bold text-slate-600 uppercase tracking-wider">Payload</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {paginatedLogs.map(log => {
+                  let badgeColor = 'bg-slate-100 text-slate-700 border-slate-300';
+                  if (log.action_type === 'INSERT') badgeColor = 'bg-emerald-50 text-emerald-700 border-emerald-300';
+                  if (log.action_type === 'UPDATE') badgeColor = 'bg-blue-50 text-blue-700 border-blue-300';
+                  if (log.action_type === 'DELETE') badgeColor = 'bg-rose-50 text-rose-700 border-rose-300';
+                  if (log.action_type === 'LOGIN') badgeColor = 'bg-purple-50 text-purple-700 border-purple-300';
+                  return (
+                    <tr key={log.log_id} className="hover:bg-slate-50">
+                      <td className="px-4 py-3 font-mono font-bold text-slate-700">#{log.log_id}</td>
+                      <td className="px-4 py-3 font-mono text-slate-600 text-xs">{new Date(log.created_at).toLocaleString()}</td>
+                      <td className="px-4 py-3 font-bold text-slate-800">
+                        {log.user_name || 'System'} {log.user_id ? <span className="text-slate-400 text-[11px] font-normal">(ID #{log.user_id})</span> : ''}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={`font-mono font-bold text-[11px] px-2 py-0.5 rounded border uppercase ${badgeColor}`}>
+                          {log.action_type}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 font-mono text-xs text-slate-700 font-semibold">
+                        {log.table_name} [ID: {log.record_id}]
+                      </td>
+                      <td className="px-4 py-3 font-mono text-slate-500 text-xs">{log.ip_address || '127.0.0.1'}</td>
+                      <td className="px-4 py-3">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedLog(log)}
+                          className="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-xs font-semibold flex items-center gap-1 transition-colors"
+                        >
+                          <FaFileCode className="text-slate-500" />
+                          <span>View</span>
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+        {!loading && filteredLogs.length > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            itemsPerPage={ITEMS_PER_PAGE}
+            totalItems={filteredLogs.length}
+          />
+        )}
+      </div>
 
       {/* JSON Payload Inspection Modal */}
       {selectedLog && (

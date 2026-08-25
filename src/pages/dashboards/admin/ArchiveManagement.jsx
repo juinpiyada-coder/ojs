@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { 
   FaArchive, FaPlus, FaSearch, FaFilter, FaFilePdf, FaEdit, FaTrash, 
   FaEye, FaTimes, FaCloudUploadAlt, FaCalendarAlt, FaBookOpen, FaUser, 
-  FaTag, FaLayerGroup, FaCheckCircle, FaExternalLinkAlt, FaDownload,
-  FaFileExcel, FaThLarge, FaTable
+  FaTag, FaLayerGroup, FaCheckCircle, FaExternalLinkAlt, FaDownload
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { apiFetch, resolveFileUrl } from '../../../utils/api';
-import ExcelDataSheet from '../../../components/ExcelDataSheet';
+import Pagination from '../../../components/Pagination';
+
+const ITEMS_PER_PAGE = 10;
 
 const ArchiveManagement = () => {
   const [articles, setArticles] = useState([]);
@@ -19,49 +20,7 @@ const ArchiveManagement = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedVolumeFilter, setSelectedVolumeFilter] = useState('ALL');
   const [selectedIssueFilter, setSelectedIssueFilter] = useState('ALL');
-  const [viewMode, setViewMode] = useState('sheet'); // 'sheet' | 'cards'
-  
-  const archiveColumns = [
-    { key: 'article_id', label: 'ID', width: 'w-14 text-center', render: (v) => <span className="font-mono font-bold text-slate-700">#{v}</span> },
-    { key: 'title', label: 'Publication Title', render: (v) => <span className="font-bold text-slate-900 truncate block max-w-xs" title={v}>{v}</span> },
-    { key: 'author_name', label: 'Author(s)', render: (v) => <span className="text-slate-800 font-medium truncate block max-w-[130px]" title={v}>{v || 'Anonymous'}</span> },
-    { key: 'volume_number', label: 'Vol / Issue', width: 'w-28 text-center shrink-0', render: (_, r) => r.volume_number && r.issue_number ? <span className="font-mono text-[10px] bg-slate-100 px-1.5 py-0.5 rounded border border-slate-300 font-bold text-slate-700">Vol {r.volume_number}, Iss {r.issue_number}</span> : <span className="text-slate-400 italic text-[11px]">Unassigned</span> },
-    { key: 'doi', label: 'DOI', width: 'w-32 text-center shrink-0', render: (v) => v ? <span className="font-mono text-[9px] text-amber-900 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 truncate block max-w-[120px] mx-auto" title={v}>{v}</span> : <span className="text-slate-400 italic text-[11px]">None</span> },
-    { key: 'status', label: 'Status', width: 'w-24 text-center shrink-0', render: (v) => <span className="px-2 py-0.5 text-[9px] font-mono font-bold rounded border bg-[#E6F4EA] text-[#137333] border-[#CEEAD6] uppercase">{String(v || 'PUBLISHED')}</span> },
-    { key: 'actions', label: 'Actions', width: 'w-48 text-center shrink-0', truncate: false, render: (_, art) => {
-      const pdfUrl = art.published_url || art.manuscript_url;
-      return (
-        <div className="flex items-center justify-center gap-1 whitespace-nowrap">
-          {pdfUrl ? (
-            <button
-              type="button"
-              onClick={() => handlePreviewPdf(pdfUrl, art.title)}
-              className="text-blue-700 hover:text-blue-900 text-xs font-bold bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded border border-blue-300 inline-flex items-center gap-0.5 cursor-pointer transition-all shadow-xs"
-              title="View Publication PDF"
-            >
-              <FaEye className="text-[11px]" /> PDF
-            </button>
-          ) : null}
-          <button
-            type="button"
-            onClick={() => handleOpenEditModal(art)}
-            className="text-slate-800 hover:text-slate-950 text-xs font-bold bg-slate-100 hover:bg-slate-200 px-2 py-1 rounded border border-slate-300 inline-flex items-center gap-0.5 cursor-pointer transition-all shadow-xs"
-            title="Edit Publication"
-          >
-            <FaEdit className="text-[11px]" /> Edit
-          </button>
-          <button
-            type="button"
-            onClick={() => handleDelete(art.article_id)}
-            className="text-red-700 hover:text-red-900 text-xs font-bold bg-red-50 hover:bg-red-100 px-2 py-1 rounded border border-red-300 inline-flex items-center gap-0.5 cursor-pointer transition-all shadow-xs"
-            title="Delete Publication"
-          >
-            <FaTrash className="text-[10px]" /> Delete
-          </button>
-        </div>
-      );
-    }}
-  ];
+  const [currentPage, setCurrentPage] = useState(1);
   
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -388,6 +347,9 @@ const ArchiveManagement = () => {
     return matchesSearch && matchesVolume && matchesIssue;
   });
 
+  const totalPages = Math.ceil(filteredArticles.length / ITEMS_PER_PAGE);
+  const paginatedArticles = filteredArticles.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
   return (
     <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-8 animate-fadeIn">
       {/* Header Banner */}
@@ -457,7 +419,7 @@ const ArchiveManagement = () => {
           <input
             type="text"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
             placeholder="Search by title, author, DOI, keywords..."
             className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-400/30 focus:border-gray-400 transition-all"
           />
@@ -472,6 +434,7 @@ const ArchiveManagement = () => {
               onChange={(e) => {
                 setSelectedVolumeFilter(e.target.value);
                 setSelectedIssueFilter('ALL');
+                setCurrentPage(1);
               }}
               className="px-3.5 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-gray-400"
             >
@@ -488,7 +451,7 @@ const ArchiveManagement = () => {
             <span className="text-xs font-semibold uppercase text-gray-500">Issue:</span>
             <select
               value={selectedIssueFilter}
-              onChange={(e) => setSelectedIssueFilter(e.target.value)}
+              onChange={(e) => { setSelectedIssueFilter(e.target.value); setCurrentPage(1); }}
               className="px-3.5 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-gray-400"
             >
               <option value="ALL">All Issues</option>
@@ -499,42 +462,11 @@ const ArchiveManagement = () => {
               ))}
             </select>
           </div>
-
-          {/* View Mode Toggle */}
-          <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-300">
-            <button
-              onClick={() => setViewMode('sheet')}
-              className={`px-3 py-1 text-xs font-bold rounded-md flex items-center gap-1 transition-all ${
-                viewMode === 'sheet' ? 'bg-[#107C41] text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <FaFileExcel /> Sheet View
-            </button>
-            <button
-              onClick={() => setViewMode('cards')}
-              className={`px-3 py-1 text-xs font-bold rounded-md flex items-center gap-1 transition-all ${
-                viewMode === 'cards' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <FaThLarge /> Card View
-            </button>
-          </div>
         </div>
       </div>
 
-      {/* Articles List / Excel Sheet */}
-      {viewMode === 'sheet' ? (
-        <ExcelDataSheet
-          sheetName="Archive_Publications"
-          workbookName="OJS_Archive_Publications.xlsx"
-          columns={archiveColumns}
-          data={filteredArticles}
-          loading={loading}
-          onRefresh={fetchData}
-          formulaText={`=ARCHIVES!A1:G${filteredArticles.length} [VOL=${selectedVolumeFilter}, ISS=${selectedIssueFilter}]`}
-          emptyMessage="No publications matched criteria in spreadsheet."
-        />
-      ) : loading ? (
+      {/* Articles List */}
+      {loading ? (
         <div className="text-center py-20 bg-white rounded-2xl border border-gray-200">
           <div className="animate-spin w-8 h-8 border-3 border-gray-400 border-t-transparent rounded-full mx-auto mb-4" />
           <p className="text-gray-500 font-medium">Loading archives & publications...</p>
@@ -560,7 +492,7 @@ const ArchiveManagement = () => {
       ) : (
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
           <div className="divide-y divide-gray-100">
-            {filteredArticles.map((art) => {
+            {paginatedArticles.map((art) => {
               const pdfUrl = art.published_url || art.manuscript_url;
               return (
                 <div key={art.article_id} className="p-6 hover:bg-gray-50 transition-colors flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
@@ -1030,8 +962,15 @@ const ArchiveManagement = () => {
                 >
                   <FaTimes className="w-5 h-5" />
                 </button>
-              </div>
-            </div>
+          </div>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            itemsPerPage={ITEMS_PER_PAGE}
+            totalItems={filteredArticles.length}
+          />
+        </div>
 
             <div className="flex-1 bg-gray-900">
               <iframe

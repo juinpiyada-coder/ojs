@@ -119,7 +119,7 @@ const Register = () => {
         }
       });
 
-      toast.success(`Welcome to OJS! Signed in as ${data.data?.role_name || selectedRole}`);
+      toast.success(`Welcome! Signed in as ${data.data?.role_name || selectedRole}`);
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.data));
       window.location.href = data.redirect_url || '/user/dashboard';

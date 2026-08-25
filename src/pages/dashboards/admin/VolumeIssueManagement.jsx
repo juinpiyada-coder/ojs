@@ -14,17 +14,18 @@ import {
   FaChevronUp,
   FaFileAlt,
   FaImage,
-  FaFileExcel,
-  FaTable,
   FaThLarge
 } from 'react-icons/fa';
-import ExcelDataSheet from '../../../components/ExcelDataSheet';
+import Pagination from '../../../components/Pagination';
+
+const ITEMS_PER_PAGE = 10;
 
 const VolumeIssueManagement = () => {
   const [volumes, setVolumes] = useState([]);
   const [issues, setIssues] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expandedVolumeId, setExpandedVolumeId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Volume Modal State
   const [showVolumeModal, setShowVolumeModal] = useState(false);
@@ -271,39 +272,6 @@ const VolumeIssueManagement = () => {
     }
   };
 
-  const [viewMode, setViewMode] = useState('sheet'); // 'sheet' | 'cards'
-
-  const volumeIssueSheetColumns = [
-    { key: 'issue_id', label: 'Issue ID', width: 'w-20', render: (v) => <span className="font-mono font-bold text-slate-700">#{v}</span> },
-    { key: 'volume_number', label: 'Vol', width: 'w-16', render: (v) => <span className="font-mono font-bold bg-slate-100 px-1.5 py-0.5 rounded border border-slate-300">Vol {v}</span> },
-    { key: 'issue_number', label: 'Issue #', width: 'w-16', render: (v) => <span className="font-mono font-bold bg-slate-100 px-1.5 py-0.5 rounded border border-slate-300">Iss {v}</span> },
-    { key: 'issue_title', label: 'Issue Title', render: (v) => <span className="font-bold text-slate-900">{v}</span> },
-    { key: 'publication_date', label: 'Publication Date', render: (v) => <span className="font-mono text-slate-600 text-xs">{v ? new Date(v).toLocaleDateString() : 'N/A'}</span> },
-    { key: 'is_published', label: 'Status', render: (v) => (
-      <span className={`px-2 py-0.5 text-[10px] font-mono font-bold rounded border ${
-        v ? 'bg-[#E6F4EA] text-[#137333] border-[#CEEAD6]' : 'bg-[#FEF7E0] text-[#B06000] border-[#FEEFC3]'
-      }`}>
-        {v ? 'PUBLISHED' : 'DRAFT'}
-      </span>
-    )},
-    { key: 'actions', label: 'Actions / Manage', width: 'w-28', render: (_, issue) => (
-      <div className="flex items-center gap-1.5">
-        <button 
-          onClick={() => openIssueModal(issue)}
-          className="text-blue-600 hover:text-blue-800 text-xs font-bold bg-blue-50 px-2 py-0.5 rounded border border-blue-200"
-        >
-          <FaEdit />
-        </button>
-        <button 
-          onClick={() => handleDeleteIssue(issue.issue_id)}
-          className="text-red-500 hover:text-red-700 text-xs font-bold bg-red-50 px-2 py-0.5 rounded border border-red-200"
-        >
-          <FaTrash />
-        </button>
-      </div>
-    )}
-  ];
-
   if (loading && volumes.length === 0) {
     return <div className="p-8 text-gray-500 font-bold">Loading volumes and issues...</div>;
   }
@@ -321,35 +289,12 @@ const VolumeIssueManagement = () => {
                 <FaLayerGroup className="text-slate-600" />
                 Volumes & Issues Management
               </h2>
-              <span className="px-2 py-0.5 bg-[#107C41] text-white text-[10px] font-mono font-bold rounded">
-                EXCEL_ENABLED
-              </span>
             </div>
             <p className="text-slate-500 text-xs mt-0.5">
               Organize journal publication hierarchy: Volumes contain Issues, and Issues contain Articles.
             </p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
-            {/* View Mode Toggle */}
-            <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-300">
-              <button
-                onClick={() => setViewMode('sheet')}
-                className={`px-3 py-1 text-xs font-bold rounded-md flex items-center gap-1 transition-all ${
-                  viewMode === 'sheet' ? 'bg-[#107C41] text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                <FaFileExcel /> Sheet Grid
-              </button>
-              <button
-                onClick={() => setViewMode('cards')}
-                className={`px-3 py-1 text-xs font-bold rounded-md flex items-center gap-1 transition-all ${
-                  viewMode === 'cards' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                <FaThLarge /> Tree Cards
-              </button>
-            </div>
-
             <button
               onClick={() => openVolumeModal()}
               className="px-3.5 py-1.5 bg-slate-900 text-white rounded-lg font-bold hover:bg-slate-800 transition-all text-xs flex items-center gap-1.5"
@@ -397,30 +342,16 @@ const VolumeIssueManagement = () => {
         </div>
       </div>
 
-      {/* Conditional: Excel Spreadsheet View OR Tree Card View */}
-      {viewMode === 'sheet' ? (
-        <ExcelDataSheet
-          sheetName="Issues_Directory"
-          workbookName="OJS_Volumes_Issues_Master.xlsx"
-          columns={volumeIssueSheetColumns}
-          data={issues.map(iss => {
-            const vol = volumes.find(v => String(v.volume_id) === String(iss.volume_id));
-            return {
-              ...iss,
-              volume_number: vol ? vol.volume_number : '?'
-            };
-          })}
-          loading={loading}
-          onRefresh={fetchData}
-          formulaText={`=ISSUES_TABLE!A1:G${issues.length} [JOIN=VOLUMES]`}
-          emptyMessage="No volumes or issues found in spreadsheet."
-        />
-      ) : (
-        /* Volumes List with Accordion of Issues */
-        <div className="space-y-4">
-        {volumes.map((vol) => {
-          const volIssues = issues.filter(i => String(i.volume_id) === String(vol.volume_id));
-          const isExpanded = expandedVolumeId === vol.volume_id;
+      {/* Volumes List with Accordion of Issues */}
+      <div className="space-y-4">
+        {(() => {
+          const totalPages = Math.ceil(volumes.length / ITEMS_PER_PAGE);
+          const paginatedVolumes = volumes.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+          return (
+            <>
+              {paginatedVolumes.map((vol) => {
+                const volIssues = issues.filter(i => String(i.volume_id) === String(vol.volume_id));
+                const isExpanded = expandedVolumeId === vol.volume_id;
 
           return (
             <div 
@@ -557,6 +488,9 @@ const VolumeIssueManagement = () => {
             </div>
           );
         })}
+            </>
+          );
+        })()}
 
         {volumes.length === 0 && (
           <div className="p-12 text-center bg-white rounded-2xl border border-gray-200">
@@ -573,8 +507,16 @@ const VolumeIssueManagement = () => {
             </button>
           </div>
         )}
+        {volumes.length > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={Math.ceil(volumes.length / ITEMS_PER_PAGE)}
+            onPageChange={setCurrentPage}
+            itemsPerPage={ITEMS_PER_PAGE}
+            totalItems={volumes.length}
+          />
+        )}
       </div>
-      )}
 
       {/* VOLUME MODAL */}
       {showVolumeModal && (

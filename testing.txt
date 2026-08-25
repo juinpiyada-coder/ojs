@@ -1,0 +1,212 @@
+================================================================================
+           THE LITERARY SCIENTIST / OPEN JOURNAL SYSTEM (OJS)
+                     COMPLETE WORKFLOW UI TESTING GUIDE
+================================================================================
+Generated for: UI Validation & End-to-End Workflow Verification
+Target Directory: /ui
+================================================================================
+
+--------------------------------------------------------------------------------
+TABLE OF CONTENTS
+--------------------------------------------------------------------------------
+1. PUBLIC PORTAL & NAVIGATION WORKFLOW
+2. USER AUTHENTICATION & PROFILE WORKFLOW
+3. WHITE-LABELING & BRAND CUSTOMIZER WORKFLOW
+4. ARCHIVE MANAGEMENT WORKFLOW (EXCEL DATASHEET)
+5. VOLUMES & ISSUES MANAGEMENT WORKFLOW
+6. SUBMISSIONS & EDITORIAL REVIEW WORKFLOW
+7. USER MANAGEMENT & SYSTEM SETTINGS WORKFLOW
+8. END-TO-END AUTOMATED & MANUAL SMOKE TEST CHECKLIST
+
+================================================================================
+1. PUBLIC PORTAL & NAVIGATION WORKFLOW
+================================================================================
+
+TEST CASE 1.1: Header Navigation & Branding Display
+  - Steps:
+    1. Navigate to "/" (Home Page).
+    2. Verify the Header displays the official authentic logo (/logo.png).
+    3. Verify navigation links: Home, Articles, Submissions, Policies, About.
+    4. Hover over "Articles" dropdown:
+       - Current Issue (Vol I, Iss III)
+       - All Articles & Directory
+       - Archived Volumes
+       - Special Collections
+    5. Hover over "Submissions" dropdown:
+       - Submit Manuscript Online
+       - Call For Papers
+       - Author Guidelines
+  - Expected Result:
+    - Navbar items highlight smoothly on hover.
+    - Official logo is crisp and properly proportioned without distortion.
+
+TEST CASE 1.2: Public Manuscript Submission Flow
+  - Steps:
+    1. Click "Submit Manuscript" or navigate to "/start-submission".
+    2. Fill in the Manuscript Submission Form:
+       - Article Title: "Modernist Perspectives in 20th Century Fiction"
+       - Abstract: "A comprehensive investigation..."
+       - Authors: "Dr. Eleanor Vance, Prof. James Sterling"
+       - Primary Category: "Literary Criticism"
+       - Keywords: "Modernism, Fiction, Aesthetics"
+       - Upload Manuscript File (.pdf / .docx).
+    3. Click "Submit Manuscript".
+  - Expected Result:
+    - Loading spinner displays during document upload.
+    - Success confirmation modal / toast appears.
+    - Submission is recorded in database and visible in Admin Submissions sheet.
+
+================================================================================
+2. USER AUTHENTICATION & PROFILE WORKFLOW
+================================================================================
+
+TEST CASE 2.1: Admin / User Login
+  - Steps:
+    1. Navigate to "/login".
+    2. Enter credentials (e.g. admin@literaria.org / admin password).
+    3. Click "Sign In".
+  - Expected Result:
+    - User is authenticated and JWT token stored in localStorage.
+    - Admin users redirect to "/admin/dashboard".
+    - Author/Reader users redirect to "/user/dashboard".
+
+TEST CASE 2.2: Profile Picture (Avatar) Upload & Real-Time Sync
+  - Steps:
+    1. In Admin Dashboard, navigate to "My Profile" (/admin/dashboard/profile).
+    2. In the "Profile Avatar" card, click "Upload Image" and choose an image file.
+    3. Click "Update Profile".
+  - Expected Result:
+    - Toast notification: "Profile updated successfully!".
+    - Profile picture displays immediately in the profile preview card.
+    - Top-right navbar avatar immediately updates with the uploaded picture.
+    - Public header user icon reflects the updated avatar.
+
+================================================================================
+3. WHITE-LABELING & BRAND CUSTOMIZER WORKFLOW
+================================================================================
+
+TEST CASE 3.1: Change Official Journal Title
+  - Steps:
+    1. In Admin Dashboard, navigate to "Branding" (/admin/dashboard/branding).
+    2. In "Portal Identity", change Official Journal Title to: "The Literary Scientist".
+    3. Click "Save White-Labeling".
+  - Expected Result:
+    - Toast notification confirms branding update.
+    - Sidebar brand title immediately reflects the new name.
+    - Browser document title reflects the new journal title.
+
+TEST CASE 3.2: Upload & Manage Brand Logo
+  - Steps:
+    1. Go to "Branding" -> "Brand Logo Asset" card.
+    2. Click "Choose File" and upload a logo file (PNG / JPG / SVG).
+    3. Verify the logo preview card displays the uploaded image.
+    4. Click "Save White-Labeling".
+  - Expected Result:
+    - The Admin Dashboard sidebar header immediately displays the custom logo.
+    - The main website public header (/logo.png) remains locked to the official design.
+    - Clicking "Remove Logo" cleanly reverts the sidebar back to the dynamic emblem.
+
+TEST CASE 3.3: Theme Presets & Color Customization
+  - Steps:
+    1. Go to "Curated Theme Presets" tab in Branding.
+    2. Select a preset (e.g. "Emerald Scholar", "Crimson Academic", "Classic Slate").
+    3. Observe the live preview colors change instantly.
+    4. Click "Save White-Labeling".
+  - Expected Result:
+    - Sidebar active menu highlight dynamically updates to the chosen accent color.
+    - Contrast text calculation automatically renders dark or light text for readability.
+
+================================================================================
+4. ARCHIVE MANAGEMENT WORKFLOW (EXCEL DATASHEET)
+================================================================================
+
+TEST CASE 4.1: Responsive Data Sheet Layout
+  - Steps:
+    1. Navigate to "/admin/dashboard/archives".
+    2. Observe the OJS_ARCHIVE_MASTER spreadsheet grid.
+  - Expected Result:
+    - All 8 columns (ID, Title, Author, Vol/Issue, DOI, Status, Actions) fit 100% 
+      horizontally on standard screens without horizontal overflow or hidden action buttons.
+
+TEST CASE 4.2: PDF Preview & Direct Download
+  - Steps:
+    1. In the Archive spreadsheet, locate an article with an attached PDF.
+    2. Click the blue "[PDF]" button in the Actions column.
+  - Expected Result:
+    - PDF Preview Modal opens instantly with title and embedded viewer.
+    - "Open in New Tab" and "Download" buttons function properly.
+
+TEST CASE 4.3: Edit Publication Metadata
+  - Steps:
+    1. Click the dark "[Edit]" button on an article row.
+    2. Edit Title, Abstract, Authors, Volume/Issue, DOI, or Page Range in the modal.
+    3. Click "Update Publication".
+  - Expected Result:
+    - Modal closes and success toast appears.
+    - Spreadsheet row updates immediately with fresh metadata.
+
+TEST CASE 4.4: Delete Publication
+  - Steps:
+    1. Click the red "[Delete]" button on an article row.
+    2. Confirm deletion in the prompt.
+  - Expected Result:
+    - Success toast: "Article deleted successfully".
+    - Row is removed immediately from the spreadsheet without page reload.
+
+================================================================================
+5. VOLUMES & ISSUES MANAGEMENT WORKFLOW
+================================================================================
+
+TEST CASE 5.1: Create New Volume & Issue
+  - Steps:
+    1. Navigate to "/admin/dashboard/volumes-issues".
+    2. Click "+ New Volume / Issue".
+    3. Enter Volume Number, Publication Year, Issue Number, and Issue Title.
+    4. Click "Save".
+  - Expected Result:
+    - New volume and issue are created and selectable in article publish dropdowns.
+
+================================================================================
+6. SUBMISSIONS & EDITORIAL REVIEW WORKFLOW
+================================================================================
+
+TEST CASE 6.1: Submissions Management Spreadsheet
+  - Steps:
+    1. Navigate to "/admin/dashboard/submissions".
+    2. Verify all pending, reviewed, and published submissions appear in the grid.
+    3. Filter by Status (All / Submitted / Under Review / Accepted / Published).
+    4. Click "[Export CSV / .xlsx]" to export tabular data.
+  - Expected Result:
+    - Filter updates rows in real-time.
+    - CSV download initiates and contains all displayed submission records.
+
+================================================================================
+7. USER MANAGEMENT & SYSTEM SETTINGS WORKFLOW
+================================================================================
+
+TEST CASE 7.1: User Role Administration
+  - Steps:
+    1. Navigate to "/admin/dashboard/users".
+    2. View list of registered accounts with user ID, name, email, and role badge.
+    3. Edit a user's role (Admin, Editor, Reviewer, Author).
+    4. Save changes.
+  - Expected Result:
+    - Updated role takes effect immediately.
+
+================================================================================
+8. QUICK VERIFICATION COMMANDS
+================================================================================
+
+1. Build Verification:
+   cd ui && npm run build
+
+2. Dev Server Test:
+   cd ui && npm run dev
+
+3. API Endpoint Health Check:
+   curl -s https://proxy.literaria-ajournaloftheenglishdepartmentwbsu.org/api/branding
+   curl -s https://proxy.literaria-ajournaloftheenglishdepartmentwbsu.org/api/articles
+
+================================================================================
+                            END OF TESTING GUIDE
+================================================================================

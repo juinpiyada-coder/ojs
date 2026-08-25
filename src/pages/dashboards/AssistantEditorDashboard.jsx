@@ -30,7 +30,7 @@ const AssistantEditorDashboard = () => {
           </thead>
           <tbody className="bg-white divide-y divide-gray-100">
             <tr>
-              <td className="px-6 py-4 text-sm font-medium text-blue-600">OJS-2026-1050</td>
+              <td className="px-6 py-4 text-sm font-medium text-blue-600">2026-1050</td>
               <td className="px-6 py-4 text-sm text-gray-900 font-sans">Analysis of Quantum Cryptography Protocols</td>
               <td className="px-6 py-4 text-sm text-gray-500">Today</td>
               <td className="px-6 py-4 text-right">

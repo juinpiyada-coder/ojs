@@ -1,7 +1,7 @@
 /**
  * ==============================================================================
- * Direct High-Performance OJS API Client with Smart In-Memory / TTL Caching
- * Eliminates duplicate network waterfalls without heavyweight Redux overhead
+ * Direct High-Performance OJS API Client with Session & Memory Cache
+ * Keeps data persistently across tab and page navigation so UI switches are instant!
  * ==============================================================================
  */
 
@@ -25,37 +25,90 @@ export const setActiveBackendUrl = () => {};
 export const initAutoFailover = () => {};
 export const getCandidatePool = () => [getDynamicApiUrl()];
 
-// Lightweight in-memory request cache and in-flight promise deduplication
-const apiCache = new Map();
+// In-memory cache + In-flight promise deduplication
+const memoryCache = new Map();
 const inFlightRequests = new Map();
 
+// 5 minutes default persistent cache TTL for instant navigation
+const DEFAULT_CACHE_TTL_MS = 5 * 60 * 1000;
+
 /**
- * Clear cached data for specific routes or entirely upon mutation
+ * Read cached response from Memory or SessionStorage
+ */
+export const getCachedData = (key) => {
+  // 1. Check memory cache first
+  const memItem = memoryCache.get(key);
+  if (memItem && Date.now() - memItem.timestamp < memItem.ttl) {
+    return memItem.data;
+  }
+
+  // 2. Check sessionStorage
+  if (typeof window !== 'undefined' && window.sessionStorage) {
+    try {
+      const raw = window.sessionStorage.getItem(`ojs_cache_${key}`);
+      if (raw) {
+        const item = JSON.parse(raw);
+        if (Date.now() - item.timestamp < item.ttl) {
+          memoryCache.set(key, item); // rehydrate memory
+          return item.data;
+        } else {
+          window.sessionStorage.removeItem(`ojs_cache_${key}`);
+        }
+      }
+    } catch {}
+  }
+  return null;
+};
+
+/**
+ * Write response to Memory and SessionStorage
+ */
+export const setCachedData = (key, data, ttl = DEFAULT_CACHE_TTL_MS) => {
+  const item = { data, timestamp: Date.now(), ttl };
+  memoryCache.set(key, item);
+  if (typeof window !== 'undefined' && window.sessionStorage) {
+    try {
+      window.sessionStorage.setItem(`ojs_cache_${key}`, JSON.stringify(item));
+    } catch {}
+  }
+};
+
+/**
+ * Invalidate cache upon create/update/delete mutations
  */
 export const clearApiCache = (prefix = null) => {
   if (!prefix) {
-    apiCache.clear();
+    memoryCache.clear();
+    if (typeof window !== 'undefined' && window.sessionStorage) {
+      Object.keys(window.sessionStorage).forEach((k) => {
+        if (k.startsWith('ojs_cache_')) window.sessionStorage.removeItem(k);
+      });
+    }
   } else {
-    for (const key of apiCache.keys()) {
-      if (key.includes(prefix)) {
-        apiCache.delete(key);
-      }
+    for (const key of memoryCache.keys()) {
+      if (key.includes(prefix)) memoryCache.delete(key);
+    }
+    if (typeof window !== 'undefined' && window.sessionStorage) {
+      Object.keys(window.sessionStorage).forEach((k) => {
+        if (k.startsWith('ojs_cache_') && k.includes(prefix)) {
+          window.sessionStorage.removeItem(k);
+        }
+      });
     }
   }
 };
 
 /**
- * Standardized fetch wrapper with in-flight deduplication and GET caching
+ * Standardized fetch wrapper with Automatic Caching & Instant Navigation Persistence
  *
  * @param {string} endpoint - API route (e.g., '/users', '/articles', '/health')
- * @param {object} options - Fetch options (method, body, headers, cacheTtl, etc.)
+ * @param {object} options - Fetch options (method, body, headers, cacheTtl, forceFresh, etc.)
  */
 export const apiFetch = async (endpoint, options = {}) => {
   const method = (options.method || 'GET').toUpperCase();
   const token = typeof localStorage !== 'undefined' ? localStorage.getItem('token') : null;
   const headers = { ...options.headers };
 
-  // Set default JSON Content-Type unless body is FormData
   if (!(options.body instanceof FormData)) {
     if (!headers['Content-Type']) {
       headers['Content-Type'] = 'application/json';
@@ -77,20 +130,20 @@ export const apiFetch = async (endpoint, options = {}) => {
   const baseUrl = getDynamicApiUrl();
   const targetFullUrl = `${baseUrl}${normalizedEndpoint}`;
 
-  // If mutation (POST/PUT/PATCH/DELETE), invalidate relevant cache
+  // If mutation (POST/PUT/PATCH/DELETE), instantly invalidate cache for affected resource
   if (method !== 'GET') {
     const routePrefix = normalizedEndpoint.split('?')[0].split('/')[1] || '';
     if (routePrefix) clearApiCache(routePrefix);
   }
 
-  // Check TTL cache for GET requests
-  const cacheTtlMs = options.cacheTtl !== undefined ? options.cacheTtl : (method === 'GET' ? 3000 : 0);
-  const cacheKey = `${method}:${targetFullUrl}:${token || ''}`;
+  const cacheKey = `${method}:${normalizedEndpoint}:${token ? 'auth' : 'anon'}`;
+  const cacheTtlMs = options.cacheTtl !== undefined ? options.cacheTtl : (method === 'GET' ? DEFAULT_CACHE_TTL_MS : 0);
 
-  if (cacheTtlMs > 0) {
-    const cached = apiCache.get(cacheKey);
-    if (cached && Date.now() - cached.timestamp < cacheTtlMs) {
-      return cached.data;
+  // Return cached data immediately if available and fresh
+  if (method === 'GET' && cacheTtlMs > 0 && !options.forceFresh) {
+    const cachedData = getCachedData(cacheKey);
+    if (cachedData) {
+      return cachedData;
     }
   }
 
@@ -132,12 +185,9 @@ export const apiFetch = async (endpoint, options = {}) => {
         throw new Error(data.message || data.error || `Request failed with status ${response.status}`);
       }
 
-      // Save in cache if GET request
+      // Persist in memory + sessionStorage for instant tab navigation
       if (method === 'GET' && cacheTtlMs > 0) {
-        apiCache.set(cacheKey, {
-          data,
-          timestamp: Date.now()
-        });
+        setCachedData(cacheKey, data, cacheTtlMs);
       }
 
       return data;
@@ -158,8 +208,6 @@ export const apiFetch = async (endpoint, options = {}) => {
 
 /**
  * Resolves media / file URLs to point to the backend host
- *
- * @param {string} url - The URL string from backend or database
  */
 export const resolveFileUrl = (url) => {
   if (!url) return '';

@@ -24,7 +24,12 @@ const Login = () => {
         body: { email, password }
       });
 
-      const roleStr = (data.data?.role_name || '').toLowerCase();
+      if (!data || !data.token) {
+        throw new Error(data?.message || 'Login response missing authentication token');
+      }
+
+      const userData = data.data || {};
+      const roleStr = (userData.role_name || '').toLowerCase();
       let targetUrl = data.redirect_url;
       if (!targetUrl) {
         if (roleStr.includes('admin')) targetUrl = '/admin/dashboard';
@@ -35,8 +40,8 @@ const Login = () => {
       }
 
       localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.data));
-      window.location.href = targetUrl;
+      localStorage.setItem('user', JSON.stringify(userData));
+      navigate(targetUrl, { replace: true });
       
     } catch (err) {
       setError(err.message || 'Login failed. Please check your credentials.');
@@ -49,7 +54,7 @@ const Login = () => {
     setError('');
     setGoogleLoading(true);
     
-    const { user, error: googleError } = await signInWithGoogle();
+    const { user: fbUser, error: googleError } = await signInWithGoogle();
     
     if (googleError) {
       setError(googleError);
@@ -57,21 +62,26 @@ const Login = () => {
       return;
     }
 
-    // Send Firebase token to your backend to create/get user
+    // Send Firebase token to backend to authenticate/create user
     try {
-      const idToken = await user.getIdToken();
+      const idToken = await fbUser.getIdToken();
       const data = await apiFetch('/auth/google', {
         method: 'POST',
         body: { 
           idToken,
-          email: user.email,
-          display_name: user.displayName,
-          photo_url: user.photoURL,
-          uid: user.uid
+          email: fbUser.email,
+          display_name: fbUser.displayName,
+          photo_url: fbUser.photoURL,
+          uid: fbUser.uid
         }
       });
 
-      const roleStr = (data.data?.role_name || '').toLowerCase();
+      if (!data || !data.token) {
+        throw new Error(data?.message || 'Google sign-in response missing authentication token');
+      }
+
+      const userData = data.data || {};
+      const roleStr = (userData.role_name || '').toLowerCase();
       let targetUrl = data.redirect_url;
       if (!targetUrl) {
         if (roleStr.includes('admin')) targetUrl = '/admin/dashboard';
@@ -82,8 +92,8 @@ const Login = () => {
       }
 
       localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.data));
-      window.location.href = targetUrl;
+      localStorage.setItem('user', JSON.stringify(userData));
+      navigate(targetUrl, { replace: true });
       
     } catch (err) {
       setError(err.message || 'Google sign-in failed');

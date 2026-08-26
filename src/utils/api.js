@@ -6,7 +6,7 @@
  */
 
 // Primary API Endpoints
-export const PRODUCTION_API_URL = 'https://proxy.literaria-ajournaloftheenglishdepartmentwbsu.org/api';
+export const PRODUCTION_API_URL = 'http://be.theliteraryscientist.org/api';
 export const LOCAL_API_URL = 'http://localhost:9090/api';
 
 /**

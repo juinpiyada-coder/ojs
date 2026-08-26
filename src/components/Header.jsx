@@ -18,7 +18,7 @@ import {
   FaUsers,
   FaFileAlt
 } from 'react-icons/fa';
-import { resolveFileUrl } from '../utils/api';
+import { resolveFileUrl, resolveImageUrl } from '../utils/api';
 import { useBrand } from '../context/BrandingContext';
 
 const Header = () => {

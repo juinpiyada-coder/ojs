@@ -6,17 +6,24 @@
  */
 
 // Primary API Endpoints
-export const PRODUCTION_API_URL = 'http://be.theliteraryscientist.org/api';
+export const PRODUCTION_API_URL = 'https://be.theliteraryscientist.org/api';
 export const LOCAL_API_URL = 'http://localhost:9090/api';
 
 /**
  * Direct API Base URL resolution
  */
 export const getDynamicApiUrl = () => {
+  let url = PRODUCTION_API_URL;
   if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL) {
-    return import.meta.env.VITE_API_URL.replace(/\/+$/, '');
+    url = import.meta.env.VITE_API_URL.replace(/\/+$/, '');
   }
-  return PRODUCTION_API_URL;
+
+  // Prevent browser mixed-content blocking (e.g. on HTTPS hosted sites like Vercel or SSL domains)
+  if (typeof window !== 'undefined' && window.location.protocol === 'https:' && url.startsWith('http://') && !url.includes('localhost') && !url.includes('127.0.0.1')) {
+    url = url.replace('http://', 'https://');
+  }
+
+  return url;
 };
 
 export const API_URL = getDynamicApiUrl();

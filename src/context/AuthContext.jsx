@@ -54,12 +54,22 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const hasLocalAuth = () => {
+    try {
+      const token = localStorage.getItem('token');
+      const localUser = localStorage.getItem('user');
+      return !!(token || localUser);
+    } catch (e) {
+      return false;
+    }
+  };
+
   const value = {
     user,
     loading,
     signInWithGoogle,
     logout,
-    isAuthenticated: !!user,
+    isAuthenticated: !!user || hasLocalAuth(),
   };
 
   return (

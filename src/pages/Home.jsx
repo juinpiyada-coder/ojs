@@ -590,7 +590,7 @@ const Home = () => {
 
         </div>
 
-        {/* Bottom Pagination Indicators (Hustle-Free Automatic Slider) */}
+        {/* Bottom Pagination Indicators (Pure Automatic Auto-Play Slider) */}
         <div className="flex items-center justify-center gap-3 sm:gap-6 px-4 sm:px-8 py-3 bg-[#111317] border-t border-gray-800">
           {/* Pagination Pill Indicators */}
           <div className="flex items-center gap-2 sm:gap-3">
@@ -613,17 +613,6 @@ const Home = () => {
               </button>
             ))}
           </div>
-
-          {/* Auto-play pause toggle indicator */}
-          <button
-            type="button"
-            onClick={() => setIsSliderPaused(!isSliderPaused)}
-            className="p-1.5 text-gray-400 hover:text-white bg-[#1E232B] hover:bg-[#282F3A] border border-gray-700 rounded-md transition-colors text-xs flex items-center justify-center ml-2 cursor-pointer"
-            title={isSliderPaused ? "Resume Autoplay" : "Pause Autoplay"}
-            aria-label={isSliderPaused ? "Resume Autoplay" : "Pause Autoplay"}
-          >
-            {isSliderPaused ? <FaPlay className="text-[9px] text-emerald-400" /> : <FaPause className="text-[9px]" />}
-          </button>
         </div>
 
       </section>

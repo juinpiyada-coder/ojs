@@ -806,14 +806,28 @@ const Archive = () => {
                 <p className="text-xs text-gray-400">By {activePdfViewer.author}</p>
               </div>
 
-              <button
-                type="button"
-                onClick={() => setActivePdfViewer(null)}
-                className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors flex-shrink-0"
-                aria-label="Close PDF Viewer"
-              >
-                <FaTimes className="w-5 h-5" />
-              </button>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                {(activePdfViewer.pdfUrl || activePdfViewer.url) && (
+                  <a
+                    href={activePdfViewer.pdfUrl || activePdfViewer.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-600 rounded-lg text-xs font-semibold transition-colors"
+                    title="Open PDF in new tab"
+                  >
+                    <FaExternalLinkAlt className="text-[10px]" />
+                    <span className="hidden sm:inline">Open in New Tab</span>
+                  </a>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setActivePdfViewer(null)}
+                  className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
+                  aria-label="Close PDF Viewer"
+                >
+                  <FaTimes className="w-5 h-5" />
+                </button>
+              </div>
             </div>
 
             {/* Embedded Stream Viewer */}

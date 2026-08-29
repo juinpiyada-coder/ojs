@@ -547,8 +547,21 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Main Paper Title (Optimized Size & Line Clamping) */}
-            <h2 className="text-lg sm:text-xl md:text-2xl lg:text-[1.6rem] font-bold text-white font-serif leading-snug tracking-tight line-clamp-2 md:line-clamp-3">
+            {/* Main Paper Title (Optimized Size, Line Clamping & Clickable Hyperlink) */}
+            <h2 
+              onClick={() => currentPaper.pdfUrl && setActivePdfViewer({
+                url: currentPaper.pdfUrl,
+                title: formatTitle(currentPaper.title),
+                author: currentPaper.author,
+                pages: currentPaper.pages,
+                doi: currentPaper.doi,
+                category: currentPaper.category
+              })}
+              className={`text-lg sm:text-xl md:text-2xl lg:text-[1.6rem] font-bold text-white font-serif leading-snug tracking-tight line-clamp-2 md:line-clamp-3 transition-colors ${
+                currentPaper.pdfUrl ? 'cursor-pointer hover:text-[#D4AF37] hover:underline underline-offset-4 decoration-[#D4AF37]/60' : ''
+              }`}
+              title={currentPaper.pdfUrl ? "Click to read full PDF paper" : currentPaper.title}
+            >
               {formatTitle(currentPaper.title)}
             </h2>
 
@@ -580,6 +593,20 @@ const Home = () => {
                 <FaBookOpen className="text-gray-300 text-sm" />
                 <span>Quick Preview</span>
               </button>
+
+              {currentPaper.pdfUrl && (
+                <a
+                  href={currentPaper.pdfUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-red-600/20 hover:bg-red-600/30 text-red-300 border border-red-500/40 text-xs sm:text-sm font-semibold rounded-lg transition-all active:scale-95 cursor-pointer shadow-sm"
+                  title="Open PDF in new tab"
+                >
+                  <FaFilePdf className="text-red-400 text-sm" />
+                  <span>Open PDF</span>
+                  <FaExternalLinkAlt className="text-[10px] opacity-70" />
+                </a>
+              )}
 
               <span className="text-xs text-gray-400 font-mono ml-auto hidden md:inline">
                 DOI: {currentPaper.doi}
@@ -1119,8 +1146,22 @@ const Home = () => {
                   </div>
                 </div>
 
-                {/* Read Article Action */}
+                {/* Read Article & PDF Actions */}
                 <div className="flex-shrink-0 w-full md:w-auto pt-2 md:pt-0 border-t md:border-t-0 border-[#F0EBE1] flex items-center gap-2 justify-end">
+                  {article.pdfUrl && (
+                    <a
+                      href={article.pdfUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 rounded-xl text-xs font-bold transition-all shadow-xs shrink-0 cursor-pointer"
+                      title="Open PDF in new tab"
+                    >
+                      <FaFilePdf className="text-red-600 text-xs" />
+                      <span>PDF</span>
+                      <FaExternalLinkAlt className="text-[9px] opacity-70" />
+                    </a>
+                  )}
+
                   <button
                     type="button"
                     onClick={() => setActivePdfViewer({
@@ -1443,6 +1484,19 @@ const Home = () => {
               </div>
 
               <div className="flex items-center gap-2 flex-shrink-0">
+                {activePdfViewer.url && (
+                  <a
+                    href={activePdfViewer.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-600 rounded-lg text-xs font-semibold transition-colors"
+                    title="Open PDF in new tab"
+                  >
+                    <FaExternalLinkAlt className="text-[10px]" />
+                    <span className="hidden sm:inline">Open in New Tab</span>
+                  </a>
+                )}
+
                 <button
                   type="button"
                   onClick={() => setActivePdfViewer(null)}

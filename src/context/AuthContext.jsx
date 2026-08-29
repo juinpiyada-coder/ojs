@@ -45,11 +45,21 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await firebaseSignOut(auth);
+      try {
+        await firebaseSignOut(auth);
+      } catch (fbErr) {
+        console.warn('Firebase signout skipped/failed:', fbErr);
+      }
+      setUser(null);
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+      window.dispatchEvent(new Event('storage'));
+      window.dispatchEvent(new CustomEvent('user-profile-updated', { detail: null }));
       return { error: null };
     } catch (error) {
+      setUser(null);
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
       return { error: error.message };
     }
   };

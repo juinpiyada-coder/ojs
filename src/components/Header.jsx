@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
   FaBookOpen,
@@ -22,12 +22,18 @@ import { resolveFileUrl, resolveImageUrl } from '../utils/api';
 import { useBrand } from '../context/BrandingContext';
 
 const Header = () => {
+  const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openMobileDropdown, setOpenMobileDropdown] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const { brand } = useBrand();
   const { user, logout, isAuthenticated } = useAuth();
   const location = useLocation();
+
+  const handleSignOut = async () => {
+    await logout();
+    navigate('/login');
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -453,8 +459,9 @@ const Header = () => {
                   <span className="hidden xl:inline max-w-[110px] truncate">{user?.displayName || user?.email?.split('@')[0]}</span>
                 </Link>
                 <button
-                  onClick={logout}
-                  className="p-1.5 text-gray-400 hover:text-red-600 transition-colors rounded-lg hover:bg-red-50"
+                  type="button"
+                  onClick={handleSignOut}
+                  className="p-1.5 text-gray-400 hover:text-red-600 transition-colors rounded-lg hover:bg-red-50 cursor-pointer"
                   title="Sign Out"
                 >
                   <FaSignOutAlt className="w-4 h-4" />
@@ -616,8 +623,9 @@ const Header = () => {
                     Go to Dashboard
                   </Link>
                   <button 
-                    onClick={() => { logout(); closeMobileMenu(); }} 
-                    className="w-full py-2 bg-white border border-red-200 text-[#B83327] rounded-xl font-bold text-xs"
+                    type="button"
+                    onClick={() => { closeMobileMenu(); handleSignOut(); }} 
+                    className="w-full py-2 bg-white border border-red-200 text-[#B83327] rounded-xl font-bold text-xs cursor-pointer hover:bg-red-50"
                   >
                     Sign Out
                   </button>

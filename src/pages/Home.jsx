@@ -666,19 +666,8 @@ const Home = () => {
 
         </div>
 
-        {/* Bottom Navigation Controls & Pagination Bar */}
-        <div className="flex items-center justify-between sm:justify-center gap-3 sm:gap-6 px-4 sm:px-8 py-3 bg-[#111317] border-t border-gray-800">
-          {/* Prev Slide Button */}
-          <button
-            type="button"
-            onClick={prevSlide}
-            aria-label="Previous Slide"
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-gray-300 hover:text-white bg-[#1E232B] hover:bg-[#282F3A] border border-gray-700 rounded-lg transition-all cursor-pointer active:scale-95"
-          >
-            <FaChevronLeft className="text-[10px]" />
-            <span className="hidden sm:inline">Previous</span>
-          </button>
-
+        {/* Bottom Pagination Indicators (Hustle-Free Automatic Slider) */}
+        <div className="flex items-center justify-center gap-3 sm:gap-6 px-4 sm:px-8 py-3 bg-[#111317] border-t border-gray-800">
           {/* Pagination Pill Indicators */}
           <div className="flex items-center gap-2 sm:gap-3">
             {featuredSliderPapers.map((paper, idx) => (
@@ -686,7 +675,7 @@ const Home = () => {
                 key={paper.id}
                 type="button"
                 onClick={() => goToSlide(idx)}
-                className="p-1 flex items-center justify-center cursor-pointer transition-all duration-300 group"
+                className="p-1.5 flex items-center justify-center cursor-pointer transition-all duration-300 group"
                 title={`Paper ${idx + 1}: ${paper.title.substring(0, 40)}...`}
                 aria-label={`Slide ${idx + 1}`}
               >
@@ -701,22 +690,11 @@ const Home = () => {
             ))}
           </div>
 
-          {/* Next Slide Button */}
-          <button
-            type="button"
-            onClick={nextSlide}
-            aria-label="Next Slide"
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-gray-300 hover:text-white bg-[#1E232B] hover:bg-[#282F3A] border border-gray-700 rounded-lg transition-all cursor-pointer active:scale-95"
-          >
-            <span className="hidden sm:inline">Next</span>
-            <FaChevronRight className="text-[10px]" />
-          </button>
-
           {/* Auto-play pause toggle indicator */}
           <button
             type="button"
             onClick={() => setIsSliderPaused(!isSliderPaused)}
-            className="p-1.5 text-gray-400 hover:text-white bg-[#1E232B] hover:bg-[#282F3A] border border-gray-700 rounded-md transition-colors text-xs hidden lg:flex items-center justify-center ml-2"
+            className="p-1.5 text-gray-400 hover:text-white bg-[#1E232B] hover:bg-[#282F3A] border border-gray-700 rounded-md transition-colors text-xs flex items-center justify-center ml-2 cursor-pointer"
             title={isSliderPaused ? "Resume Autoplay" : "Pause Autoplay"}
             aria-label={isSliderPaused ? "Resume Autoplay" : "Pause Autoplay"}
           >

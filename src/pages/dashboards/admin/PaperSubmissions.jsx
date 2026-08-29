@@ -576,24 +576,24 @@ const PaperSubmissions = () => {
       </div>
 
       {/* 4. Submissions Table */}
-      <div className="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden">
+      <div className="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden w-full">
         <div className="px-5 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
           <h3 className="text-sm font-bold text-slate-900">All Submissions</h3>
           <span className="text-xs text-slate-500 font-medium">Showing {filteredArticles.length} total entries</span>
         </div>
         <div className="overflow-x-auto w-full">
-          <table className="w-full text-left text-xs min-w-[950px]">
+          <table className="w-full text-left text-xs table-auto">
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
-                <th className="px-3 py-3 font-bold text-slate-600 uppercase tracking-wider w-10 text-center">#</th>
-                <th className="px-3 py-3 font-bold text-slate-600 uppercase tracking-wider min-w-[200px]">Title & Topics</th>
-                <th className="px-3 py-3 font-bold text-slate-600 uppercase tracking-wider min-w-[130px]">Author</th>
-                <th className="px-3 py-3 font-bold text-slate-600 uppercase tracking-wider w-28 text-center">Editor</th>
-                <th className="px-3 py-3 font-bold text-slate-600 uppercase tracking-wider w-32 text-center">Reviewer(s)</th>
-                <th className="px-3 py-3 font-bold text-slate-600 uppercase tracking-wider w-24 text-center">Issue</th>
-                <th className="px-3 py-3 font-bold text-slate-600 uppercase tracking-wider w-24 text-center">PDF</th>
-                <th className="px-3 py-3 font-bold text-slate-600 uppercase tracking-wider w-24 text-center">Status</th>
-                <th className="px-3 py-3 font-bold text-slate-600 uppercase tracking-wider text-center min-w-[240px]">Actions</th>
+                <th className="px-3 py-3 font-bold text-slate-600 uppercase tracking-wider w-8 text-center">#</th>
+                <th className="px-3 py-3 font-bold text-slate-600 uppercase tracking-wider">Title & Topics</th>
+                <th className="px-3 py-3 font-bold text-slate-600 uppercase tracking-wider">Author</th>
+                <th className="px-2 py-3 font-bold text-slate-600 uppercase tracking-wider text-center">Editor</th>
+                <th className="px-2 py-3 font-bold text-slate-600 uppercase tracking-wider text-center">Reviewer(s)</th>
+                <th className="px-2 py-3 font-bold text-slate-600 uppercase tracking-wider text-center">Issue</th>
+                <th className="px-2 py-3 font-bold text-slate-600 uppercase tracking-wider text-center">PDF</th>
+                <th className="px-2 py-3 font-bold text-slate-600 uppercase tracking-wider text-center">Status</th>
+                <th className="px-3 py-3 font-bold text-slate-600 uppercase tracking-wider text-center">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -610,15 +610,15 @@ const PaperSubmissions = () => {
                   const pdfUrl = article.published_url || article.manuscript_url || article.anonymous_pdf_url;
                   return (
                     <tr key={article.article_id} className={`hover:bg-slate-50 transition-colors ${rIdx % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}>
-                      <td className="px-4 py-3 font-bold text-slate-500">{(currentPage - 1) * ITEMS_PER_PAGE + rIdx + 1}</td>
-                      <td className="px-4 py-3 min-w-[220px]">
-                        <div className="flex items-center gap-1.5">
-                          <span className="font-mono font-bold text-[10px] text-slate-500 bg-slate-100 px-1 py-0.2 rounded border border-slate-200">#{article.article_id}</span>
-                          <p className="font-bold text-slate-900 truncate text-xs">{article.title}</p>
+                      <td className="px-3 py-3 font-bold text-slate-500 text-center">{(currentPage - 1) * ITEMS_PER_PAGE + rIdx + 1}</td>
+                      <td className="px-3 py-3">
+                        <div className="flex items-start gap-1.5 max-w-sm xl:max-w-md">
+                          <span className="font-mono font-bold text-[10px] text-slate-500 bg-slate-100 px-1 py-0.2 rounded border border-slate-200 shrink-0 mt-0.5">#{article.article_id}</span>
+                          <p className="font-bold text-slate-900 line-clamp-2 text-xs leading-snug">{article.title}</p>
                         </div>
                         {article.keywords && (
                           <div className="flex flex-wrap gap-1 mt-1">
-                            {article.keywords.split(',').map((kw, i) => kw.trim() && (
+                            {article.keywords.split(',').slice(0, 4).map((kw, i) => kw.trim() && (
                               <span key={i} className="inline-block text-[9px] font-semibold bg-slate-100 text-slate-600 border border-slate-200 px-1.5 py-0.2 rounded">
                                 #{kw.trim()}
                               </span>
@@ -626,52 +626,52 @@ const PaperSubmissions = () => {
                           </div>
                         )}
                       </td>
-                      <td className="px-4 py-3 min-w-[140px]">
-                        <p className="font-bold text-slate-800 text-xs">{article.author_name || `User #${article.author_user_id}`}</p>
-                        {article.author_email && <p className="text-[10px] text-slate-500 mt-0.5">{article.author_email}</p>}
+                      <td className="px-3 py-3">
+                        <p className="font-bold text-slate-800 text-xs truncate max-w-[140px]">{article.author_name || `User #${article.author_user_id}`}</p>
+                        {article.author_email && <p className="text-[10px] text-slate-500 truncate max-w-[140px]">{article.author_email}</p>}
                       </td>
-                      <td className="px-4 py-3 text-center">
+                      <td className="px-2 py-3 text-center">
                         {article.editor_name ? (
                           <span className="font-bold text-slate-900 text-xs">{article.editor_name}</span>
                         ) : (
-                          <button type="button" onClick={() => openWorkflowModal(article)} className="text-[10px] font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-300 px-2 py-0.5 rounded">+ Editor</button>
+                          <button type="button" onClick={() => openWorkflowModal(article)} className="text-[10px] font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-300 px-2 py-0.5 rounded cursor-pointer">+ Editor</button>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-center">
+                      <td className="px-2 py-3 text-center">
                         {article.reviews && article.reviews.length > 0 ? (
                           <div className="space-y-1">
                             {article.reviews.map((rev, rIdx2) => (
                               <div key={rIdx2} className="text-[11px] font-medium text-slate-700">
-                                <span className="truncate max-w-[80px]">{rev.reviewer_name}</span>:
+                                <span className="truncate max-w-[70px] inline-block align-middle">{rev.reviewer_name}</span>:
                                 <span className="font-bold uppercase text-[9px] bg-blue-50 text-blue-800 px-1 py-0.2 rounded border border-blue-200 ml-1">{rev.recommendation}</span>
                               </div>
                             ))}
                           </div>
                         ) : (
-                          <button type="button" onClick={() => openWorkflowModal(article)} className="text-[10px] font-bold text-blue-800 bg-blue-50 hover:bg-blue-100 border border-blue-300 px-2 py-0.5 rounded">+ Reviewer</button>
+                          <button type="button" onClick={() => openWorkflowModal(article)} className="text-[10px] font-bold text-blue-800 bg-blue-50 hover:bg-blue-100 border border-blue-300 px-2 py-0.5 rounded cursor-pointer">+ Reviewer</button>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-center">
+                      <td className="px-2 py-3 text-center whitespace-nowrap">
                         {article.volume_number && article.issue_number ? (
-                          <span className="font-mono text-[11px] bg-slate-100 px-1.5 py-0.5 rounded border border-slate-300 font-bold">Vol {article.volume_number}, Iss {article.issue_number}</span>
+                          <span className="font-mono text-[10px] bg-slate-100 px-1.5 py-0.5 rounded border border-slate-300 font-bold">Vol {article.volume_number}, Iss {article.issue_number}</span>
                         ) : (
                           <span className="text-slate-400 italic text-[11px]">Unassigned</span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-center">
+                      <td className="px-2 py-3 text-center whitespace-nowrap">
                         {pdfUrl ? (
-                          <button type="button" onClick={() => setViewingDocUrl(resolveFileUrl(pdfUrl))} className="text-red-700 hover:text-red-900 bg-red-50 hover:bg-red-100 border border-red-200 px-2 py-1 rounded font-bold text-xs">View PDF</button>
+                          <button type="button" onClick={() => setViewingDocUrl(resolveFileUrl(pdfUrl))} className="text-red-700 hover:text-red-900 bg-red-50 hover:bg-red-100 border border-red-200 px-2 py-1 rounded font-bold text-[11px] cursor-pointer">View PDF</button>
                         ) : (
                           <span className="text-slate-400 text-[11px] italic">No File</span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-center">{getStatusBadge(article.status)}</td>
-                      <td className="px-4 py-3 text-center">
-                        <div className="flex items-center justify-center gap-1.5">
-                          <button type="button" onClick={() => openModal(article)} className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-300 rounded text-xs font-bold">Edit</button>
-                          <button type="button" onClick={() => handleDelete(article.article_id)} className="inline-flex items-center gap-1 px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-700 border border-red-300 rounded text-xs font-bold">Delete</button>
-                          <button type="button" onClick={() => openWorkflowModal(article)} className="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded text-xs font-bold">Workflow</button>
-                          <button type="button" onClick={() => setRedactorArticle(article)} className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 rounded text-xs font-bold">Redact</button>
+                      <td className="px-2 py-3 text-center whitespace-nowrap">{getStatusBadge(article.status)}</td>
+                      <td className="px-3 py-3 text-center whitespace-nowrap">
+                        <div className="flex items-center justify-center gap-1">
+                          <button type="button" onClick={() => openModal(article)} className="px-2 py-0.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-300 rounded text-xs font-bold cursor-pointer">Edit</button>
+                          <button type="button" onClick={() => handleDelete(article.article_id)} className="px-2 py-0.5 bg-red-50 hover:bg-red-100 text-red-700 border border-red-300 rounded text-xs font-bold cursor-pointer">Delete</button>
+                          <button type="button" onClick={() => openWorkflowModal(article)} className="px-2 py-0.5 bg-slate-900 hover:bg-slate-800 text-white rounded text-xs font-bold cursor-pointer">Workflow</button>
+                          <button type="button" onClick={() => setRedactorArticle(article)} className="px-2 py-0.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 rounded text-xs font-bold cursor-pointer">Redact</button>
                         </div>
                       </td>
                     </tr>

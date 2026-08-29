@@ -23,7 +23,8 @@ const DashboardLayout = ({ title }) => {
   const location = useLocation();
   const { brand } = useBrand();
   const [user, setUser] = useState(() => JSON.parse(localStorage.getItem('user')) || {});
-  const isAdmin = (user.role_name || '').toLowerCase() === 'admin';
+  const userRole = (user.role_name || '').toLowerCase().trim();
+  const isAdmin = userRole === 'admin';
   
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 

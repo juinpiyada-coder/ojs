@@ -18,75 +18,184 @@ import {
   FaArrowRight
 } from 'react-icons/fa';
 
+const defaultArchiveVolumes = [
+  {
+    id: "vol-1-iss-3",
+    volumeNumber: 1,
+    issueNumber: 3,
+    year: 2025,
+    volume: "Volume I, Issue III",
+    date: "July, 2025",
+    status: "Latest Published Issue",
+    coverImg: "/annousments/image2.png",
+    description: "Features 10 peer-reviewed articles exploring contemporary mythological literature, cinema, gendered rural agency, folk art traditions, eco-criticism, and transnational identities.",
+    articles: [
+      {
+        id: 1,
+        title: "Bridging Cinematic Narratives and Literary Depths: Fusions in Contemporary Mythological Novels Concerning Amish Tripathi’s Ram Chandra Series",
+        author: "Garima Singh",
+        pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_26.pdf",
+        category: "MYTHOLOGICAL FICTION & CINEMA",
+        pages: "pp. 26-30",
+        doi: "10.5281/zenodo.1082326"
+      },
+      {
+        id: 2,
+        title: "Retelling the Past: Cinematic Narratives of Oppression and Resistance in Bolivia and Bengal",
+        author: "Ahana Bhandari",
+        pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_27.pdf",
+        category: "COMPARATIVE CULTURAL STUDIES",
+        pages: "pp. 31-36",
+        doi: "10.5281/zenodo.1082327"
+      },
+      {
+        id: 3,
+        title: "What Did She Know About Transformation That We Don’t?",
+        author: "Lina Mandal",
+        pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_28.pdf",
+        category: "LITERARY THEORY & CRITICISM",
+        pages: "pp. 37-41",
+        doi: "10.5281/zenodo.1082328"
+      },
+      {
+        id: 4,
+        title: "Laapataa Ladies: A Cinematic Satire on Gendered Invisibility and Rural Agency",
+        author: "Satyam Kumar",
+        pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_30.pdf",
+        category: "GENDER STUDIES & FILM",
+        pages: "pp. 42-47",
+        doi: "10.5281/zenodo.1082330"
+      },
+      {
+        id: 5,
+        title: "Patachitra Tradition and Artist Kalam Pauta: A Theoretical Perspective on Art and Literature",
+        author: "Dr. Rakesh Kaibartya",
+        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/07/TLS20250103_31.pdf",
+        category: "ART, FOLK TRADITION & LITERATURE",
+        pages: "pp. 48-54",
+        doi: "10.5281/zenodo.1082331"
+      },
+      {
+        id: 6,
+        title: "Beyond the Characters: Nature Shapes the Story in “Ullozhukku”",
+        author: "Dona Joseph",
+        pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_32.pdf",
+        category: "ECO-CRITICISM & NARRATIVE",
+        pages: "pp. 55-60",
+        doi: "10.5281/zenodo.1082332"
+      },
+      {
+        id: 7,
+        title: "How Ideology Shapes Consumption: The Case of Oil Palm Industry and Red Meat Production",
+        author: "Souvik Karmakar",
+        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/07/TLS20250103_.33.pdf",
+        category: "ENVIRONMENTAL SCIENCES & POLICY",
+        pages: "pp. 61-68",
+        doi: "10.5281/zenodo.1082333"
+      },
+      {
+        id: 8,
+        title: "From ‘Little Maiden’ to ‘The Witch’: Exploring the Themes of Vampirism, Witchcraft and the Female Wanderer Through a Biographical Reading of Mary Coleridge’s “The Witch”",
+        author: "Shibangi Ghose",
+        pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_34.pdf",
+        category: "GOTHIC LITERATURE & GENDER",
+        pages: "pp. 69-75",
+        doi: "10.5281/zenodo.1082334"
+      },
+      {
+        id: 9,
+        title: "The Word as Weapon: Language, Power, and Black Male Representation in Morrison’s Narratives",
+        author: "Sakshi Virmani",
+        pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_37.pdf",
+        category: "AFRICAN AMERICAN LITERATURE",
+        pages: "pp. 76-82",
+        doi: "10.5281/zenodo.1082337"
+      },
+      {
+        id: 10,
+        title: "Between Nations and Narratives: Transnational Engagement and Flexible Citizenship in American Betiya",
+        author: "Kakoli Debnath and Dr. Binda Sah",
+        pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_.38.pdf",
+        category: "DIASPORA & TRANSNATIONALISM",
+        pages: "pp. 83-90",
+        doi: "10.5281/zenodo.1082338"
+      }
+    ]
+  },
+  {
+    id: "vol-1-iss-2",
+    volumeNumber: 1,
+    issueNumber: 2,
+    year: 2025,
+    volume: "Volume I, Issue II",
+    date: "January, 2025",
+    status: "Archived Issue",
+    coverImg: "/annousments/image copy.png",
+    description: "Featuring peer-reviewed scholarship across modern cultural hermeneutics, socio-environmental dynamics, and medical humanities.",
+    articles: [
+      {
+        id: 101,
+        title: "Discursive Ecologies and Environmental Hermeneutics in Contemporary South Asian Literature",
+        author: "Subhasish Roy",
+        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/07/TLS20250103_31.pdf",
+        category: "ENVIRONMENTAL HUMANITIES",
+        pages: "pp. 1-12",
+        doi: "10.5281/zenodo.1082301"
+      },
+      {
+        id: 102,
+        title: "Medical Humanities and Illness Narratives: Empathy and Rhetoric in Clinical Spaces",
+        author: "Dr. Ananya Mukherjee",
+        pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_27.pdf",
+        category: "MEDICAL HUMANITIES",
+        pages: "pp. 13-24",
+        doi: "10.5281/zenodo.1082302"
+      }
+    ]
+  },
+  {
+    id: "vol-1-iss-1",
+    volumeNumber: 1,
+    issueNumber: 1,
+    year: 2023,
+    volume: "Volume I, Issue I",
+    date: "December, 2023",
+    status: "Inaugural Issue",
+    coverImg: "/annousments/img2.png",
+    description: "Inaugural volume establishing our multidisciplinary bridge between literary theory and empirical scientific inquiry.",
+    articles: [
+      {
+        id: 201,
+        title: "Foundations of Cross-Disciplinary Inquiry: Intermediality in Literary and Scientific Discourse",
+        author: "Md Arif Uddin Mondal",
+        pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_26.pdf",
+        category: "INTERDISCIPLINARY THEORY",
+        pages: "pp. 1-14",
+        doi: "10.5281/zenodo.1082201"
+      },
+      {
+        id: 202,
+        title: "Cognitive Poetics and Reader-Response in Modern Digital Literatures",
+        author: "Editorial Collective",
+        pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_28.pdf",
+        category: "COGNITIVE POETICS",
+        pages: "pp. 15-28",
+        doi: "10.5281/zenodo.1082202"
+      }
+    ]
+  }
+];
+
 const Archive = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeSearch, setActiveSearch] = useState('');
-  const [volumesList, setVolumesList] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedIssueId, setSelectedIssueId] = useState(null);
-  const [expandedYears, setExpandedYears] = useState({});
+  const [volumesList, setVolumesList] = useState(defaultArchiveVolumes);
+  const [loading, setLoading] = useState(false);
+  const [selectedIssueId, setSelectedIssueId] = useState("vol-1-iss-3");
+  const [expandedYears, setExpandedYears] = useState({ 2025: true, 2023: true });
   const [fontSizeLevel, setFontSizeLevel] = useState('base'); // 'sm' | 'base' | 'lg'
   const [activeModalPoster, setActiveModalPoster] = useState(null);
   const [activePdfViewer, setActivePdfViewer] = useState(null);
-
-  // Fetch Live Volumes & Issues from Database
-  useEffect(() => {
-    const fetchArchiveData = async () => {
-      try {
-        const res = await apiFetch('/volumes?with_articles=true&published_only=true');
-        if (res && res.data && res.data.length > 0) {
-          const mappedVolumes = [];
-          
-          res.data.forEach((vol) => {
-            const yr = parseInt(vol.publication_year) || new Date().getFullYear();
-            if (vol.issues && vol.issues.length > 0) {
-              vol.issues.forEach((iss) => {
-                const dateStr = iss.publication_date
-                  ? new Date(iss.publication_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
-                  : `${yr}`;
-
-                const articlesList = (iss.articles || []).map((art, idx) => ({
-                  id: art.article_id || idx + 1,
-                  title: art.title,
-                  author: art.author_name || 'Anonymous Author',
-                  pdfUrl: resolveFileUrl(art.published_url || art.manuscript_url),
-                  category: art.doi ? `DOI: ${art.doi}` : (art.page_range ? `Pages: ${art.page_range}` : 'Research Article'),
-                  pages: art.page_range || '',
-                  abstract: art.abstract || '',
-                  keywords: art.keywords || '',
-                  doi: art.doi || ''
-                }));
-
-                mappedVolumes.push({
-                  id: `vol-${vol.volume_id}-iss-${iss.issue_id}`,
-                  volumeNumber: vol.volume_number,
-                  issueNumber: iss.issue_number,
-                  year: yr,
-                  volume: `Vol. ${vol.volume_number}, Issue No. ${iss.issue_number}`,
-                  date: dateStr,
-                  status: "Published Issue",
-                  coverImg: resolveFileUrl(iss.cover_url || vol.cover_url || "/annousments/image copy.png"),
-                  description: iss.description || `Peer-reviewed volume featuring scholarly investigations across literature, science, and the humanities.`,
-                  articles: articlesList
-                });
-              });
-            }
-          });
-
-          if (mappedVolumes.length > 0) {
-            setVolumesList(mappedVolumes);
-            // Default select the latest issue
-            setSelectedIssueId(mappedVolumes[0].id);
-          }
-        }
-      } catch (err) {
-        console.warn('Could not fetch live archives, using fallback:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchArchiveData();
-  }, []);
 
   // Set default selected issue on initial load
   useEffect(() => {

@@ -81,6 +81,18 @@ const featuredSliderPapers = [
   },
   {
     id: 5,
+    title: "Patachitra Tradition and Artist Kalam Pauta: A Theoretical Perspective on Art and Literature",
+    author: "Dr. Rakesh Kaibartya",
+    category: "ART, FOLK TRADITION & LITERATURE",
+    volume: "Vol I, Issue III (July 2025)",
+    pages: "pp. 48-54",
+    doi: "10.5281/zenodo.1082331",
+    pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/07/TLS20250103_31.pdf",
+    coverImg: "/annousments/image2.png",
+    abstract: `This paper explores the traditional Patachitra artistic motifs and their theoretical resonance in contemporary literary narratives, examining the intersection of indigenous art forms, folk oral storytelling, and evolving visual culture.`
+  },
+  {
+    id: 6,
     title: "Beyond the Characters: Nature Shapes the Story in “Ullozhukku”",
     author: "Dona Joseph",
     category: "ECO-CRITICISM & NARRATIVE",
@@ -89,7 +101,55 @@ const featuredSliderPapers = [
     doi: "10.5281/zenodo.1082332",
     pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_32.pdf",
     coverImg: "/annousments/image2.png",
-    abstract: `“Ullozhukku” (Under Current) is a 2024 Malayalam language drama film from India featuring female protagonists who represent two generations and the clash of their ideologies, experiences, and agency. It challenges the conventional positioning of women, motherhood, and the commodification of women. The dilemmas faced by the female protagonists, Anju (Parvathy Thiruvothu) and her mother-in-law, Leelamma (Urvashi), are both similar and different. The plot revolves around Anju, who has lost her husband and is pregnant with her lover’s child, and Leelamma, who feels relieved upon hearing the news of the pregnancy, even in the wake of her son’s death, as his lineage will continue. While the female-centered movie does not depict violent retributions, the weight of emotions lingers in the silences and gaps in dialogue. The film opens with the female characters constrained by societal and cultural norms; as the story progresses, they gradually loosen these ties and find solidarity in each other. Nature plays a significant role, a spectator, as the relentless rain and flooded surroundings amplify the characters' psychological distress. The direction, cinematography and narrative style add to the sensitive storyline. It is as if the rainy blues have enveloped the film, awaiting sunlight, as the characters long to breathe freely after the funeral and seek reconciliation.`
+    abstract: `“Ullozhukku” (Under Current) is a 2024 Malayalam language drama film from India featuring female protagonists who represent two generations and the clash of their ideologies, experiences, and agency. It challenges the conventional positioning of women, motherhood, and the commodification of women. The dilemmas faced by the female protagonists, Anju (Parvathy Thiruvothu) and her mother-in-law, Leelamma (Urvashi), are both similar and different. Nature plays a significant role, a spectator, as the relentless rain and flooded surroundings amplify the characters' psychological distress.`
+  },
+  {
+    id: 7,
+    title: "How Ideology Shapes Consumption: The Case of Oil Palm Industry and Red Meat Production",
+    author: "Souvik Karmakar",
+    category: "ENVIRONMENTAL SCIENCES & POLICY",
+    volume: "Vol I, Issue III (July 2025)",
+    pages: "pp. 61-68",
+    doi: "10.5281/zenodo.1082333",
+    pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/07/TLS20250103_.33.pdf",
+    coverImg: "/annousments/image2.png",
+    abstract: `An examination of ideological apparatuses directing agro-industrial consumption paradigms, environmental sustainability, and ecological fallout in contemporary commodity systems.`
+  },
+  {
+    id: 8,
+    title: "From ‘Little Maiden’ to ‘The Witch’: Exploring the Themes of Vampirism, Witchcraft and the Female Wanderer Through a Biographical Reading of Mary Coleridge’s “The Witch”",
+    author: "Shibangi Ghose",
+    category: "GOTHIC LITERATURE & GENDER",
+    volume: "Vol I, Issue III (July 2025)",
+    pages: "pp. 69-75",
+    doi: "10.5281/zenodo.1082334",
+    pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_34.pdf",
+    coverImg: "/annousments/image2.png",
+    abstract: `Investigating gothic tropes, nocturnal anxiety, female wanderers, and biographical underpinnings in Mary Coleridge's Victorian poetry through feminist and psychoanalytic lenses.`
+  },
+  {
+    id: 9,
+    title: "The Word as Weapon: Language, Power, and Black Male Representation in Morrison’s Narratives",
+    author: "Sakshi Virmani",
+    category: "AFRICAN AMERICAN LITERATURE",
+    volume: "Vol I, Issue III (July 2025)",
+    pages: "pp. 76-82",
+    doi: "10.5281/zenodo.1082337",
+    pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_37.pdf",
+    coverImg: "/annousments/image2.png",
+    abstract: `Analyzing the linguistic power structures, historical memory, and racialized masculine identities across Toni Morrison's seminal literary texts.`
+  },
+  {
+    id: 10,
+    title: "Between Nations and Narratives: Transnational Engagement and Flexible Citizenship in American Betiya",
+    author: "Kakoli Debnath and Dr. Binda Sah",
+    category: "DIASPORA & TRANSNATIONALISM",
+    volume: "Vol I, Issue III (July 2025)",
+    pages: "pp. 83-90",
+    doi: "10.5281/zenodo.1082338",
+    pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_.38.pdf",
+    coverImg: "/annousments/image2.png",
+    abstract: `Diasporic negotiations of identity, cultural hybridity, and parental expectations in young adult transnational literature, exploring the complex contours of flexible citizenship.`
   }
 ];
 
@@ -498,34 +558,6 @@ const Home = () => {
             }}
           />
         </div>
-
-        {/* Floating Left Arrow Button */}
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            prevSlide();
-          }}
-          aria-label="Previous Slide"
-          title="Previous Slide (Left Arrow)"
-          className="hidden sm:flex absolute left-3 md:left-6 top-1/2 -translate-y-1/2 z-30 w-11 h-11 md:w-12 md:h-12 rounded-full bg-[#181B20]/85 hover:bg-[#D32F2F] text-white border border-white/20 hover:border-[#D32F2F] shadow-2xl backdrop-blur-md items-center justify-center cursor-pointer transition-all duration-200 active:scale-90 hover:scale-105 group focus:outline-none focus:ring-2 focus:ring-red-500"
-        >
-          <FaChevronLeft className="text-sm md:text-base group-hover:-translate-x-0.5 transition-transform" />
-        </button>
-
-        {/* Floating Right Arrow Button */}
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            nextSlide();
-          }}
-          aria-label="Next Slide"
-          title="Next Slide (Right Arrow)"
-          className="hidden sm:flex absolute right-3 md:right-6 top-1/2 -translate-y-1/2 z-30 w-11 h-11 md:w-12 md:h-12 rounded-full bg-[#181B20]/85 hover:bg-[#D32F2F] text-white border border-white/20 hover:border-[#D32F2F] shadow-2xl backdrop-blur-md items-center justify-center cursor-pointer transition-all duration-200 active:scale-90 hover:scale-105 group focus:outline-none focus:ring-2 focus:ring-red-500"
-        >
-          <FaChevronRight className="text-sm md:text-base group-hover:translate-x-0.5 transition-transform" />
-        </button>
 
         {/* Main Slide Content Grid */}
         <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-14 py-6 sm:py-8 lg:py-10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center relative z-10 min-h-[380px] lg:min-h-[410px]">
@@ -967,7 +999,8 @@ const Home = () => {
                     title: "Vol. II Issue I (2025) Call for Contributions",
                     subtitle: "Official Call for Papers Announcement & Submission Details",
                     downloadName: "The_Literary_Scientist_Call_For_Contributions_Vol2_Issue1.png",
-                    pdfLink: "/annousments/Olive-Green-Doodle-Final-Project-Cover-A4-Document.pdf"
+                    pdfLink: "/annousments/Olive-Green-Doodle-Final-Project-Cover-A4-Document.pdf",
+                    isCallForContribution: true
                   })}
                   className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-[#26303F] hover:bg-[#323F52] text-white border border-gray-600 rounded-xl font-bold text-xs sm:text-sm shadow-md transition-all cursor-pointer"
                 >
@@ -993,7 +1026,8 @@ const Home = () => {
                   title: "Vol. II Issue I (2025) Call for Contributions",
                   subtitle: "Official Call for Papers Announcement & Submission Details",
                   downloadName: "The_Literary_Scientist_Call_For_Contributions_Vol2_Issue1.png",
-                  pdfLink: "/annousments/Olive-Green-Doodle-Final-Project-Cover-A4-Document.pdf"
+                  pdfLink: "/annousments/Olive-Green-Doodle-Final-Project-Cover-A4-Document.pdf",
+                  isCallForContribution: true
                 })}
                 className="relative group cursor-pointer max-w-[320px] sm:max-w-[340px] rounded-3xl overflow-hidden shadow-2xl border border-white/20 bg-white transform transition-all duration-300 hover:scale-[1.02] p-2"
               >
@@ -1456,20 +1490,30 @@ const Home = () => {
             <div className="flex flex-wrap justify-between items-center gap-3 px-5 py-3 bg-[#161B22] border-t border-gray-700">
               <a
                 href={activeModalPoster.src}
-                download={activeModalPoster.downloadName || "poster.png"}
+                download={activeModalPoster.downloadName || "cover.png"}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-medium rounded-lg transition-colors cursor-pointer"
               >
                 <FaDownload className="text-xs" /> Save Image
               </a>
 
               <div className="flex items-center gap-2">
-                <Link
-                  to="/start-submission"
-                  onClick={() => setActiveModalPoster(null)}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold rounded-lg transition-colors"
-                >
-                  Submit Paper
-                </Link>
+                {activeModalPoster.isCallForContribution ? (
+                  <Link
+                    to="/start-submission"
+                    onClick={() => setActiveModalPoster(null)}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold rounded-lg transition-colors"
+                  >
+                    Submit Paper
+                  </Link>
+                ) : (
+                  <Link
+                    to="/current-issue"
+                    onClick={() => setActiveModalPoster(null)}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#8E7C68] hover:bg-[#7D6B57] text-white text-xs sm:text-sm font-bold rounded-lg transition-colors"
+                  >
+                    View Published Articles
+                  </Link>
+                )}
               </div>
             </div>
 

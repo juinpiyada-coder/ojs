@@ -281,15 +281,6 @@ const Header = () => {
                   <FaShieldAlt className="text-[#9E8B75] text-xs" />
                   <span>Ensuring Anonymous Review</span>
                 </Link>
-                <Link 
-                  to="/glossa-special-collections" 
-                  className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${
-                    isActive('/glossa-special-collections') ? 'bg-[#FAF7F2] text-[#1C2024] font-bold' : 'text-[#5A5043] hover:bg-[#FAF7F2] hover:text-[#1C2024]'
-                  }`}
-                >
-                  <FaBookOpen className="text-[#9E8B75] text-xs" />
-                  <span>Glossa Special Collections</span>
-                </Link>
               </div>
             </div>
 
@@ -559,7 +550,6 @@ const Header = () => {
                   <Link to="/author-guidelines" className="p-2 text-xs font-semibold text-[#5A5043] hover:text-[#1C2024] hover:bg-[#FAF7F2] rounded-lg" onClick={closeMobileMenu}>Author Guidelines</Link>
                   <Link to="/template" className="p-2 text-xs font-semibold text-[#5A5043] hover:text-[#1C2024] hover:bg-[#FAF7F2] rounded-lg" onClick={closeMobileMenu}>Manuscript Template</Link>
                   <Link to="/anonymous-review" className="p-2 text-xs font-semibold text-[#5A5043] hover:text-[#1C2024] hover:bg-[#FAF7F2] rounded-lg" onClick={closeMobileMenu}>Ensuring Anonymous Review</Link>
-                  <Link to="/glossa-special-collections" className="p-2 text-xs font-semibold text-[#5A5043] hover:text-[#1C2024] hover:bg-[#FAF7F2] rounded-lg" onClick={closeMobileMenu}>Glossa Special Collections</Link>
                 </div>
               )}
             </div>

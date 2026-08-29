@@ -721,16 +721,6 @@ const Archive = () => {
                   </ul>
                 </div>
 
-                {/* Submit Article CTA Button */}
-                <div className="pt-4">
-                  <Link
-                    to="/start-submission"
-                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#1E2530] hover:bg-[#D32F2F] text-white rounded text-xs font-bold uppercase tracking-wider transition-colors shadow-xs"
-                  >
-                    Submit Paper to Next Issue <FaArrowRight className="text-[10px]" />
-                  </Link>
-                </div>
-
               </div>
 
             </div>

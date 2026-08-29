@@ -316,22 +316,15 @@ const Home = () => {
   const [pendingPdfItem, setPendingPdfItem] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Protected PDF Access Handler: Blocks unauthenticated users from opening/saving PDFs
-  const handleOpenPdf = (pdfPayload) => {
+  // Protected PDF Download Handler: Anyone can read online, but downloading/saving requires an account
+  const handleDownloadPdf = (pdfUrl) => {
     if (!isAuthenticated) {
-      setPendingPdfItem(pdfPayload);
+      setPendingPdfItem({ url: pdfUrl });
       setShowLoginPrompt(true);
       return;
     }
-    setActivePdfViewer(pdfPayload);
-  };
-
-  const handleDirectPdfLink = (e, url) => {
-    if (!isAuthenticated) {
-      e.preventDefault();
-      setPendingPdfItem({ url });
-      setShowLoginPrompt(true);
-    }
+    // Authenticated user: open or trigger direct PDF download
+    window.open(pdfUrl, '_blank', 'noopener,noreferrer');
   };
 
   // Live Database States
@@ -573,9 +566,9 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Main Paper Title (Optimized Size, Line Clamping & Clickable Hyperlink) */}
+            {/* Main Paper Title (Optimized Size, Line Clamping & Clickable Hyperlink to In-Browser Viewer) */}
             <h2 
-              onClick={() => currentPaper.pdfUrl && handleOpenPdf({
+              onClick={() => currentPaper.pdfUrl && setActivePdfViewer({
                 url: currentPaper.pdfUrl,
                 title: formatTitle(currentPaper.title),
                 author: currentPaper.author,
@@ -586,7 +579,7 @@ const Home = () => {
               className={`text-lg sm:text-xl md:text-2xl lg:text-[1.6rem] font-bold text-white font-serif leading-snug tracking-tight line-clamp-2 md:line-clamp-3 transition-colors ${
                 currentPaper.pdfUrl ? 'cursor-pointer hover:text-[#D4AF37] hover:underline underline-offset-4 decoration-[#D4AF37]/60' : ''
               }`}
-              title={currentPaper.pdfUrl ? (isAuthenticated ? "Click to read full PDF paper" : "Sign in required to read PDF paper") : currentPaper.title}
+              title={currentPaper.pdfUrl ? "Click to read full PDF paper online" : currentPaper.title}
             >
               {formatTitle(currentPaper.title)}
             </h2>
@@ -606,7 +599,7 @@ const Home = () => {
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <button
                 type="button"
-                onClick={() => handleOpenPdf({
+                onClick={() => setActivePdfViewer({
                   url: currentPaper.pdfUrl,
                   title: formatTitle(currentPaper.title),
                   author: currentPaper.author,
@@ -616,31 +609,25 @@ const Home = () => {
                 })}
                 className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#242933] hover:bg-[#2F3643] text-white border border-gray-700 hover:border-gray-500 text-xs sm:text-sm font-semibold rounded-lg transition-all active:scale-95 cursor-pointer shadow-sm"
               >
-                {isAuthenticated ? (
-                  <FaBookOpen className="text-gray-300 text-sm" />
-                ) : (
-                  <FaLock className="text-amber-400 text-xs" />
-                )}
-                <span>Quick Preview</span>
+                <FaBookOpen className="text-gray-300 text-sm" />
+                <span>Read Online</span>
               </button>
 
               {currentPaper.pdfUrl && (
-                <a
-                  href={currentPaper.pdfUrl}
-                  onClick={(e) => handleDirectPdfLink(e, currentPaper.pdfUrl)}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  type="button"
+                  onClick={() => handleDownloadPdf(currentPaper.pdfUrl)}
                   className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-red-600/20 hover:bg-red-600/30 text-red-300 border border-red-500/40 text-xs sm:text-sm font-semibold rounded-lg transition-all active:scale-95 cursor-pointer shadow-sm"
-                  title={isAuthenticated ? "Open PDF in new tab" : "Sign in required to open PDF"}
+                  title={isAuthenticated ? "Download / Open PDF file" : "Login required to download PDF file"}
                 >
                   <FaFilePdf className="text-red-400 text-sm" />
-                  <span>Open PDF</span>
+                  <span>Download PDF</span>
                   {!isAuthenticated ? (
                     <FaLock className="text-[10px] text-amber-400 ml-0.5" />
                   ) : (
-                    <FaExternalLinkAlt className="text-[10px] opacity-70" />
+                    <FaDownload className="text-[10px] opacity-70" />
                   )}
-                </a>
+                </button>
               )}
 
               <span className="text-xs text-gray-400 font-mono ml-auto hidden md:inline">
@@ -1150,7 +1137,7 @@ const Home = () => {
                     </div>
 
                     <h3 
-                      onClick={() => article.pdfUrl && handleOpenPdf({
+                      onClick={() => article.pdfUrl && setActivePdfViewer({
                         url: article.pdfUrl,
                         title: formatTitle(article.title),
                         author: article.author,
@@ -1159,7 +1146,7 @@ const Home = () => {
                         doi: article.doi
                       })}
                       className={`text-base sm:text-lg font-bold text-[#1E2530] leading-snug font-serif ${article.pdfUrl ? 'cursor-pointer hover:text-[#8E7C68]' : ''} transition-colors`}
-                      title={article.pdfUrl ? (isAuthenticated ? "Click to read full PDF paper" : "Sign in required to read article") : article.title}
+                      title={article.pdfUrl ? "Click to read full PDF paper online" : article.title}
                     >
                       {formatTitle(article.title)}
                     </h3>
@@ -1184,28 +1171,9 @@ const Home = () => {
 
                 {/* Read Article & PDF Actions */}
                 <div className="flex-shrink-0 w-full md:w-auto pt-2 md:pt-0 border-t md:border-t-0 border-[#F0EBE1] flex items-center gap-2 justify-end">
-                  {article.pdfUrl && (
-                    <a
-                      href={article.pdfUrl}
-                      onClick={(e) => handleDirectPdfLink(e, article.pdfUrl)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 rounded-xl text-xs font-bold transition-all shadow-xs shrink-0 cursor-pointer"
-                      title={isAuthenticated ? "Open PDF in new tab" : "Sign in required to open PDF"}
-                    >
-                      <FaFilePdf className="text-red-600 text-xs" />
-                      <span>PDF</span>
-                      {!isAuthenticated ? (
-                        <FaLock className="text-[9px] text-amber-500" />
-                      ) : (
-                        <FaExternalLinkAlt className="text-[9px] opacity-70" />
-                      )}
-                    </a>
-                  )}
-
                   <button
                     type="button"
-                    onClick={() => handleOpenPdf({
+                    onClick={() => setActivePdfViewer({
                       url: article.pdfUrl,
                       title: formatTitle(article.title),
                       author: article.author,
@@ -1215,13 +1183,26 @@ const Home = () => {
                     })}
                     className="inline-flex items-center gap-2 px-4 py-2 bg-[#FAF7F2] hover:bg-[#EFE9DF] text-[#1E2530] border border-[#E5E0D8] rounded-xl text-xs font-bold transition-all shadow-xs shrink-0 cursor-pointer"
                   >
-                    {isAuthenticated ? (
-                      <FaBookOpen className="text-[#8E7C68] text-xs" />
-                    ) : (
-                      <FaLock className="text-amber-500 text-xs" />
-                    )}
+                    <FaBookOpen className="text-[#8E7C68] text-xs" />
                     <span>Read Article</span>
                   </button>
+
+                  {article.pdfUrl && (
+                    <button
+                      type="button"
+                      onClick={() => handleDownloadPdf(article.pdfUrl)}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 rounded-xl text-xs font-bold transition-all shadow-xs shrink-0 cursor-pointer"
+                      title={isAuthenticated ? "Download PDF file" : "Login required to download PDF file"}
+                    >
+                      <FaFilePdf className="text-red-600 text-xs" />
+                      <span>Download</span>
+                      {!isAuthenticated ? (
+                        <FaLock className="text-[9px] text-amber-600 ml-0.5" />
+                      ) : (
+                        <FaDownload className="text-[9px] opacity-70 ml-0.5" />
+                      )}
+                    </button>
+                  )}
                 </div>
               </article>
             ))
@@ -1530,16 +1511,19 @@ const Home = () => {
 
               <div className="flex items-center gap-2 flex-shrink-0">
                 {activePdfViewer.url && (
-                  <a
-                    href={activePdfViewer.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-600 rounded-lg text-xs font-semibold transition-colors"
-                    title="Open PDF in new tab"
+                  <button
+                    type="button"
+                    onClick={() => handleDownloadPdf(activePdfViewer.url)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-600 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+                    title={isAuthenticated ? "Download / Open PDF in new tab" : "Login required to download PDF file"}
                   >
-                    <FaExternalLinkAlt className="text-[10px]" />
-                    <span className="hidden sm:inline">Open in New Tab</span>
-                  </a>
+                    {!isAuthenticated ? (
+                      <FaLock className="text-[10px] text-amber-400" />
+                    ) : (
+                      <FaDownload className="text-[10px]" />
+                    )}
+                    <span className="hidden sm:inline">Download PDF</span>
+                  </button>
                 )}
 
                 <button

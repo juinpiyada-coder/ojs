@@ -337,19 +337,6 @@ const CurrentIssue = () => {
                   </div>
 
                   <div className="flex-shrink-0 w-full md:w-auto pt-2 md:pt-0 border-t md:border-t-0 border-[#F0EBE1] flex items-center gap-2 justify-end">
-                    {art.pdfUrl && (
-                      <a
-                        href={art.pdfUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 rounded-xl text-xs font-bold transition-all shadow-xs shrink-0 cursor-pointer"
-                        title="Open PDF in new tab"
-                      >
-                        <FaFilePdf className="text-red-600 text-xs" />
-                        <span>PDF</span>
-                        <FaExternalLinkAlt className="text-[9px] opacity-70" />
-                      </a>
-                    )}
                     <button
                       type="button"
                       onClick={() => setActivePdfViewer({
@@ -360,9 +347,9 @@ const CurrentIssue = () => {
                         pages: art.pages,
                         doi: art.doi
                       })}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-[#FAF7F2] hover:bg-[#EFE9DF] text-[#1E2530] border border-[#E5E0D8] rounded-xl text-xs font-bold transition-all shadow-xs shrink-0 cursor-pointer"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#FAF7F2] hover:bg-[#1E2530] text-[#1E2530] hover:text-white border border-[#E5E0D8] hover:border-[#1E2530] rounded-xl text-xs font-bold transition-all shadow-xs shrink-0 cursor-pointer group/btn"
                     >
-                      <FaBookOpen className="text-[#8E7C68] text-xs" />
+                      <FaBookOpen className="text-[#8E7C68] group-hover/btn:text-white text-xs transition-colors" />
                       <span>Read Article</span>
                     </button>
                   </div>
@@ -396,18 +383,9 @@ const CurrentIssue = () => {
                 </h4>
               </div>
               <div className="flex items-center gap-2 flex-shrink-0">
-                {activePdfViewer.url && (
-                  <a
-                    href={activePdfViewer.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-600 rounded-lg text-xs font-semibold transition-colors"
-                    title="Open PDF in new tab"
-                  >
-                    <FaExternalLinkAlt className="text-[10px]" />
-                    <span className="hidden sm:inline">Open in New Tab</span>
-                  </a>
-                )}
+                <span className="text-[11px] text-gray-400 font-mono hidden sm:inline bg-gray-800/80 px-2.5 py-1 rounded border border-gray-700">
+                  Protected In-Browser Reader
+                </span>
                 <button
                   type="button"
                   onClick={() => setActivePdfViewer(null)}

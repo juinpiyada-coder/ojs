@@ -607,28 +607,11 @@ const Home = () => {
                   doi: currentPaper.doi,
                   category: currentPaper.category
                 })}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#242933] hover:bg-[#2F3643] text-white border border-gray-700 hover:border-gray-500 text-xs sm:text-sm font-semibold rounded-lg transition-all active:scale-95 cursor-pointer shadow-sm"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#D32F2F] hover:bg-[#B71C1C] text-white text-xs sm:text-sm font-bold rounded-lg transition-all active:scale-95 cursor-pointer shadow-md"
               >
-                <FaBookOpen className="text-gray-300 text-sm" />
-                <span>Read Online</span>
+                <FaBookOpen className="text-white text-sm" />
+                <span>Read Full Article (Online View)</span>
               </button>
-
-              {currentPaper.pdfUrl && (
-                <button
-                  type="button"
-                  onClick={() => handleDownloadPdf(currentPaper.pdfUrl)}
-                  className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-red-600/20 hover:bg-red-600/30 text-red-300 border border-red-500/40 text-xs sm:text-sm font-semibold rounded-lg transition-all active:scale-95 cursor-pointer shadow-sm"
-                  title={isAuthenticated ? "Download / Open PDF file" : "Login required to download PDF file"}
-                >
-                  <FaFilePdf className="text-red-400 text-sm" />
-                  <span>Download PDF</span>
-                  {!isAuthenticated ? (
-                    <FaLock className="text-[10px] text-amber-400 ml-0.5" />
-                  ) : (
-                    <FaDownload className="text-[10px] opacity-70" />
-                  )}
-                </button>
-              )}
 
               <span className="text-xs text-gray-400 font-mono ml-auto hidden md:inline">
                 DOI: {currentPaper.doi}
@@ -1169,7 +1152,7 @@ const Home = () => {
                   </div>
                 </div>
 
-                {/* Read Article & PDF Actions */}
+                {/* Read Article In-Browser Action */}
                 <div className="flex-shrink-0 w-full md:w-auto pt-2 md:pt-0 border-t md:border-t-0 border-[#F0EBE1] flex items-center gap-2 justify-end">
                   <button
                     type="button"
@@ -1181,28 +1164,11 @@ const Home = () => {
                       pages: article.pages,
                       doi: article.doi
                     })}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-[#FAF7F2] hover:bg-[#EFE9DF] text-[#1E2530] border border-[#E5E0D8] rounded-xl text-xs font-bold transition-all shadow-xs shrink-0 cursor-pointer"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#FAF7F2] hover:bg-[#1E2530] text-[#1E2530] hover:text-white border border-[#E5E0D8] hover:border-[#1E2530] rounded-xl text-xs font-bold transition-all shadow-xs shrink-0 cursor-pointer group/btn"
                   >
-                    <FaBookOpen className="text-[#8E7C68] text-xs" />
+                    <FaBookOpen className="text-[#8E7C68] group-hover/btn:text-white text-xs transition-colors" />
                     <span>Read Article</span>
                   </button>
-
-                  {article.pdfUrl && (
-                    <button
-                      type="button"
-                      onClick={() => handleDownloadPdf(article.pdfUrl)}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 rounded-xl text-xs font-bold transition-all shadow-xs shrink-0 cursor-pointer"
-                      title={isAuthenticated ? "Download PDF file" : "Login required to download PDF file"}
-                    >
-                      <FaFilePdf className="text-red-600 text-xs" />
-                      <span>Download</span>
-                      {!isAuthenticated ? (
-                        <FaLock className="text-[9px] text-amber-600 ml-0.5" />
-                      ) : (
-                        <FaDownload className="text-[9px] opacity-70 ml-0.5" />
-                      )}
-                    </button>
-                  )}
                 </div>
               </article>
             ))
@@ -1510,21 +1476,9 @@ const Home = () => {
               </div>
 
               <div className="flex items-center gap-2 flex-shrink-0">
-                {activePdfViewer.url && (
-                  <button
-                    type="button"
-                    onClick={() => handleDownloadPdf(activePdfViewer.url)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-600 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
-                    title={isAuthenticated ? "Download / Open PDF in new tab" : "Login required to download PDF file"}
-                  >
-                    {!isAuthenticated ? (
-                      <FaLock className="text-[10px] text-amber-400" />
-                    ) : (
-                      <FaDownload className="text-[10px]" />
-                    )}
-                    <span className="hidden sm:inline">Download PDF</span>
-                  </button>
-                )}
+                <span className="text-[11px] text-gray-400 font-mono hidden sm:inline bg-gray-800/80 px-2.5 py-1 rounded border border-gray-700">
+                  Protected In-Browser Reader
+                </span>
 
                 <button
                   type="button"

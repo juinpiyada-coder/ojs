@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import SEO from '../components/SEO';
 import {
   FaBookOpen,
@@ -330,6 +330,8 @@ const defaultArchiveVolumes = [
 ];
 
 const Archive = () => {
+  const [searchParams] = useSearchParams();
+  const location = useLocation();
   const [searchTerm, setSearchTerm] = useState('');
   const [activeSearch, setActiveSearch] = useState('');
   const [volumesList, setVolumesList] = useState(defaultArchiveVolumes);
@@ -339,6 +341,27 @@ const Archive = () => {
   const [fontSizeLevel, setFontSizeLevel] = useState('base'); // 'sm' | 'base' | 'lg'
   const [activeModalPoster, setActiveModalPoster] = useState(null);
   const [activePdfViewer, setActivePdfViewer] = useState(null);
+
+  // Sync issue selection from URL query param (e.g., ?issue=vol-1-iss-2 or ?issue=vol-1-iss-1 or hash #vol-1-iss-1)
+  useEffect(() => {
+    const issueParam = searchParams.get('issue') || (location.hash ? location.hash.replace('#', '') : null);
+    if (issueParam) {
+      const match = volumesList.find(v => v.id === issueParam || v.id.toLowerCase().includes(issueParam.toLowerCase()));
+      if (match) {
+        setSelectedIssueId(match.id);
+        if (match.year) {
+          setExpandedYears(prev => ({ ...prev, [match.year]: true }));
+        }
+        // Smooth scroll to the issue card or reader
+        setTimeout(() => {
+          const el = document.getElementById(match.id) || document.getElementById('archive-content');
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 100);
+      }
+    }
+  }, [searchParams, location.hash, volumesList]);
 
   // Set default selected issue on initial load
   useEffect(() => {

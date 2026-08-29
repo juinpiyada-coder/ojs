@@ -273,20 +273,22 @@ const defaultArticles = [
 
 const defaultPreviousIssues = [
   {
+    id: "vol-1-iss-1",
     volume: "Volume I Issue I (December, 2023)",
     date: "December, 2023",
     status: "INAUGURAL ISSUE",
     coverImg: "/annousments/img2.png",
     description: "Inaugural volume establishing our multidisciplinary bridge between literary theory and empirical scientific inquiry.",
-    link: "/archive"
+    link: "/archive?issue=vol-1-iss-1"
   },
   {
+    id: "vol-1-iss-2",
     volume: "Volume I Issue II (January, 2025)",
     date: "January, 2025",
     status: "ARCHIVED ISSUE",
     coverImg: "/annousments/image copy.png",
     description: "Featuring peer-reviewed scholarship across modern cultural hermeneutics, socio-environmental dynamics, and medical humanities.",
-    link: "/archive"
+    link: "/archive?issue=vol-1-iss-2"
   }
 ];
 
@@ -1195,7 +1197,7 @@ const Home = () => {
             {previousIssuesList.map((issue, idx) => (
               <div
                 key={idx}
-                className="bg-white border border-[#E5E0D8] rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
+                className="bg-white border border-[#E5E0D8] rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
               >
                 {/* Header Info */}
                 <div>
@@ -1208,25 +1210,23 @@ const Home = () => {
                     </span>
                   </div>
 
-                  <h3 className="text-xl sm:text-2xl font-bold text-[#1E2530] font-serif tracking-tight mb-4">
+                  <Link 
+                    to={issue.link || `/archive?issue=${issue.id || 'vol-1-iss-1'}`}
+                    className="block text-xl sm:text-2xl font-bold text-[#1E2530] font-serif tracking-tight mb-4 hover:text-[#D32F2F] transition-colors cursor-pointer"
+                  >
                     {issue.volume}
-                  </h3>
+                  </Link>
                   <p className="text-xs sm:text-sm text-[#5C5446] mb-6 font-serif leading-relaxed">
                     {issue.description}
                   </p>
                 </div>
 
-                {/* Centered Journal Cover */}
-                <div className="my-2 flex justify-center">
-                  <div
-                    onClick={() => setActiveModalPoster({
-                      src: issue.coverImg,
-                      title: `The Literary Scientist — ${issue.volume}`,
-                      subtitle: `${issue.status} • Published: ${issue.date}`,
-                      downloadName: `The_Literary_Scientist_${issue.volume.replace(/[^a-zA-Z0-9]/g, '_')}_Cover.png`,
-                      pdfLink: null
-                    })}
-                    className="relative cursor-pointer w-full max-w-[240px] rounded-2xl overflow-hidden shadow-md border-2 border-white bg-white transform hover:scale-[1.03] transition-all duration-300 p-1"
+                {/* Centered Journal Cover (Clickable to redirect to Archive Issue) */}
+                <div className="my-2 flex flex-col items-center">
+                  <Link
+                    to={issue.link || `/archive?issue=${issue.id || 'vol-1-iss-1'}`}
+                    className="relative cursor-pointer w-full max-w-[240px] rounded-2xl overflow-hidden shadow-md border-2 border-white bg-white transform group-hover:scale-[1.03] transition-all duration-300 p-1 block"
+                    title={`View ${issue.volume} in Archive`}
                   >
                     <div className="rounded-xl overflow-hidden bg-white flex items-center justify-center">
                       <img
@@ -1236,7 +1236,17 @@ const Home = () => {
                         loading="lazy"
                       />
                     </div>
-                  </div>
+                  </Link>
+
+                  {/* Direct Link to Archive Issue */}
+                  <Link
+                    to={issue.link || `/archive?issue=${issue.id || 'vol-1-iss-1'}`}
+                    className="mt-5 inline-flex items-center gap-2 px-5 py-2 bg-[#FAF7F2] hover:bg-[#1E2530] text-[#1E2530] hover:text-white border border-[#E5E0D8] hover:border-[#1E2530] rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer group-hover:bg-[#1E2530] group-hover:text-white"
+                  >
+                    <FaBookOpen className="text-xs text-[#8E7C68] group-hover:text-white transition-colors" />
+                    <span>Explore Issue in Archive</span>
+                    <FaArrowRight className="text-[10px]" />
+                  </Link>
                 </div>
               </div>
             ))}

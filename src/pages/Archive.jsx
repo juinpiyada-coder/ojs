@@ -131,25 +131,97 @@ const defaultArchiveVolumes = [
     date: "January, 2025",
     status: "Archived Issue",
     coverImg: "/annousments/image copy.png",
-    description: "Featuring peer-reviewed scholarship across modern cultural hermeneutics, socio-environmental dynamics, and medical humanities.",
+    description: "Featuring peer-reviewed scholarship across modern cultural hermeneutics, socio-environmental dynamics, gender discourse, and medical humanities.",
     articles: [
       {
         id: 101,
-        title: "Discursive Ecologies and Environmental Hermeneutics in Contemporary South Asian Literature",
-        author: "Subhasish Roy",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/07/TLS20250103_31.pdf",
-        category: "ENVIRONMENTAL HUMANITIES",
-        pages: "pp. 1-12",
-        doi: "10.5281/zenodo.1082301"
+        title: "Praxis in Academic Gauging: A Critique to Scholastic Module of Neuroplasticity Dialogue on Mental Health",
+        author: "Bidisha Chakraborty",
+        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/02/Praxis_final.pdf",
+        category: "MEDICAL HUMANITIES & NEURO-DIALOGUE",
+        pages: "pp. 1-8",
+        doi: "10.5281/zenodo.1082341"
       },
       {
         id: 102,
-        title: "Medical Humanities and Illness Narratives: Empathy and Rhetoric in Clinical Spaces",
-        author: "Dr. Ananya Mukherjee",
-        pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_27.pdf",
-        category: "MEDICAL HUMANITIES",
-        pages: "pp. 13-24",
-        doi: "10.5281/zenodo.1082302"
+        title: "Phallic Myth and Sexual Rapport Reprogrammed: Lacanian Analysis of Bryan Forbes' Film The Stepford Wives (1975)",
+        author: "Biswadip Mal",
+        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/02/Phallic_Final.pdf",
+        category: "FILM & PSYCHOANALYTIC THEORY",
+        pages: "pp. 9-16",
+        doi: "10.5281/zenodo.1082342"
+      },
+      {
+        id: 103,
+        title: "Jung’s Archetypes and Baum’s Attempt at Ethical Neutrality in The Wizard of Oz",
+        author: "Sounak Banerjee",
+        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/02/Sounak_final.pdf",
+        category: "LITERARY CRITICISM & ARCHETYPAL THEORY",
+        pages: "pp. 17-24",
+        doi: "10.5281/zenodo.1082343"
+      },
+      {
+        id: 104,
+        title: "Remaining Literary Forms: Twitterature and Instapoetry as Microfiction",
+        author: "Anuska Bag",
+        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/02/Remaining-literacy_Final.pdf",
+        category: "DIGITAL HUMANITIES & MICROFICTION",
+        pages: "pp. 25-32",
+        doi: "10.5281/zenodo.1082344"
+      },
+      {
+        id: 105,
+        title: "Critiquing the Eco-Narratives",
+        author: "Debanjan Chakraborty",
+        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/02/Critiquing_final.pdf",
+        category: "ENVIRONMENTAL HUMANITIES & ECO-CRITICISM",
+        pages: "pp. 33-40",
+        doi: "10.5281/zenodo.1082345"
+      },
+      {
+        id: 106,
+        title: "Subverting the Patriarchal Trope by Challenging Toxic Masculinity in Feminist Revenge Fantasy: An Analysis of Anvita Dutt’s ‘Bulbbul’ and Prosit Roy’s ‘Pari’",
+        author: "Quincy Tikadar",
+        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/02/Subverting_final.pdf",
+        category: "GENDER STUDIES & CINEMA",
+        pages: "pp. 41-48",
+        doi: "10.5281/zenodo.1082346"
+      },
+      {
+        id: 107,
+        title: "Intersecting Inequalities: The Role of Caste and Socioeconomic Status in Maternal Healthcare Access",
+        author: "Suchismita Mitra and Samriddha Biswas",
+        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/02/The-Role_Final.pdf",
+        category: "PUBLIC HEALTH & SOCIAL JUSTICE",
+        pages: "pp. 49-56",
+        doi: "10.5281/zenodo.1082347"
+      },
+      {
+        id: 108,
+        title: "Menstrual Education Through Indian Info Comic Menstrupedia",
+        author: "Firthouse Tajuddin and Dr. K. Sindhu",
+        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/02/Mentrual_Final.pdf",
+        category: "COMICS STUDIES & HEALTH EDUCATION",
+        pages: "pp. 57-64",
+        doi: "10.5281/zenodo.1082348"
+      },
+      {
+        id: 109,
+        title: "WOUNDS OF THE PAST: Feminine Histories and Silent Landscapes in Ice-Candy-Man and What the Body Remembers",
+        author: "Kazmi Afrose",
+        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/02/Wound-of-the-past_Final.pdf",
+        category: "POST-COLONIAL & MEMORY STUDIES",
+        pages: "pp. 65-72",
+        doi: "10.5281/zenodo.1082349"
+      },
+      {
+        id: 110,
+        title: "Film Review: Breaking Barriers with Laughter in “Badhaai Do”",
+        author: "Pallabi Gharami",
+        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/02/Badhaai-Do_Final.pdf",
+        category: "QUEER STUDIES & FILM REVIEW",
+        pages: "pp. 73-78",
+        doi: "10.5281/zenodo.1082350"
       }
     ]
   },
@@ -162,25 +234,97 @@ const defaultArchiveVolumes = [
     date: "December, 2023",
     status: "Inaugural Issue",
     coverImg: "/annousments/img2.png",
-    description: "Inaugural volume establishing our multidisciplinary bridge between literary theory and empirical scientific inquiry.",
+    description: "Inaugural volume establishing our multidisciplinary bridge between literary theory, cultural memory, and empirical scientific inquiry.",
     articles: [
       {
         id: 201,
-        title: "Foundations of Cross-Disciplinary Inquiry: Intermediality in Literary and Scientific Discourse",
-        author: "Md Arif Uddin Mondal",
-        pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_26.pdf",
-        category: "INTERDISCIPLINARY THEORY",
-        pages: "pp. 1-14",
+        title: "Gendering Wartime Sexual Violence Against Women in Bangladesh: The Liberation War and the Struggles of the War Heroines in the book “Birangona”",
+        author: "Quince Tikadar",
+        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2024/07/Gendering-1.pdf",
+        category: "GENDER & HISTORICAL MEMORY",
+        pages: "pp. 1-9",
         doi: "10.5281/zenodo.1082201"
       },
       {
         id: 202,
-        title: "Cognitive Poetics and Reader-Response in Modern Digital Literatures",
-        author: "Editorial Collective",
-        pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_28.pdf",
-        category: "COGNITIVE POETICS",
-        pages: "pp. 15-28",
+        title: "ভারতীয় সাহিত্যঃ লোক সংস্কৃতি ও মিথের বহূকৌনিকের গোমোণ",
+        author: "Samaresh Mondal",
+        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2024/07/bharatiya-sahitya-1.pdf",
+        category: "FOLKLORE & INDIAN LITERATURE",
+        pages: "pp. 10-18",
         doi: "10.5281/zenodo.1082202"
+      },
+      {
+        id: 203,
+        title: "শ্রীগদ্যশরীর : একটি বিশ্লেষণী পাঠ",
+        author: "Debasree Pal",
+        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2024/07/goddosorir-2-1.pdf",
+        category: "LITERARY CRITICISM & BENGALI PROSE",
+        pages: "pp. 19-27",
+        doi: "10.5281/zenodo.1082203"
+      },
+      {
+        id: 204,
+        title: "আমাদের জল জীবন",
+        author: "Aritree De",
+        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2024/07/jol-1.pdf",
+        category: "ECOLOGICAL WRITING & CULTURE",
+        pages: "pp. 28-35",
+        doi: "10.5281/zenodo.1082204"
+      },
+      {
+        id: 205,
+        title: "Book Review: Heidegger and a Hippo Walk Through Those Pearly Gates",
+        author: "Agomoni Chakraborty",
+        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2024/07/The_BOOK.pdf",
+        category: "PHILOSOPHY & BOOK REVIEW",
+        pages: "pp. 36-41",
+        doi: "10.5281/zenodo.1082205"
+      },
+      {
+        id: 206,
+        title: "The Euclidean Mind and the Major Archetypes in Dostoevsky’s Novel, The Brothers Karamazov",
+        author: "Al Minar Mahmudur Reza",
+        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2024/07/The-euclident-mind.pdf",
+        category: "RUSSIAN LITERATURE & PHILOSOPHY",
+        pages: "pp. 42-50",
+        doi: "10.5281/zenodo.1082206"
+      },
+      {
+        id: 207,
+        title: "The Influence of Music Videos in Second Language Listening Development: A Study of the Undergraduate Students of Dhaka City",
+        author: "Farah Ulfat Mohinee and Progga Saha",
+        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2024/07/The-Influence.pdf",
+        category: "APPLIED LINGUISTICS & PEDAGOGY",
+        pages: "pp. 51-60",
+        doi: "10.5281/zenodo.1082207"
+      },
+      {
+        id: 208,
+        title: "“Where words fail, music speaks”: The Role of Influential Music in Shaping Young Adults’ Identities and Perspectives",
+        author: "Simanta Nandy and Sumedha Ghosh",
+        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2024/07/The_role.pdf",
+        category: "CULTURAL STUDIES & MUSICOLOGY",
+        pages: "pp. 61-70",
+        doi: "10.5281/zenodo.1082208"
+      },
+      {
+        id: 209,
+        title: "Delineating Eco-Epistemic Paradigms: A Multifaceted Exegesis of Environmental Morality and Hegemonic Dynamics in Mandaar and Macbeth",
+        author: "Soumabha Chakraborty and Sounak Banerjee",
+        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2024/07/Golem-Effect-Final.pdf",
+        category: "ECO-CRITICISM & SHAKESPEARE STUDIES",
+        pages: "pp. 71-80",
+        doi: "10.5281/zenodo.1082209"
+      },
+      {
+        id: 210,
+        title: "The Gollem Effect: Integration of Gollem-Class AIs during the Climate Change in Online Ecosystem",
+        author: "Megha Bhattacharya and Arkannel Khan",
+        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2024/07/Golem-Effect-Final.pdf",
+        category: "AI, COMPUTATIONAL ECOLOGY & MEDIA",
+        pages: "pp. 81-90",
+        doi: "10.5281/zenodo.1082210"
       }
     ]
   }

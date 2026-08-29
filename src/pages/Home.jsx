@@ -408,85 +408,9 @@ const Home = () => {
   useEffect(() => {
     const fetchLiveHomeData = async () => {
       try {
-        const [volRes, annRes] = await Promise.all([
-          apiFetch('/volumes?with_articles=true&published_only=true'),
-          apiFetch('/announcements?published_only=true')
-        ]);
+        const annRes = await apiFetch('/announcements?published_only=true');
 
-        // Process Volumes & Live Published Articles from Database
-        if (volRes && volRes.data && volRes.data.length > 0) {
-          const allIssues = [];
-          volRes.data.forEach(vol => {
-            if (vol.issues && vol.issues.length > 0) {
-              vol.issues.forEach(iss => {
-                allIssues.push({
-                  ...iss,
-                  volume_title: vol.volume_title,
-                  volume_number: vol.volume_number,
-                  publication_year: vol.publication_year,
-                  vol_cover_url: vol.cover_url
-                });
-              });
-            }
-          });
-
-          allIssues.sort((a, b) => {
-            const dateA = new Date(a.publication_date || `${a.publication_year}-01-01`).getTime();
-            const dateB = new Date(b.publication_date || `${b.publication_year}-01-01`).getTime();
-            if (dateB !== dateA) return dateB - dateA;
-            return (b.issue_number || 0) - (a.issue_number || 0);
-          });
-
-          if (allIssues.length > 0) {
-            const latest = allIssues[0];
-            const issueDateStr = latest.publication_date 
-              ? new Date(latest.publication_date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
-              : `${latest.publication_year}`;
-
-            setCurrentIssueInfo({
-              title: `${latest.volume_title || `Volume ${latest.volume_number}`}, ${latest.issue_title || `Issue ${latest.issue_number}`} (${issueDateStr})`,
-              volume: latest.volume_title || `Volume ${latest.volume_number}`,
-              issue: latest.issue_title || `Issue ${latest.issue_number}`,
-              date: issueDateStr,
-              description: latest.description || "This edition brings together rigorous cross-disciplinary investigations exploring contemporary mythological literature, cinema, gendered rural agency, folk art traditions, eco-criticism, and transnational identities.",
-              coverImg: resolveFileUrl(latest.cover_url || latest.vol_cover_url || "/annousments/image2.png"),
-              articlesCount: latest.articles?.length || 10
-            });
-
-            if (latest.articles && latest.articles.length > 0) {
-              setLiveArticles(latest.articles.map((art, idx) => ({
-                id: art.article_id,
-                title: art.title,
-                author: art.author_name || 'Author',
-                pdfUrl: resolveFileUrl(art.published_url || art.manuscript_url),
-                category: (art.keywords?.split(',')[0] || (art.doi ? `DOI: ${art.doi}` : 'Research Paper')).toUpperCase(),
-                pages: art.page_range || `pp. 1-${10 + idx}`,
-                volumeLabel: `${latest.volume_title || `Vol ${latest.volume_number}`}, ${latest.issue_title || `Issue ${latest.issue_number}`} (${issueDateStr})`,
-                keywords: art.keywords || '',
-                doi: art.doi || ''
-              })));
-            }
-
-            if (allIssues.length > 1) {
-              setPreviousIssuesList(allIssues.slice(1).map(iss => {
-                const prevDate = iss.publication_date 
-                  ? new Date(iss.publication_date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
-                  : `${iss.publication_year}`;
-                return {
-                  volume: `${iss.volume_title || `Volume ${iss.volume_number}`} ${iss.issue_title || `Issue ${iss.issue_number}`} (${prevDate})`,
-                  date: prevDate,
-                  coverImg: resolveFileUrl(iss.cover_url || iss.vol_cover_url || "/annousments/img2.png"),
-                  description: iss.description || `Peer-reviewed volume publication with scholarly research papers.`,
-                  status: iss.issue_number === 1 ? "INAUGURAL ISSUE" : "ARCHIVED ISSUE",
-                  link: "/archive",
-                  issn: "ISSN: 3048-7366"
-                };
-              }));
-            }
-          }
-        }
-
-        // Process Announcements
+        // Process Announcements only
         if (annRes && annRes.data && annRes.data.length > 0) {
           setAnnouncements(annRes.data);
           const latestAnn = annRes.data[0];
@@ -499,7 +423,7 @@ const Home = () => {
           }
         }
       } catch (err) {
-        console.warn('Live home data fetch error:', err);
+        console.warn('Live announcements fetch error:', err);
       } finally {
         setLoading(false);
       }

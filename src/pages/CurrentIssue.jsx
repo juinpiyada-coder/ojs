@@ -162,69 +162,7 @@ const CurrentIssue = () => {
   const [activePdfViewer, setActivePdfViewer] = useState(null);
   const [activeModalPoster, setActiveModalPoster] = useState(null);
 
-  useEffect(() => {
-    const fetchLatestIssue = async () => {
-      try {
-        const res = await apiFetch('/volumes?with_articles=true&published_only=true');
-        if (res && res.data && res.data.length > 0) {
-          const allIssues = [];
-          res.data.forEach(vol => {
-            if (vol.issues && vol.issues.length > 0) {
-              vol.issues.forEach(iss => {
-                allIssues.push({
-                  ...iss,
-                  volume_title: vol.volume_title,
-                  volume_number: vol.volume_number,
-                  publication_year: vol.publication_year,
-                  vol_cover_url: vol.cover_url
-                });
-              });
-            }
-          });
-
-          allIssues.sort((a, b) => {
-            const dateA = new Date(a.publication_date || `${a.publication_year}-01-01`).getTime();
-            const dateB = new Date(b.publication_date || `${b.publication_year}-01-01`).getTime();
-            if (dateB !== dateA) return dateB - dateA;
-            return (b.issue_number || 0) - (a.issue_number || 0);
-          });
-
-          if (allIssues.length > 0) {
-            const latest = allIssues[0];
-            const issueDateStr = latest.publication_date 
-              ? new Date(latest.publication_date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
-              : `${latest.publication_year}`;
-
-            setIssueInfo({
-              title: `${latest.volume_title || `Volume ${latest.volume_number}`}, ${latest.issue_title || `Issue ${latest.issue_number}`} (${issueDateStr})`,
-              date: issueDateStr,
-              volume: latest.volume_title || `Volume ${latest.volume_number}`,
-              issue: latest.issue_title || `Issue ${latest.issue_number}`,
-              coverImg: resolveFileUrl(latest.cover_url || latest.vol_cover_url || "/annousments/image2.png"),
-              description: latest.description || issueInfo.description
-            });
-
-            if (latest.articles && latest.articles.length > 0) {
-              setArticles(latest.articles.map((art, idx) => ({
-                id: art.article_id || idx + 1,
-                title: art.title,
-                author: art.author_name || 'Author',
-                category: (art.keywords?.split(',')[0] || (art.doi ? `DOI: ${art.doi}` : 'Research Paper')).toUpperCase(),
-                volumeLabel: `${latest.volume_title || `Vol ${latest.volume_number}`}, ${latest.issue_title || `Issue ${latest.issue_number}`} (${issueDateStr})`,
-                pages: art.page_range || `pp. 1-${10 + idx}`,
-                doi: art.doi || '',
-                pdfUrl: resolveFileUrl(art.published_url || art.manuscript_url),
-                abstract: art.abstract || ''
-              })));
-            }
-          }
-        }
-      } catch (e) {
-        console.warn('Using default current issue data', e);
-      }
-    };
-    fetchLatestIssue();
-  }, []);
+  // Curated Volume 1 Issue 3 data remains static and verified
 
   const filteredArticles = articles.filter((a) =>
     a.title.toLowerCase().includes(searchTerm.toLowerCase()) ||

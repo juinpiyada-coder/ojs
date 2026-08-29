@@ -383,16 +383,18 @@ const PaperSubmissions = () => {
     
     if (isPdfDoc(viewingDocUrl)) {
       return (
-        <iframe 
-          src={viewingDocUrl} 
-          title="Document Viewer" 
-          className="w-full h-full border-0 bg-white" 
-        />
+        <div className="w-full h-full flex flex-col bg-slate-900">
+          <iframe 
+            src={`${viewingDocUrl}#toolbar=1&navpanes=0&scrollbar=1`} 
+            title="Document Viewer" 
+            className="w-full h-full border-0 bg-white" 
+          />
+        </div>
       );
     } else if (['jpg', 'jpeg', 'png', 'gif', 'webp'].some(ext => viewingDocUrl.toLowerCase().includes(`.${ext}`))) {
       return (
-        <div className="w-full h-full flex items-center justify-center p-4 bg-slate-900/50">
-          <img src={viewingDocUrl} alt="Document" className="max-w-full max-h-full object-contain shadow-lg rounded" />
+        <div className="w-full h-full flex items-center justify-center p-4 bg-slate-900/90">
+          <img src={viewingDocUrl} alt="Document" className="max-w-full max-h-full object-contain shadow-2xl rounded-lg border border-slate-700" />
         </div>
       );
     } else {
@@ -402,12 +404,17 @@ const PaperSubmissions = () => {
             <FaFileAlt className="w-10 h-10" />
           </div>
           <h4 className="text-xl font-bold text-gray-900 mb-2">Manuscript Document</h4>
-          <p className="text-gray-600 max-w-md mb-6 text-xs font-mono break-all">
+          <p className="text-gray-600 max-w-md mb-6 text-xs font-mono break-all bg-white p-3 rounded-lg border border-slate-200">
             {viewingDocUrl}
           </p>
           <div className="flex gap-3">
-            <a href={viewingDocUrl} target="_blank" rel="noreferrer" className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow text-xs inline-flex items-center gap-1.5 cursor-pointer">
-              <FaDownload /> Download / Open
+            <a 
+              href={viewingDocUrl} 
+              target="_blank" 
+              rel="noreferrer" 
+              className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow text-xs inline-flex items-center gap-1.5 cursor-pointer"
+            >
+              <FaDownload /> Open in External Tab
             </a>
           </div>
         </div>
@@ -570,22 +577,23 @@ const PaperSubmissions = () => {
 
       {/* 4. Submissions Table */}
       <div className="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden">
-        <div className="px-5 py-4 border-b border-slate-200">
+        <div className="px-5 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
           <h3 className="text-sm font-bold text-slate-900">All Submissions</h3>
+          <span className="text-xs text-slate-500 font-medium">Showing {filteredArticles.length} total entries</span>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
+        <div className="overflow-x-auto w-full">
+          <table className="w-full text-left text-xs min-w-[950px]">
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
-                <th className="px-4 py-3 font-bold text-slate-600 uppercase tracking-wider w-10">#</th>
-                <th className="px-4 py-3 font-bold text-slate-600 uppercase tracking-wider min-w-[220px]">Title & Topics</th>
-                <th className="px-4 py-3 font-bold text-slate-600 uppercase tracking-wider min-w-[140px]">Author</th>
-                <th className="px-4 py-3 font-bold text-slate-600 uppercase tracking-wider w-36 text-center">Editor</th>
-                <th className="px-4 py-3 font-bold text-slate-600 uppercase tracking-wider w-40 text-center">Reviewer(s)</th>
-                <th className="px-4 py-3 font-bold text-slate-600 uppercase tracking-wider w-28 text-center">Vol / Issue</th>
-                <th className="px-4 py-3 font-bold text-slate-600 uppercase tracking-wider w-28 text-center">PDF</th>
-                <th className="px-4 py-3 font-bold text-slate-600 uppercase tracking-wider w-28 text-center">Status</th>
-                <th className="px-4 py-3 font-bold text-slate-600 uppercase tracking-wider text-center min-w-[270px]">Actions</th>
+                <th className="px-3 py-3 font-bold text-slate-600 uppercase tracking-wider w-10 text-center">#</th>
+                <th className="px-3 py-3 font-bold text-slate-600 uppercase tracking-wider min-w-[200px]">Title & Topics</th>
+                <th className="px-3 py-3 font-bold text-slate-600 uppercase tracking-wider min-w-[130px]">Author</th>
+                <th className="px-3 py-3 font-bold text-slate-600 uppercase tracking-wider w-28 text-center">Editor</th>
+                <th className="px-3 py-3 font-bold text-slate-600 uppercase tracking-wider w-32 text-center">Reviewer(s)</th>
+                <th className="px-3 py-3 font-bold text-slate-600 uppercase tracking-wider w-24 text-center">Issue</th>
+                <th className="px-3 py-3 font-bold text-slate-600 uppercase tracking-wider w-24 text-center">PDF</th>
+                <th className="px-3 py-3 font-bold text-slate-600 uppercase tracking-wider w-24 text-center">Status</th>
+                <th className="px-3 py-3 font-bold text-slate-600 uppercase tracking-wider text-center min-w-[240px]">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">

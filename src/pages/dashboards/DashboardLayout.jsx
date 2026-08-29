@@ -205,6 +205,18 @@ const DashboardLayout = ({ title }) => {
               {renderNavItem('/admin/dashboard/announcements', FaBullhorn, 'Announcements')}
             </>
           )}
+
+          {/* Editor & Assistant Editor Content Links */}
+          {(userRole === 'editor' || userRole === 'assistant editor') && (
+            <>
+              <div className="pt-4 pb-1.5 px-3">
+                <p className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">Editorial Workflows</p>
+              </div>
+              {renderNavItem(dashPrefix, FaFileAlt, 'Assigned Manuscripts')}
+              {renderNavItem('/admin/dashboard/submissions', FaLayerGroup, 'All Submissions')}
+              {renderNavItem('/archive', FaArchive, 'Published Archive')}
+            </>
+          )}
         </nav>
         
         {/* Logout Footer */}

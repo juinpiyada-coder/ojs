@@ -556,40 +556,63 @@ const Archive = () => {
                                     </span>
                                   </div>
 
-                                  <div className="divide-y divide-gray-200 space-y-4">
-                                    {iss.articles.map((art, idx) => (
-                                      <div key={art.id || idx} className="pt-4 first:pt-0 space-y-2">
-                                        <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
-                                          <div className="space-y-1 max-w-xl">
-                                            <h4 
-                                              onClick={() => art.pdfUrl && setActivePdfViewer(art)}
-                                              className={`text-sm sm:text-base font-bold text-gray-900 leading-snug ${art.pdfUrl ? 'cursor-pointer hover:text-[#D32F2F]' : ''} transition-colors`}
-                                            >
-                                              {art.title}
-                                            </h4>
-                                            <p className="text-xs font-semibold text-[#8E7C68]">
-                                              By: {art.author}
-                                            </p>
-                                            <div className="flex flex-wrap items-center gap-2 text-[11px] text-gray-500 font-mono pt-1">
-                                              {art.pages && <span className="bg-gray-100 px-1.5 py-0.5 rounded">{art.pages}</span>}
-                                              {art.doi && <span className="bg-amber-50 text-amber-900 px-1.5 py-0.5 rounded border border-amber-200">DOI: {art.doi}</span>}
-                                              <span className="text-gray-400">{art.category}</span>
-                                            </div>
-                                          </div>
-
-                                          {art.pdfUrl && (
-                                            <button
-                                              type="button"
-                                              onClick={() => setActivePdfViewer(art)}
-                                              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white hover:bg-[#D32F2F] text-gray-800 hover:text-white border border-gray-300 hover:border-[#D32F2F] rounded text-xs font-bold transition-all shadow-xs shrink-0 cursor-pointer"
-                                            >
-                                              <FaBookOpen className="text-red-600 group-hover:text-white" />
-                                              <span>View PDF</span>
-                                            </button>
-                                          )}
-                                        </div>
+                                  <div className="flex flex-col md:flex-row gap-6 items-start">
+                                    {/* Issue Cover Artwork Thumbnail */}
+                                    <div 
+                                      onClick={() => setActiveModalPoster({
+                                        src: iss.coverImg,
+                                        title: `The Literary Scientist — ${iss.volume}`,
+                                        subtitle: `${iss.status} • ${iss.date}`,
+                                        downloadName: `The_Literary_Scientist_${iss.volume.replace(/[^a-zA-Z0-9]/g, '_')}_Cover.png`
+                                      })}
+                                      className="w-full sm:w-44 md:w-48 shrink-0 bg-white border border-gray-300 rounded-lg p-2 shadow-sm cursor-pointer group hover:shadow-md transition-shadow relative"
+                                    >
+                                      <img
+                                        src={iss.coverImg}
+                                        alt={`${iss.volume} Cover`}
+                                        className="w-full h-auto object-contain rounded"
+                                      />
+                                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded flex items-center justify-center text-white text-xs font-bold gap-1">
+                                        <FaExpandAlt className="text-[10px]" /> Enlarge
                                       </div>
-                                    ))}
+                                    </div>
+
+                                    {/* Articles List */}
+                                    <div className="flex-1 divide-y divide-gray-200 space-y-4 w-full">
+                                      {iss.articles.map((art, idx) => (
+                                        <div key={art.id || idx} className="pt-4 first:pt-0 space-y-2">
+                                          <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
+                                            <div className="space-y-1 max-w-xl">
+                                              <h4 
+                                                onClick={() => art.pdfUrl && setActivePdfViewer(art)}
+                                                className={`text-sm sm:text-base font-bold text-gray-900 leading-snug ${art.pdfUrl ? 'cursor-pointer hover:text-[#D32F2F]' : ''} transition-colors`}
+                                              >
+                                                {art.title}
+                                              </h4>
+                                              <p className="text-xs font-semibold text-[#8E7C68]">
+                                                By: {art.author}
+                                              </p>
+                                              <div className="flex flex-wrap items-center gap-2 text-[11px] text-gray-500 font-mono pt-1">
+                                                {art.pages && <span className="bg-gray-100 px-1.5 py-0.5 rounded">{art.pages}</span>}
+                                                {art.doi && <span className="bg-amber-50 text-amber-900 px-1.5 py-0.5 rounded border border-amber-200">DOI: {art.doi}</span>}
+                                                <span className="text-gray-400">{art.category}</span>
+                                              </div>
+                                            </div>
+
+                                            {art.pdfUrl && (
+                                              <button
+                                                type="button"
+                                                onClick={() => setActivePdfViewer(art)}
+                                                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white hover:bg-[#D32F2F] text-gray-800 hover:text-white border border-gray-300 hover:border-[#D32F2F] rounded text-xs font-bold transition-all shadow-xs shrink-0 cursor-pointer"
+                                              >
+                                                <FaBookOpen className="text-red-600 group-hover:text-white" />
+                                                <span>View PDF</span>
+                                              </button>
+                                            )}
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
                                   </div>
                                 </div>
                               )}

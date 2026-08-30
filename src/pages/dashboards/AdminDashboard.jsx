@@ -26,43 +26,23 @@ import {
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
-  const [stats, setStats] = useState({ users: 0, articles: 0, issues: 0, volumes: 0 });
-  const [articles, setArticles] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [volumes, setVolumes] = useState([]);
-  const [issues, setIssues] = useState([]);
+  const [statsData, setStatsData] = useState({
+    stats: { users: 0, articles: 0, issues: 0, volumes: 0 },
+    status_counts: { submitted: 0, under_review: 0, copyediting: 0, accepted: 0, published: 0, rejected: 0 },
+    role_counts: { Author: 0, Reviewer: 0, Editor: 0, Admin: 0 },
+    monthly_trends: []
+  });
   const [loading, setLoading] = useState(true);
-  const [timeRange, setTimeRange] = useState('ALL');
 
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const [usersRes, articlesRes, issuesRes, volumesRes] = await Promise.all([
-        apiFetch('/users').catch(() => ({ data: [] })),
-        apiFetch('/articles').catch(() => ({ data: [] })),
-        apiFetch('/issues').catch(() => ({ data: [] })),
-        apiFetch('/volumes').catch(() => ({ data: [] }))
-      ]);
-
-      const usersData = usersRes.data || [];
-      const articlesData = articlesRes.data || [];
-      const issuesData = issuesRes.data || [];
-      const volumesData = volumesRes.data || [];
-
-      setStats({
-        users: usersData.length,
-        articles: articlesData.length,
-        issues: issuesData.length,
-        volumes: volumesData.length
-      });
-
-      setArticles(articlesData);
-      setUsers(usersData);
-      setIssues(issuesData);
-      setVolumes(volumesData);
-
+      const res = await apiFetch('/articles/stats');
+      if (res && res.data) {
+        setStatsData(res.data);
+      }
     } catch (err) {
-      console.error('Failed to fetch dashboard data', err);
+      console.error('Failed to fetch dashboard stats', err);
     } finally {
       setLoading(false);
     }
@@ -72,64 +52,9 @@ const AdminDashboard = () => {
     fetchDashboardData();
   }, []);
 
-  // Compute status distributions for clean visual charts
-  const statusCounts = useMemo(() => {
-    const counts = {
-      submitted: 0,
-      under_review: 0,
-      copyediting: 0,
-      accepted: 0,
-      published: 0,
-      rejected: 0
-    };
-    articles.forEach(a => {
-      const s = (a.status || 'submitted').toLowerCase();
-      if (s === 'in_review') counts.under_review++;
-      else if (counts[s] !== undefined) counts[s]++;
-      else counts.submitted++;
-    });
-    return counts;
-  }, [articles]);
+  const { stats, status_counts: statusCounts, role_counts: roleCounts, monthly_trends: monthlyTrends } = statsData;
 
-  // Compute role breakdown
-  const roleCounts = useMemo(() => {
-    const map = { Author: 0, Reviewer: 0, Editor: 0, Admin: 0 };
-    users.forEach(u => {
-      const r = (u.role_name || '').toLowerCase();
-      if (r.includes('admin')) map.Admin++;
-      else if (r.includes('editor')) map.Editor++;
-      else if (r.includes('reviewer')) map.Reviewer++;
-      else map.Author++;
-    });
-    return map;
-  }, [users]);
-
-  // Recent 6-Month Monthly Submission Trends for Line & Bar graph
-  const monthlyTrends = useMemo(() => {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const now = new Date();
-    const result = [];
-    for (let i = 5; i >= 0; i--) {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const mName = months[d.getMonth()];
-      const year = d.getFullYear();
-      
-      // Count matching articles
-      const count = articles.filter(a => {
-        if (!a.created_at) return false;
-        const ad = new Date(a.created_at);
-        return ad.getMonth() === d.getMonth() && ad.getFullYear() === year;
-      }).length;
-
-      result.push({
-        label: `${mName} ${String(year).slice(2)}`,
-        count: count || (i === 0 ? Math.max(1, Math.floor(articles.length * 0.25)) : Math.floor(articles.length * 0.15))
-      });
-    }
-    return result;
-  }, [articles]);
-
-  const maxMonthlyCount = Math.max(...monthlyTrends.map(m => m.count), 10);
+  const maxMonthlyCount = Math.max(...(monthlyTrends || []).map(m => m.count || 0), 10);
 
   // Acceptance Rate calculation
   const totalDecided = statusCounts.accepted + statusCounts.published + statusCounts.rejected;

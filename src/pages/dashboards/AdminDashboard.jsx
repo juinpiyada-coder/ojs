@@ -63,14 +63,14 @@ const AdminDashboard = () => {
     : 78;
 
   // Pie chart calculation
-  const totalArticles = articles.length || 1;
+  const totalArticles = stats.articles || 1;
   const pieSlices = [
-    { label: 'Published', count: statusCounts.published, color: '#10B981', bg: 'bg-emerald-500' },
-    { label: 'Under Review', count: statusCounts.under_review, color: '#3B82F6', bg: 'bg-blue-500' },
-    { label: 'Copyediting', count: statusCounts.copyediting, color: '#8B5CF6', bg: 'bg-purple-500' },
-    { label: 'Submitted / Draft', count: statusCounts.submitted, color: '#F59E0B', bg: 'bg-amber-500' },
-    { label: 'Accepted', count: statusCounts.accepted, color: '#06B6D4', bg: 'bg-cyan-500' },
-    { label: 'Declined', count: statusCounts.rejected, color: '#EF4444', bg: 'bg-rose-500' }
+    { label: 'Published', count: statusCounts.published || 0, color: '#10B981', bg: 'bg-emerald-500' },
+    { label: 'Under Review', count: statusCounts.under_review || 0, color: '#3B82F6', bg: 'bg-blue-500' },
+    { label: 'Copyediting', count: statusCounts.copyediting || 0, color: '#8B5CF6', bg: 'bg-purple-500' },
+    { label: 'Submitted / Draft', count: statusCounts.submitted || 0, color: '#F59E0B', bg: 'bg-amber-500' },
+    { label: 'Accepted', count: statusCounts.accepted || 0, color: '#06B6D4', bg: 'bg-cyan-500' },
+    { label: 'Declined', count: statusCounts.rejected || 0, color: '#EF4444', bg: 'bg-rose-500' }
   ];
 
   // Build conic gradient for clean Pie Chart

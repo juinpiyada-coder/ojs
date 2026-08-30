@@ -13,7 +13,8 @@ import {
   FaLayerGroup, 
   FaArchive,
   FaBars,
-  FaTimes
+  FaTimes,
+  FaUserTie
 } from 'react-icons/fa';
 import { apiFetch, resolveFileUrl, resolveImageUrl } from '../../utils/api';
 import { useBrand } from '../../context/BrandingContext';
@@ -199,6 +200,7 @@ const DashboardLayout = ({ title }) => {
                 <p className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">System Administration</p>
               </div>
               
+              {renderNavItem('/admin/dashboard/editors', FaUserTie, 'Manage Editors')}
               {renderNavItem('/admin/dashboard/users', FaUsers, 'Users')}
               {renderNavItem('/admin/dashboard/settings', FaCog, 'Settings')}
               {renderNavItem('/admin/dashboard/branding', FaPaintBrush, 'Branding')}

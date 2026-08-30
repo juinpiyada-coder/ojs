@@ -55,9 +55,50 @@ const Register = () => {
   const navigate = useNavigate();
   const { signInWithGoogle } = useAuth();
 
+  const disposableDomains = [
+    'mailinator.com', '10minutemail.com', 'tempmail.com', 'temp-mail.org',
+    'guerrillamail.com', 'sharklasers.com', 'yopmail.com', 'throwawaymail.com',
+    'dispostable.com', 'trashmail.com', 'fakeinbox.com', 'mytemp.email',
+    'generator.email', 'maildrop.cc', 'burnermail.io', 'dropmail.me',
+    'emailondeck.com', 'mytempmail.com', 'tempail.com', 'disposablemail.com'
+  ];
+
   const handleRegister = async (e) => {
     e.preventDefault();
     setError('');
+
+    const cleanEmail = email.trim().toLowerCase();
+    const emailParts = cleanEmail.split('@');
+    if (emailParts.length !== 2) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+
+    const [userPart, domainPart] = emailParts;
+
+    if (disposableDomains.includes(domainPart)) {
+      setError('Temporary / disposable emails are not permitted. Please use a permanent email (e.g. Gmail, Outlook, or institutional email).');
+      return;
+    }
+
+    // Check for fake repeating patterns (e.g. jjjj, aaaaa)
+    if (/^(.)\1{4,}$/.test(userPart) || userPart.length < 3) {
+      setError('Suspicious or invalid email address. Please use your real email.');
+      return;
+    }
+
+    // Specific Gmail validation
+    if (domainPart === 'gmail.com' || domainPart === 'googlemail.com') {
+      const cleanUser = userPart.replace(/\./g, '');
+      if (cleanUser.length < 6 || cleanUser.length > 30) {
+        setError('Gmail usernames must be between 6 and 30 characters.');
+        return;
+      }
+      if (!/^[a-z0-9.]+$/i.test(userPart)) {
+        setError('Gmail addresses can only contain letters, numbers, and periods.');
+        return;
+      }
+    }
 
     if (password !== confirmPassword) {
       setError('Passwords do not match. Please verify your password.');

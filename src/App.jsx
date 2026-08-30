@@ -59,6 +59,7 @@ import Announcements from './pages/dashboards/admin/Announcements';
 import PaperSubmissions from './pages/dashboards/admin/PaperSubmissions';
 import VolumeIssueManagement from './pages/dashboards/admin/VolumeIssueManagement';
 import ArchiveManagement from './pages/dashboards/admin/ArchiveManagement';
+import EditorManagement from './pages/dashboards/admin/EditorManagement';
 
 function App() {
   return (
@@ -122,6 +123,7 @@ function App() {
               <Route index element={<AdminDashboard />} />
               <Route path="profile" element={<AdminProfile />} />
               <Route path="users" element={<UserManagement />} />
+              <Route path="editors" element={<EditorManagement />} />
               <Route path="settings" element={<SystemSettings />} />
               <Route path="branding" element={<BrandingUI />} />
               <Route path="audit-logs" element={<AuditLogs />} />

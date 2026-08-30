@@ -37,19 +37,6 @@ const AdminDashboard = () => {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      // Attempt to fetch dedicated stats endpoint
-      try {
-        const res = await apiFetch('/articles/stats');
-        if (res && res.data && res.data.stats) {
-          setStatsData(res.data);
-          setLoading(false);
-          return;
-        }
-      } catch (e) {
-        // Fallback for live production backend before backend files are deployed
-      }
-
-      // Fallback: Fetch standard endpoints with light limits
       const [artRes, usersRes, volRes, issRes] = await Promise.all([
         apiFetch('/articles?limit=100').catch(() => ({ data: [] })),
         apiFetch('/users').catch(() => ({ data: [] })),

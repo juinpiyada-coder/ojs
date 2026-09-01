@@ -491,8 +491,8 @@ const EditorDashboard = () => {
 
                       <button
                         onClick={() => setViewingDoc({
-                          url: resolveFileUrl(`/api/docs/stream?article_id=${article.article_id}`),
-                          streamUrl: resolveFileUrl(`/api/docs/stream?article_id=${article.article_id}`),
+                          url: resolveFileUrl(article.manuscript_url || `/api/docs/stream?article_id=${article.article_id}`),
+                          streamUrl: resolveFileUrl(article.manuscript_url || `/api/docs/stream?article_id=${article.article_id}`),
                           title: article.title,
                           id: article.article_id,
                           latex: article.latex_source || ''
@@ -500,7 +500,7 @@ const EditorDashboard = () => {
                         className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-white hover:bg-gray-50 text-gray-900 border border-gray-200 rounded-lg text-xs font-semibold"
                         title="View Author Manuscript with Protected Anonymized Layer"
                       >
-                        <FaFilePdf className="text-red-600" /> PDF
+                        <FaFilePdf className="text-red-600" /> View Document
                       </button>
 
                       <button
@@ -807,50 +807,95 @@ const EditorDashboard = () => {
         </div>
       )}
 
-      {/* 6. Document Viewer */}
+      {/* 6. Comprehensive Editorial Document & Manuscript Viewer */}
       {viewingDoc && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-[100] p-4 sm:p-6 animate-fadeIn">
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-5xl h-[90vh] flex flex-col relative overflow-hidden border border-gray-200">
-            <div className="px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-gray-900 text-white shrink-0">
-              <div className="space-y-0.5">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-[100] p-3 sm:p-6 animate-fadeIn">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl h-[92vh] flex flex-col relative overflow-hidden border border-slate-700">
+            
+            {/* Header Toolbar */}
+            <div className="px-6 py-3.5 border-b border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-slate-950 text-white shrink-0">
+              <div className="space-y-0.5 max-w-2xl">
                 <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 bg-amber-400/20 text-amber-300 rounded text-[10px] font-bold flex items-center gap-1">
-                    <FaShieldAlt /> Double-Blind Mask Active
+                  <span className="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+                    <FaShieldAlt /> Editorial File Inspection
                   </span>
-                  <span className="text-xs text-gray-400 font-mono">Manuscript ID #{viewingDoc.id}</span>
+                  <span className="text-xs text-slate-400 font-mono">ID #{viewingDoc.id}</span>
                 </div>
-                <h3 className="text-base font-bold font-sans truncate max-w-xl text-white">
+                <h3 className="text-sm sm:text-base font-bold truncate text-white">
                   {viewingDoc.title}
                 </h3>
               </div>
 
               <div className="flex flex-wrap items-center gap-2 self-end sm:self-center">
+                {viewingDoc.latex && (
+                  <button
+                    onClick={() => {
+                      const lData = { id: viewingDoc.id, title: viewingDoc.title, latex: viewingDoc.latex };
+                      setViewingDoc(null);
+                      setActiveLatexArticle(lData);
+                    }}
+                    className="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white flex items-center gap-1.5 transition-all shadow-sm"
+                  >
+                    <FaSquareRootAlt /> Open LaTeX Editor
+                  </button>
+                )}
+
                 <a
                   href={viewingDoc.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-3 py-1.5 rounded-lg text-xs font-bold transition-all border bg-white/10 border-white/20 text-gray-200 hover:bg-white/20 flex items-center gap-1.5"
+                  className="px-3 py-1.5 rounded-xl text-xs font-bold transition-all border bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 flex items-center gap-1.5"
                 >
-                  <FaExternalLinkAlt /> Open in Tab
+                  <FaDownload /> Download / Open Tab
                 </a>
+
                 <button 
                   onClick={() => setViewingDoc(null)} 
-                  className="text-gray-400 hover:text-white text-2xl font-light leading-none p-1"
+                  className="text-slate-400 hover:text-white text-2xl font-light leading-none p-1.5 rounded-lg hover:bg-slate-800 transition-colors"
                 >
                   &times;
                 </button>
               </div>
             </div>
 
-            <div className="flex-1 bg-gray-900 overflow-hidden relative flex flex-col">
-              <div className="flex-1 w-full h-full relative overflow-hidden bg-gray-100">
+            {/* Viewer Content Frame */}
+            <div className="flex-1 bg-slate-900 overflow-hidden relative flex flex-col">
+              {viewingDoc.url && viewingDoc.url.toLowerCase().endsWith('.docx') || viewingDoc.url.toLowerCase().endsWith('.doc') ? (
+                <div className="w-full h-full flex flex-col items-center justify-center p-8 text-center bg-slate-900 text-white">
+                  <div className="w-20 h-20 bg-blue-500/20 border border-blue-500/40 text-blue-400 rounded-3xl flex items-center justify-center mb-4 shadow-lg">
+                    <FaFileAlt className="w-10 h-10" />
+                  </div>
+                  <h4 className="text-xl font-bold text-white mb-1">Microsoft Word Manuscript (.docx)</h4>
+                  <p className="text-slate-400 max-w-md mb-6 text-xs">
+                    This manuscript was uploaded as an editable Word document. You can preview it via Office Web Viewer or download it directly to edit.
+                  </p>
+                  <div className="flex flex-wrap justify-center gap-3">
+                    <a 
+                      href={viewingDoc.url} 
+                      download
+                      className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all shadow text-xs inline-flex items-center gap-2"
+                    >
+                      <FaDownload /> Download Original Word Document
+                    </a>
+                    <a 
+                      href={`https://docs.google.com/viewer?url=${encodeURIComponent(viewingDoc.url)}&embedded=true`} 
+                      target="_blank"
+                      rel="noreferrer"
+                      className="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold rounded-xl transition-all text-xs inline-flex items-center gap-2"
+                    >
+                      <FaExternalLinkAlt /> Open in Google Docs Viewer
+                    </a>
+                  </div>
+                </div>
+              ) : (
                 <iframe 
-                  src={viewingDoc.streamUrl || viewingDoc.url}
-                  title="Manuscript Viewer" 
+                  src={`${viewingDoc.url}#toolbar=1&navpanes=0&scrollbar=1`} 
+                  title="Manuscript PDF Viewer" 
                   className="w-full h-full border-0 bg-white" 
                 />
-              </div>
+              )}
             </div>
+
           </div>
         </div>
       )}

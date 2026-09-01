@@ -399,22 +399,29 @@ const PaperSubmissions = () => {
       );
     } else {
       return (
-        <div className="w-full h-full flex flex-col items-center justify-center p-8 text-center bg-slate-50">
-          <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mb-4 shadow-sm">
+        <div className="w-full h-full flex flex-col items-center justify-center p-8 text-center bg-slate-900 text-white">
+          <div className="w-20 h-20 bg-blue-500/20 border border-blue-500/40 text-blue-400 rounded-3xl flex items-center justify-center mb-4 shadow-lg">
             <FaFileAlt className="w-10 h-10" />
           </div>
-          <h4 className="text-xl font-bold text-gray-900 mb-2">Manuscript Document</h4>
-          <p className="text-gray-600 max-w-md mb-6 text-xs font-mono break-all bg-white p-3 rounded-lg border border-slate-200">
+          <h4 className="text-xl font-bold text-white mb-1">Author Manuscript Document</h4>
+          <p className="text-slate-400 max-w-md mb-6 text-xs font-mono break-all bg-slate-800/80 p-3 rounded-xl border border-slate-700">
             {viewingDocUrl}
           </p>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap justify-center gap-3">
             <a 
               href={viewingDocUrl} 
+              download
+              className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all shadow text-xs inline-flex items-center gap-2 cursor-pointer"
+            >
+              <FaDownload /> Download Original File
+            </a>
+            <a 
+              href={`https://docs.google.com/viewer?url=${encodeURIComponent(viewingDocUrl)}&embedded=true`} 
               target="_blank" 
               rel="noreferrer" 
-              className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow text-xs inline-flex items-center gap-1.5 cursor-pointer"
+              className="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold rounded-xl transition-all text-xs inline-flex items-center gap-2 cursor-pointer"
             >
-              <FaDownload /> Open in External Tab
+              <FaExternalLinkAlt /> Open in Online Viewer
             </a>
           </div>
         </div>

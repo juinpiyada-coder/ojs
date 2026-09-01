@@ -30,9 +30,39 @@ const Header = () => {
   const { user, logout, isAuthenticated } = useAuth();
   const location = useLocation();
 
-  const handleSignOut = async () => {
-    await logout();
-    navigate('/login');
+  // Fallback to local storage if user state is still hydrating
+  const currentUser = user || (() => {
+    try {
+      return JSON.parse(localStorage.getItem('user')) || null;
+    } catch {
+      return null;
+    }
+  })();
+
+  const getDashboardLink = () => {
+    const roleStr = (currentUser?.role_name || '').toLowerCase();
+    if (roleStr.includes('admin')) return '/admin/dashboard';
+    if (roleStr.includes('assistant') || roleStr.includes('sub_editor')) return '/assistant-editor/dashboard';
+    if (roleStr.includes('editor')) return '/editor/dashboard';
+    if (roleStr.includes('reviewer')) return '/reviewer/dashboard';
+    return '/user/dashboard';
+  };
+
+  const handleSignOut = async (e) => {
+    if (e && e.preventDefault) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    try {
+      await logout();
+    } catch (err) {
+      console.warn('Sign out warning:', err);
+    } finally {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.dispatchEvent(new Event('storage'));
+      navigate('/login');
+    }
   };
 
   useEffect(() => {
@@ -444,25 +474,29 @@ const Header = () => {
             {isAuthenticated ? (
               <div className="flex items-center gap-2 pl-3 border-l border-[#E2DBD0] flex-shrink-0">
                 <Link 
-                  to="/user/dashboard" 
+                  to={getDashboardLink()} 
                   className="flex items-center gap-2 text-[#5A5043] hover:text-[#1C2024] font-semibold text-xs transition-colors p-1.5 hover:bg-[#FAF7F2] rounded-lg whitespace-nowrap"
+                  title="Go to Dashboard"
                 >
-                  {(user?.avatar_url || user?.photoURL || user?.photo_url) ? (
+                  {(currentUser?.avatar_url || currentUser?.photoURL || currentUser?.photo_url) ? (
                     <img 
-                      src={resolveImageUrl(user.avatar_url || user.photoURL || user.photo_url)} 
-                      alt={user.displayName || user.display_name || 'User'} 
+                      src={resolveImageUrl(currentUser.avatar_url || currentUser.photoURL || currentUser.photo_url)} 
+                      alt={currentUser.displayName || currentUser.display_name || 'User'} 
                       className="w-6 h-6 rounded-full object-cover ring-1 ring-[#D5CDC0]" 
                     />
                   ) : (
                     <FaUserCircle className="w-6 h-6 text-[#9E8B75]" />
                   )}
-                  <span className="hidden xl:inline max-w-[110px] truncate">{user?.displayName || user?.email?.split('@')[0]}</span>
+                  <span className="hidden xl:inline max-w-[110px] truncate">
+                    {currentUser?.display_name || currentUser?.displayName || currentUser?.email?.split('@')[0] || 'Dashboard'}
+                  </span>
                 </Link>
                 <button
                   type="button"
                   onClick={handleSignOut}
                   className="p-1.5 text-gray-400 hover:text-red-600 transition-colors rounded-lg hover:bg-red-50 cursor-pointer"
                   title="Sign Out"
+                  aria-label="Sign Out"
                 >
                   <FaSignOutAlt className="w-4 h-4" />
                 </button>
@@ -616,15 +650,15 @@ const Header = () => {
               {isAuthenticated ? (
                 <div className="flex flex-col gap-2 pt-2 border-t border-[#E5DFD4]">
                   <Link 
-                    to="/user/dashboard" 
+                    to={getDashboardLink()} 
                     className="w-full py-2.5 bg-[#1C2024] text-white text-center rounded-xl font-bold text-xs"
                     onClick={closeMobileMenu}
                   >
-                    Go to Dashboard
+                    Go to Dashboard ({currentUser?.display_name || currentUser?.displayName || currentUser?.email?.split('@')[0] || 'User'})
                   </Link>
                   <button 
                     type="button"
-                    onClick={() => { closeMobileMenu(); handleSignOut(); }} 
+                    onClick={(e) => { closeMobileMenu(); handleSignOut(e); }} 
                     className="w-full py-2 bg-white border border-red-200 text-[#B83327] rounded-xl font-bold text-xs cursor-pointer hover:bg-red-50"
                   >
                     Sign Out

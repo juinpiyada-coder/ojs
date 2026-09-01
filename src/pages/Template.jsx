@@ -1,58 +1,114 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { FaFileWord, FaFilePdf, FaSquareRootAlt, FaDownload, FaCheckCircle, FaArrowRight, FaBookOpen } from 'react-icons/fa';
 import AnimatedSection from '../components/AnimatedSection';
 
 const Template = () => {
   return (
-    <main className="flex-grow bg-[#F9F6F0]">
-      <AnimatedSection animation="fade-up">
-        {/* Hero Section */}
-        <section className="bg-[#1E2530] text-[#F9F6F0] py-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 uppercase">Manuscript Template</h1>
-            <p className="text-lg md:text-xl max-w-3xl mx-auto text-gray-300 font-serif italic">
-              Standardize your submission with our formatting guidelines
+    <AnimatedSection animation="fade-up">
+      <div className="flex-grow bg-[#FDFBF7] py-16 px-4 sm:px-8">
+        <div className="max-w-5xl mx-auto space-y-10">
+          
+          {/* Header */}
+          <div className="text-center max-w-3xl mx-auto space-y-3">
+            <span className="text-xs font-bold uppercase tracking-widest text-[#9E8B75]">
+              Author Resources & Formats
+            </span>
+            <h1 className="text-4xl sm:text-5xl font-extrabold text-[#1C2024] font-serif tracking-tight">
+              Official Manuscript Templates
+            </h1>
+            <p className="text-sm sm:text-base text-[#5A5043] leading-relaxed">
+              Download standardized formatting templates in Microsoft Word (.docx) and LaTeX (.tex) adhering to <em>The Literary Scientist</em> publication guidelines.
             </p>
           </div>
-        </section>
-      </AnimatedSection>
 
-      <AnimatedSection animation="fade-up">
-        {/* Content Section */}
-        <section className="py-16">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="bg-white p-10 md:p-14 rounded shadow-sm border border-[#E5E0D8] prose prose-lg text-[#5C5446] max-w-none text-center">
-              
-              <div className="w-20 h-20 mx-auto bg-[#FAF9F6] rounded-full flex items-center justify-center border border-[#E5E0D8] mb-6">
-                <svg className="w-10 h-10 text-[#8E7C68]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                </svg>
+          {/* Download Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            {/* Word Template Card */}
+            <div className="bg-white p-8 sm:p-10 rounded-3xl border border-[#E5DFD4] shadow-xs flex flex-col justify-between space-y-6 hover:shadow-md transition-all">
+              <div className="space-y-4">
+                <div className="w-14 h-14 bg-blue-50 text-blue-700 rounded-2xl flex items-center justify-center text-2xl">
+                  <FaFileWord />
+                </div>
+                <h3 className="text-2xl font-bold text-[#1C2024] font-serif">Microsoft Word Template (.docx)</h3>
+                <p className="text-xs sm:text-sm text-[#5A5043] leading-relaxed">
+                  Pre-formatted with standard typography (Georgia font body, serif headers), APA 7th edition reference styles, line numbering, and figure placement guides.
+                </p>
+                <ul className="space-y-2 text-xs text-[#5A5043]">
+                  <li className="flex items-center gap-2">
+                    <FaCheckCircle className="text-emerald-600 shrink-0" />
+                    <span>Double-spaced, standard 1-inch margins</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <FaCheckCircle className="text-emerald-600 shrink-0" />
+                    <span>Pre-styled Title, Abstract, Keywords, and Headings</span>
+                  </li>
+                </ul>
               </div>
-              
-              <h2 className="text-2xl font-bold text-[#2C2C2C] mb-4">Download Official Template</h2>
-              <p className="mb-8 max-w-2xl mx-auto">
-                To expedite the review and publication process, we strongly encourage all authors to format their manuscripts using our official Microsoft Word template.
-              </p>
-              
-              <a href="#" className="inline-flex items-center px-8 py-4 bg-[#2C2C2C] text-white font-bold rounded shadow hover:bg-[#1A1A1A] transition-all">
-                <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                Download Template (.docx)
+
+              <a
+                href="/template.docx"
+                download="TLS_Manuscript_Template.docx"
+                className="w-full py-3.5 bg-[#1C2024] hover:bg-[#2D3748] text-white font-bold rounded-2xl text-xs sm:text-sm transition-all shadow-sm flex items-center justify-center gap-2"
+              >
+                <FaDownload />
+                <span>Download Word Template (.docx)</span>
               </a>
-              
-              <div className="mt-12 text-left border-t border-[#E5E0D8] pt-8">
-                 <h3 className="text-xl font-bold text-[#2C2C2C] mb-4">Template Guidelines</h3>
-                 <ul className="list-disc pl-5 space-y-2 text-[#5C5446]">
-                   <li>Use Times New Roman, 12pt font.</li>
-                   <li>Double-space all text, including abstract and references.</li>
-                   <li>Ensure all figures and tables are numbered chronologically and cited in the text.</li>
-                   <li>Follow the APA 7th edition formatting for references.</li>
-                 </ul>
+            </div>
+
+            {/* LaTeX Template Card */}
+            <div className="bg-white p-8 sm:p-10 rounded-3xl border border-[#E5DFD4] shadow-xs flex flex-col justify-between space-y-6 hover:shadow-md transition-all">
+              <div className="space-y-4">
+                <div className="w-14 h-14 bg-emerald-50 text-emerald-700 rounded-2xl flex items-center justify-center text-2xl">
+                  <FaSquareRootAlt />
+                </div>
+                <h3 className="text-2xl font-bold text-[#1C2024] font-serif">LaTeX & Math Template (.tex)</h3>
+                <p className="text-xs sm:text-sm text-[#5A5043] leading-relaxed">
+                  Ideal for interdisciplinary papers containing complex mathematical formulations, data tables, algorithms, and BibTeX bibliographic database management.
+                </p>
+                <ul className="space-y-2 text-xs text-[#5A5043]">
+                  <li className="flex items-center gap-2">
+                    <FaCheckCircle className="text-emerald-600 shrink-0" />
+                    <span>Includes <code>tls_journal.cls</code> document class</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <FaCheckCircle className="text-emerald-600 shrink-0" />
+                    <span>Integrated live editor inside the Author Portal</span>
+                  </li>
+                </ul>
               </div>
+
+              <Link
+                to="/start-submission"
+                className="w-full py-3.5 bg-[#B83327] hover:bg-[#992218] text-white font-bold rounded-2xl text-xs sm:text-sm transition-all shadow-sm flex items-center justify-center gap-2"
+              >
+                <FaSquareRootAlt />
+                <span>Open in LaTeX Editor</span>
+              </Link>
+            </div>
+
+          </div>
+
+          {/* Next Steps CTA */}
+          <div className="bg-[#FAF8F5] p-8 rounded-3xl border border-[#EAE4D9] flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+              <h4 className="text-lg font-bold text-[#1C2024] font-serif">Ready to submit your manuscript?</h4>
+              <p className="text-xs text-[#5A5043] mt-0.5">Check author guidelines or begin online submission directly.</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <Link to="/author-guidelines" className="px-5 py-2.5 bg-white text-[#1C2024] border border-[#D5CDC0] rounded-xl font-bold text-xs hover:bg-[#FAF8F5]">
+                Author Guidelines
+              </Link>
+              <Link to="/start-submission" className="px-5 py-2.5 bg-[#1C2024] text-white rounded-xl font-bold text-xs hover:bg-[#2D3748]">
+                Start Submission
+              </Link>
             </div>
           </div>
-        </section>
-      </AnimatedSection>
-    </main>
+
+        </div>
+      </div>
+    </AnimatedSection>
   );
 };
 

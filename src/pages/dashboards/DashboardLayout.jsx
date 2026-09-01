@@ -14,7 +14,10 @@ import {
   FaArchive,
   FaBars,
   FaTimes,
-  FaUserTie
+  FaUserTie,
+  FaFileUpload,
+  FaBookOpen,
+  FaTasks
 } from 'react-icons/fa';
 import { apiFetch, resolveFileUrl, resolveImageUrl } from '../../utils/api';
 import { useBrand } from '../../context/BrandingContext';
@@ -84,6 +87,8 @@ const DashboardLayout = ({ title }) => {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    window.dispatchEvent(new Event('storage'));
+    window.dispatchEvent(new CustomEvent('user-profile-updated', { detail: null }));
     navigate('/login');
   };
 
@@ -183,11 +188,29 @@ const DashboardLayout = ({ title }) => {
         
         {/* Navigation Items */}
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-          {renderNavItem(dashPrefix, FaHome, 'Dashboard')}
-          {renderNavItem(`${dashPrefix}/profile`, FaUser, 'My Profile')}
+          {/* Author Side Panel Items */}
+          {(!isAdmin && userRole !== 'editor' && userRole !== 'assistant editor' && userRole !== 'reviewer') && (
+            <>
+              {renderNavItem(dashPrefix, FaHome, 'Author Dashboard Overview')}
+              {renderNavItem(`${dashPrefix}/new-submission`, FaFileUpload, 'New Submission')}
+              {renderNavItem(`${dashPrefix}/publications`, FaBookOpen, 'My Publications')}
+              {renderNavItem(`${dashPrefix}/submission-status`, FaTasks, 'My Submission Status')}
+              {renderNavItem(`${dashPrefix}/profile`, FaUser, 'Profile')}
+            </>
+          )}
+
+          {/* Reviewer Navigation */}
+          {userRole === 'reviewer' && (
+            <>
+              {renderNavItem(dashPrefix, FaHome, 'Reviewer Dashboard')}
+              {renderNavItem(`${dashPrefix}/profile`, FaUser, 'Profile')}
+            </>
+          )}
           
           {isAdmin && (
             <>
+              {renderNavItem(dashPrefix, FaHome, 'Dashboard')}
+              {renderNavItem(`${dashPrefix}/profile`, FaUser, 'My Profile')}
               <div className="pt-4 pb-1.5 px-3">
                 <p className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">Content Management</p>
               </div>
@@ -212,6 +235,8 @@ const DashboardLayout = ({ title }) => {
           {/* Editor & Assistant Editor Content Links */}
           {(userRole === 'editor' || userRole === 'assistant editor') && (
             <>
+              {renderNavItem(dashPrefix, FaHome, 'Dashboard')}
+              {renderNavItem(`${dashPrefix}/profile`, FaUser, 'My Profile')}
               <div className="pt-4 pb-1.5 px-3">
                 <p className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">Editorial Workflows</p>
               </div>
@@ -225,6 +250,7 @@ const DashboardLayout = ({ title }) => {
         {/* Logout Footer */}
         <div className="p-3 border-t border-slate-100" style={{ backgroundColor: sidebarBg }}>
           <button 
+            type="button"
             onClick={handleLogout} 
             className="flex items-center w-full px-3.5 py-2.5 text-slate-600 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-all duration-150 font-semibold text-xs group cursor-pointer"
           >

@@ -1,46 +1,83 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { FaShieldAlt, FaBalanceScale, FaCheckCircle, FaExclamationTriangle, FaLock, FaBookOpen } from 'react-icons/fa';
 import AnimatedSection from '../components/AnimatedSection';
 
 const Ethics = () => {
   return (
-    <main className="flex-grow bg-[#F9F6F0]">
-      <AnimatedSection animation="fade-up">
-        {/* Hero Section */}
-        <section className="bg-[#1E2530] text-[#F9F6F0] py-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 uppercase">Publication Ethics</h1>
-            <p className="text-lg md:text-xl max-w-3xl mx-auto text-gray-300 font-serif italic">
-              Maintaining the highest standards of integrity in scholarly publishing
+    <AnimatedSection animation="fade-up">
+      <div className="flex-grow bg-[#FDFBF7] py-16 px-4 sm:px-8">
+        <div className="max-w-5xl mx-auto space-y-10">
+          
+          {/* Header */}
+          <div className="text-center max-w-3xl mx-auto space-y-3">
+            <span className="text-xs font-bold uppercase tracking-widest text-[#9E8B75]">
+              COPE Compliance & Scholarly Standards
+            </span>
+            <h1 className="text-4xl sm:text-5xl font-extrabold text-[#1C2024] font-serif tracking-tight">
+              Publication Ethics & Malpractice Statement
+            </h1>
+            <p className="text-sm sm:text-base text-[#5A5043] leading-relaxed">
+              <em>The Literary Scientist</em> strictly follows the Core Practices and Guidelines formulated by the Committee on Publication Ethics (COPE) to maintain ethical publication standards.
             </p>
           </div>
-        </section>
-      </AnimatedSection>
 
-      <AnimatedSection animation="fade-up">
-        {/* Content Section */}
-        <section className="py-16">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="bg-white p-10 md:p-14 rounded shadow-sm border border-[#E5E0D8] prose prose-lg text-[#5C5446] max-w-none">
-              <h2 className="text-2xl font-bold text-[#2C2C2C] mb-6 border-b border-[#E5E0D8] pb-4">Our Commitment</h2>
-              <p className="mb-6">
-                The Literary Scientist is committed to upholding the highest standards of publication ethics and takes all possible measures against any publication malpractices. All authors submitting their works for publication attest that the submitted works represent their contributions and have not been copied or plagiarized in whole or in part from other works.
+          {/* Ethics Pillars Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <div className="bg-white p-8 rounded-3xl border border-[#E5DFD4] shadow-xs space-y-3">
+              <div className="w-12 h-12 bg-red-50 text-red-700 rounded-2xl flex items-center justify-center text-xl mb-4">
+                <FaExclamationTriangle />
+              </div>
+              <h3 className="text-xl font-bold text-[#1C2024] font-serif">Plagiarism & Originality</h3>
+              <p className="text-xs sm:text-sm text-[#5A5043] leading-relaxed">
+                All submissions undergo mandatory similarity screening via iThenticate and Turnitin. Manuscripts with similarity exceeding 15% (excluding references) are rejected automatically.
               </p>
-              
-              <h3 className="text-xl font-bold text-[#2C2C2C] mt-8 mb-4">COPE Guidelines</h3>
-              <p className="mb-6">
-                Our ethical statements are based on the guidelines and standards developed by the Committee on Publication Ethics (COPE). We expect all parties involved in the act of publishing (the author, the journal editor(s), the peer reviewer, and the publisher) to agree upon standards of expected ethical behavior.
-              </p>
+            </div>
 
-              <h3 className="text-xl font-bold text-[#2C2C2C] mt-8 mb-4">Plagiarism Policy</h3>
-              <p className="mb-6">
-                We strictly enforce a zero-tolerance policy regarding plagiarism. All submissions are automatically screened using industry-leading similarity detection software prior to peer review. Any manuscript exhibiting significant similarities to existing published works will be immediately rejected.
+            <div className="bg-white p-8 rounded-3xl border border-[#E5DFD4] shadow-xs space-y-3">
+              <div className="w-12 h-12 bg-blue-50 text-blue-700 rounded-2xl flex items-center justify-center text-xl mb-4">
+                <FaBalanceScale />
+              </div>
+              <h3 className="text-xl font-bold text-[#1C2024] font-serif">Authorship & Contributions</h3>
+              <p className="text-xs sm:text-sm text-[#5A5043] leading-relaxed">
+                Authorship is strictly limited to individuals who made substantial intellectual contributions to conception, design, acquisition, or theoretical analysis. Ghost or guest authorship is forbidden.
+              </p>
+            </div>
+
+            <div className="bg-white p-8 rounded-3xl border border-[#E5DFD4] shadow-xs space-y-3">
+              <div className="w-12 h-12 bg-emerald-50 text-emerald-700 rounded-2xl flex items-center justify-center text-xl mb-4">
+                <FaShieldAlt />
+              </div>
+              <h3 className="text-xl font-bold text-[#1C2024] font-serif">Conflict of Interest</h3>
+              <p className="text-xs sm:text-sm text-[#5A5043] leading-relaxed">
+                Authors, peer reviewers, and editors must declare any financial, commercial, or personal affiliations that could potentially introduce bias in the review or decision process.
+              </p>
+            </div>
+
+          </div>
+
+          {/* Detailed Ethical Guidelines */}
+          <div className="bg-white p-8 sm:p-12 rounded-3xl border border-[#E5DFD4] shadow-xs space-y-6">
+            <h2 className="text-2xl sm:text-3xl font-bold text-[#1C2024] font-serif">
+              Duties and Responsibilities of Reviewers & Editors
+            </h2>
+            
+            <div className="space-y-4 text-xs sm:text-sm text-[#5A5043] leading-relaxed">
+              <p>
+                <strong>1. Confidentiality:</strong> Any manuscripts received for review must be treated as confidential documents. They must not be shown to or discussed with others except as authorized by the Editor-in-Chief.
+              </p>
+              <p>
+                <strong>2. Objectivity:</strong> Reviews should be conducted objectively. Personal criticism of the author is inappropriate. Referees should express their views clearly with supporting arguments.
+              </p>
+              <p>
+                <strong>3. Editorial Decisions:</strong> Editorial decisions are based solely on scholarly merit, originality, clarity, and relevance to the journal’s scope, without regard to the authors' race, gender, sexual orientation, religious belief, ethnic origin, citizenship, or political philosophy.
               </p>
             </div>
           </div>
-        </section>
-      </AnimatedSection>
-    </main>
+
+        </div>
+      </div>
+    </AnimatedSection>
   );
 };
 

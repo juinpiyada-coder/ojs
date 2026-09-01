@@ -163,6 +163,8 @@ const Register = () => {
       toast.success(`Welcome! Signed in as ${data.data?.role_name || selectedRole}`);
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.data || {}));
+      window.dispatchEvent(new CustomEvent('user-profile-updated', { detail: data.data }));
+      window.dispatchEvent(new Event('storage'));
       navigate(data.redirect_url || '/user/dashboard', { replace: true });
     } catch (err) {
       setError(err.message || 'Google registration failed');

@@ -13,25 +13,64 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    try {
+      const stored = localStorage.getItem('user');
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      if (firebaseUser) {
-        setUser({
-          uid: firebaseUser.uid,
-          email: firebaseUser.email,
-          displayName: firebaseUser.displayName,
-          photoURL: firebaseUser.photoURL,
-        });
-      } else {
+    const syncUserFromStorage = () => {
+      try {
+        const stored = localStorage.getItem('user');
+        setUser(stored ? JSON.parse(stored) : null);
+      } catch {
         setUser(null);
       }
-      setLoading(false);
-    });
+    };
 
-    return () => unsubscribe();
+    const handleProfileUpdate = (e) => {
+      if (e?.detail) {
+        setUser(e.detail);
+      } else {
+        syncUserFromStorage();
+      }
+    };
+
+    window.addEventListener('storage', syncUserFromStorage);
+    window.addEventListener('user-profile-updated', handleProfileUpdate);
+
+    let unsubscribe = () => {};
+    try {
+      unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+        if (firebaseUser) {
+          setUser(prev => {
+            const current = prev || {};
+            return {
+              ...current,
+              uid: firebaseUser.uid,
+              email: firebaseUser.email || current.email,
+              displayName: firebaseUser.displayName || current.display_name || current.displayName,
+              photoURL: firebaseUser.photoURL || current.photo_url || current.avatar_url,
+            };
+          });
+        }
+        setLoading(false);
+      });
+    } catch (fbErr) {
+      console.warn('Firebase auth listener error:', fbErr);
+      setLoading(false);
+    }
+
+    return () => {
+      window.removeEventListener('storage', syncUserFromStorage);
+      window.removeEventListener('user-profile-updated', handleProfileUpdate);
+      unsubscribe();
+    };
   }, []);
 
   const signInWithGoogle = async () => {
@@ -46,22 +85,20 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       try {
-        await firebaseSignOut(auth);
+        if (auth) {
+          await firebaseSignOut(auth);
+        }
       } catch (fbErr) {
         console.warn('Firebase signout skipped/failed:', fbErr);
       }
-      setUser(null);
+    } finally {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+      setUser(null);
       window.dispatchEvent(new Event('storage'));
       window.dispatchEvent(new CustomEvent('user-profile-updated', { detail: null }));
-      return { error: null };
-    } catch (error) {
-      setUser(null);
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      return { error: error.message };
     }
+    return { error: null };
   };
 
   const hasLocalAuth = () => {
@@ -69,13 +106,14 @@ export const AuthProvider = ({ children }) => {
       const token = localStorage.getItem('token');
       const localUser = localStorage.getItem('user');
       return !!(token || localUser);
-    } catch (e) {
+    } catch {
       return false;
     }
   };
 
   const value = {
     user,
+    setUser,
     loading,
     signInWithGoogle,
     logout,

@@ -21,7 +21,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Footer from './components/Footer';
 
-// New Pages
+// Public Scholarly Pages
 import Issues from './pages/Issues';
 import SpecialCollections from './pages/SpecialCollections';
 import AuthorGuidelines from './pages/AuthorGuidelines';
@@ -32,8 +32,6 @@ import PublisherPolicies from './pages/PublisherPolicies';
 import BecomeReviewer from './pages/BecomeReviewer';
 import Governance from './pages/Governance';
 import Search from './pages/Search';
-
-// Newly added Footer Pages
 import Ethics from './pages/Ethics';
 import Template from './pages/Template';
 import CurrentIssue from './pages/CurrentIssue';
@@ -42,16 +40,14 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfUse from './pages/TermsOfUse';
 import Accessibility from './pages/Accessibility';
 
-// Dashboards
+// Dashboard Shell Layout
 import DashboardLayout from './pages/dashboards/DashboardLayout';
-import AdminDashboard from './pages/dashboards/AdminDashboard';
-import EditorDashboard from './pages/dashboards/EditorDashboard';
-import AssistantEditorDashboard from './pages/dashboards/AssistantEditorDashboard';
-import ReviewerDashboard from './pages/dashboards/ReviewerDashboard';
-import AuthorDashboard from './pages/dashboards/AuthorDashboard';
 
+// Admin / Super Admin Module Pages (in /dashboards/admin/)
+import AdminDashboard from './pages/dashboards/admin/AdminDashboard';
 import AdminProfile from './pages/dashboards/admin/AdminProfile';
 import UserManagement from './pages/dashboards/admin/UserManagement';
+import EditorManagement from './pages/dashboards/admin/EditorManagement';
 import SystemSettings from './pages/dashboards/admin/SystemSettings';
 import BrandingUI from './pages/dashboards/admin/BrandingUI';
 import AuditLogs from './pages/dashboards/admin/AuditLogs';
@@ -59,7 +55,19 @@ import Announcements from './pages/dashboards/admin/Announcements';
 import PaperSubmissions from './pages/dashboards/admin/PaperSubmissions';
 import VolumeIssueManagement from './pages/dashboards/admin/VolumeIssueManagement';
 import ArchiveManagement from './pages/dashboards/admin/ArchiveManagement';
-import EditorManagement from './pages/dashboards/admin/EditorManagement';
+
+// Author Module Pages (in /dashboards/author/)
+import AuthorDashboard from './pages/dashboards/author/AuthorDashboard';
+import AuthorNewSubmission from './pages/dashboards/author/AuthorNewSubmission';
+import AuthorPublications from './pages/dashboards/author/AuthorPublications';
+import AuthorSubmissionStatus from './pages/dashboards/author/AuthorSubmissionStatus';
+
+// Editor Module Pages (in /dashboards/editor/)
+import EditorDashboard from './pages/dashboards/editor/EditorDashboard';
+import AssistantEditorDashboard from './pages/dashboards/editor/AssistantEditorDashboard';
+
+// Reviewer Module Pages (in /dashboards/reviewer/)
+import ReviewerDashboard from './pages/dashboards/reviewer/ReviewerDashboard';
 
 function App() {
   return (
@@ -67,13 +75,10 @@ function App() {
       <AuthProvider>
         <BrowserRouter>
           <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />
-          {/* 
-            We separate the layout so that public pages get the Header & Japandi theme,
-            while Dashboard pages get the Sidebar & Admin theme.
-          */}
+          
           <Routes>
             
-            {/* Public Pages */}
+            {/* Main Public Website Pages */}
             <Route path="/" element={
               <div className="min-h-screen flex flex-col bg-[#F9F6F0] text-[#2C2C2C]">
                 <Header />
@@ -90,7 +95,7 @@ function App() {
             <Route path="/team/:id" element={<div className="min-h-screen flex flex-col bg-[#F9F6F0] text-[#2C2C2C]"><Header /><TeamProfile /><Footer /></div>} />
             <Route path="/contact" element={<div className="min-h-screen flex flex-col bg-[#F9F6F0] text-[#2C2C2C]"><Header /><Contact /><Footer /></div>} />
             
-            {/* New Public Pages */}
+            {/* Scholarly Index & Policy Pages */}
             <Route path="/issues" element={<div className="min-h-screen flex flex-col bg-[#F9F6F0] text-[#2C2C2C]"><Header /><Issues /><Footer /></div>} />
             <Route path="/special-collections" element={<div className="min-h-screen flex flex-col bg-[#F9F6F0] text-[#2C2C2C]"><Header /><SpecialCollections /><Footer /></div>} />
             <Route path="/author-guidelines" element={<div className="min-h-screen flex flex-col bg-[#F9F6F0] text-[#2C2C2C]"><Header /><AuthorGuidelines /><Footer /></div>} />
@@ -102,8 +107,6 @@ function App() {
             <Route path="/become-reviewer" element={<div className="min-h-screen flex flex-col bg-[#F9F6F0] text-[#2C2C2C]"><Header /><BecomeReviewer /><Footer /></div>} />
             <Route path="/governance" element={<div className="min-h-screen flex flex-col bg-[#F9F6F0] text-[#2C2C2C]"><Header /><Governance /><Footer /></div>} />
             <Route path="/search" element={<div className="min-h-screen flex flex-col bg-[#F9F6F0] text-[#2C2C2C]"><Header /><Search /><Footer /></div>} />
-            
-            {/* Footer Link Pages */}
             <Route path="/ethics" element={<div className="min-h-screen flex flex-col bg-[#F9F6F0] text-[#2C2C2C]"><Header /><Ethics /><Footer /></div>} />
             <Route path="/template" element={<div className="min-h-screen flex flex-col bg-[#F9F6F0] text-[#2C2C2C]"><Header /><Template /><Footer /></div>} />
             <Route path="/current-issue" element={<div className="min-h-screen flex flex-col bg-[#F9F6F0] text-[#2C2C2C]"><Header /><CurrentIssue /><Footer /></div>} />
@@ -112,13 +115,13 @@ function App() {
             <Route path="/terms-of-use" element={<div className="min-h-screen flex flex-col bg-[#F9F6F0] text-[#2C2C2C]"><Header /><TermsOfUse /><Footer /></div>} />
             <Route path="/accessibility" element={<div className="min-h-screen flex flex-col bg-[#F9F6F0] text-[#2C2C2C]"><Header /><Accessibility /><Footer /></div>} />
             
-            {/* Auth Pages */}
+            {/* Authentication Pages */}
             <Route path="/login" element={<div className="min-h-screen flex flex-col bg-[#F9F6F0] text-[#2C2C2C]"><Header /><Login /><Footer /></div>} />
             <Route path="/register" element={<div className="min-h-screen flex flex-col bg-[#F9F6F0] text-[#2C2C2C]"><Header /><Register /><Footer /></div>} />
             <Route path="/forgot-password" element={<div className="min-h-screen flex flex-col bg-[#F9F6F0] text-[#2C2C2C]"><Header /><ForgotPassword /><Footer /></div>} />
             <Route path="/reset-password" element={<div className="min-h-screen flex flex-col bg-[#F9F6F0] text-[#2C2C2C]"><Header /><ResetPassword /><Footer /></div>} />
 
-            {/* Dashboard Routes */}
+            {/* 1. Admin / Super Admin Dashboard Routes */}
             <Route path="/admin/dashboard" element={<DashboardLayout title="Admin Dashboard" />}>
               <Route index element={<AdminDashboard />} />
               <Route path="profile" element={<AdminProfile />} />
@@ -133,23 +136,30 @@ function App() {
               <Route path="submissions" element={<PaperSubmissions />} />
             </Route>
             
+            {/* 2. Editor Dashboard Routes */}
             <Route path="/editor/dashboard" element={<DashboardLayout title="Editor Dashboard" />}>
               <Route index element={<EditorDashboard />} />
               <Route path="profile" element={<AdminProfile />} />
             </Route>
             
+            {/* 3. Assistant Editor Dashboard Routes */}
             <Route path="/assistant-editor/dashboard" element={<DashboardLayout title="Assistant Editor Dashboard" />}>
               <Route index element={<AssistantEditorDashboard />} />
               <Route path="profile" element={<AdminProfile />} />
             </Route>
             
+            {/* 4. Reviewer Dashboard Routes */}
             <Route path="/reviewer/dashboard" element={<DashboardLayout title="Reviewer Dashboard" />}>
               <Route index element={<ReviewerDashboard />} />
               <Route path="profile" element={<AdminProfile />} />
             </Route>
             
+            {/* 5. Author Dashboard Routes */}
             <Route path="/user/dashboard" element={<DashboardLayout title="Author Dashboard" />}>
               <Route index element={<AuthorDashboard />} />
+              <Route path="new-submission" element={<AuthorNewSubmission />} />
+              <Route path="publications" element={<AuthorPublications />} />
+              <Route path="submission-status" element={<AuthorSubmissionStatus />} />
               <Route path="profile" element={<AdminProfile />} />
             </Route>
             

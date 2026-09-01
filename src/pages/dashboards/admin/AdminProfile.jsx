@@ -135,14 +135,10 @@ const AdminProfile = () => {
         setShowPasswordSection(false);
         localStorage.setItem('user', JSON.stringify(updatedUser));
         window.dispatchEvent(new CustomEvent('user-profile-updated', { detail: updatedUser }));
+        window.dispatchEvent(new Event('storage'));
       }
       
       toast.success('Profile updated successfully!');
-      
-      setTimeout(() => {
-        window.location.reload();
-      }, 500);
-      
     } catch (err) {
       console.error('Failed to update profile:', err);
       toast.error('Failed to update profile: ' + (err.message || 'Unknown error'));

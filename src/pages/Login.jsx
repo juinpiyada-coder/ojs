@@ -43,6 +43,8 @@ const Login = () => {
 
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(userData));
+      window.dispatchEvent(new CustomEvent('user-profile-updated', { detail: userData }));
+      window.dispatchEvent(new Event('storage'));
       navigate(targetUrl, { replace: true });
       
     } catch (err) {
@@ -95,6 +97,8 @@ const Login = () => {
 
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(userData));
+      window.dispatchEvent(new CustomEvent('user-profile-updated', { detail: userData }));
+      window.dispatchEvent(new Event('storage'));
       navigate(targetUrl, { replace: true });
       
     } catch (err) {

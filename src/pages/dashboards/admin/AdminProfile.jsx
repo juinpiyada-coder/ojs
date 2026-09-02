@@ -12,7 +12,12 @@ import {
   FaKey,
   FaCamera,
   FaCircle,
-  FaInfoCircle
+  FaInfoCircle,
+  FaBuilding,
+  FaGlobe,
+  FaIdCard,
+  FaVenusMars,
+  FaUserTie
 } from 'react-icons/fa';
 
 const AdminProfile = () => {
@@ -27,9 +32,9 @@ const AdminProfile = () => {
     gender: '',
     citizenship: '',
     affiliation: '',
-    identity_proof_type: 'Aadhaar Card',
+    identity_proof_type: '',
     identity_proof_number: '',
-    user_designation: 'Researcher',
+    user_designation: '',
     password: ''
   });
   const [file, setFile] = useState(null);
@@ -119,12 +124,12 @@ const AdminProfile = () => {
         display_name: (profile.display_name || '').trim(),
         email: (profile.email || '').trim(),
         avatar_doc_id: currentDocId,
-        gender: profile.gender || null,
-        citizenship: profile.citizenship || null,
-        affiliation: profile.affiliation || null,
-        identity_proof_type: profile.identity_proof_type || null,
-        identity_proof_number: profile.identity_proof_number || null,
-        user_designation: profile.user_designation || null
+        gender: profile.gender ? profile.gender.trim() : null,
+        citizenship: profile.citizenship ? profile.citizenship.trim() : null,
+        affiliation: profile.affiliation ? profile.affiliation.trim() : null,
+        identity_proof_type: profile.identity_proof_type ? profile.identity_proof_type.trim() : null,
+        identity_proof_number: profile.identity_proof_number ? profile.identity_proof_number.trim() : null,
+        user_designation: profile.user_designation ? profile.user_designation.trim() : null
       };
 
       if (showPasswordSection && newPassword.trim()) {
@@ -171,7 +176,7 @@ const AdminProfile = () => {
   const roleName = profile.role_name || currentUser.role_name || 'Admin';
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6 pb-12">
+    <div className="max-w-3xl mx-auto space-y-6 pb-12">
       
       {/* Material Elevation Header Card */}
       <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/80 shadow-[0_2px_12px_-2px_rgba(0,0,0,0.06)] relative overflow-hidden">
@@ -186,7 +191,7 @@ const AdminProfile = () => {
               <span>Account Profile</span>
             </h2>
             <p className="text-xs text-slate-500 mt-1">
-              Manage your personal credentials, identity photo, and contact details
+              Manage your personal credentials, identity photo, and academic details
             </p>
           </div>
 
@@ -200,7 +205,7 @@ const AdminProfile = () => {
 
         <form onSubmit={handleSubmit} className="pt-6 space-y-6">
           
-          {/* Avatar Upload Card (Material Styled) */}
+          {/* Avatar Upload Card */}
           <div className="p-5 bg-slate-50/70 rounded-2xl border border-slate-200/80 flex flex-col sm:flex-row items-center sm:items-start gap-5 transition-all hover:bg-slate-50">
             
             {/* Avatar Circle with Badge */}
@@ -279,141 +284,139 @@ const AdminProfile = () => {
 
           </div>
 
-          {/* Form Fields with Material Floating Label Aesthetic */}
+          {/* Form Fields: Standard Input Fields */}
           <div className="space-y-4">
             
-            {/* Full Name */}
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
-                Full Name <span className="text-rose-500">*</span>
-              </label>
-              <div className="relative">
-                <FaUser className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5" />
+            {/* Section 1: Basic Information */}
+            <div className="pb-1 border-b border-slate-100">
+              <span className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">Basic Information</span>
+            </div>
+
+            {/* Full Name & Email */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                  Full Name <span className="text-rose-500">*</span>
+                </label>
+                <div className="relative">
+                  <FaUser className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5" />
+                  <input 
+                    type="text" 
+                    required
+                    value={profile.display_name} 
+                    onChange={e => setProfile({ ...profile, display_name: e.target.value })}
+                    className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
+                    placeholder="e.g. Dr. Jane Doe"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                  Email Address <span className="text-rose-500">*</span>
+                </label>
+                <div className="relative">
+                  <FaEnvelope className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5" />
+                  <input 
+                    type="email" 
+                    required
+                    value={profile.email} 
+                    onChange={e => setProfile({ ...profile, email: e.target.value })}
+                    className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
+                    placeholder="e.g. user@university.edu"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Gender & Citizenship (Clean Inputs) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5 flex items-center gap-1.5">
+                  <FaVenusMars className="text-slate-400" /> Gender
+                </label>
                 <input 
                   type="text" 
-                  required
-                  value={profile.display_name} 
-                  onChange={e => setProfile({ ...profile, display_name: e.target.value })}
-                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
-                  placeholder="e.g. System Admin"
-                />
-              </div>
-            </div>
-
-            {/* Email Address */}
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
-                Email Address <span className="text-rose-500">*</span>
-              </label>
-              <div className="relative">
-                <FaEnvelope className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5" />
-                <input 
-                  type="email" 
-                  required
-                  value={profile.email} 
-                  onChange={e => setProfile({ ...profile, email: e.target.value })}
-                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
-                  placeholder="e.g. admin@journal.org"
-                />
-              </div>
-            </div>
-
-            {/* Gender & Citizenship */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
-                  Gender
-                </label>
-                <select 
                   value={profile.gender || ''} 
                   onChange={e => setProfile({ ...profile, gender: e.target.value })}
-                  className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
-                >
-                  <option value="">Select Gender</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Non-Binary">Non-Binary</option>
-                  <option value="Prefer not to say">Prefer not to say</option>
-                </select>
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
+                  placeholder="e.g. Male, Female, Non-Binary..."
+                />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
-                  Citizenship / Country
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5 flex items-center gap-1.5">
+                  <FaGlobe className="text-slate-400" /> Citizenship / Nationality
                 </label>
                 <input 
                   type="text" 
                   value={profile.citizenship || ''} 
                   onChange={e => setProfile({ ...profile, citizenship: e.target.value })}
-                  className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
-                  placeholder="e.g. India, United States"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
+                  placeholder="e.g. India, United States, Germany..."
                 />
               </div>
             </div>
 
-            {/* Academic Designation & Affiliation */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* Section 2: Academic & Institutional Details */}
+            <div className="pt-3 pb-1 border-b border-slate-100">
+              <span className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">Academic & Verification Details</span>
+            </div>
+
+            {/* Academic Designation & Affiliation (Clean Text Inputs) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
-                  Designation / Role Status
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5 flex items-center gap-1.5">
+                  <FaUserTie className="text-slate-400" /> Academic Designation / Status
                 </label>
-                <select 
-                  value={profile.user_designation || 'Research Scholar'} 
+                <input 
+                  type="text" 
+                  value={profile.user_designation || ''} 
                   onChange={e => setProfile({ ...profile, user_designation: e.target.value })}
-                  className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
-                >
-                  <option value="Research Scholar">Research Scholar</option>
-                  <option value="Researcher">Researcher / Scientist</option>
-                  <option value="Faculty">Faculty / Professor</option>
-                  <option value="Student">Student</option>
-                  <option value="Other">Other Professional</option>
-                </select>
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
+                  placeholder="e.g. Research Scholar, Faculty, Student..."
+                />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
-                  Affiliation / Institute
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5 flex items-center gap-1.5">
+                  <FaBuilding className="text-slate-400" /> Affiliation / Institute Name
                 </label>
                 <input 
                   type="text" 
                   value={profile.affiliation || ''} 
                   onChange={e => setProfile({ ...profile, affiliation: e.target.value })}
-                  className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
-                  placeholder="e.g. University Name / Dept"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
+                  placeholder="e.g. Department of English, University of Delhi"
                 />
               </div>
             </div>
 
-            {/* Identity Proof Type & Number */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* Identity Proof Type & Proof Number (Clean Text Inputs) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
-                  Identity Proof Type
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5 flex items-center gap-1.5">
+                  <FaIdCard className="text-slate-400" /> Identity Proof Type
                 </label>
-                <select 
-                  value={profile.identity_proof_type || 'Aadhaar Card'} 
+                <input 
+                  type="text" 
+                  value={profile.identity_proof_type || ''} 
                   onChange={e => setProfile({ ...profile, identity_proof_type: e.target.value })}
-                  className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
-                >
-                  <option value="Aadhaar Card">Aadhaar Card</option>
-                  <option value="PAN Card">PAN Card</option>
-                  <option value="Driving License">Driving License</option>
-                  <option value="Passport">Passport</option>
-                  <option value="ABC ID">ABC ID (Academic Bank of Credits)</option>
-                  <option value="Other">Other Government / Institute ID</option>
-                </select>
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
+                  placeholder="e.g. Aadhaar Card, PAN Card, Passport, ABC ID..."
+                />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
-                  Identity Proof Number
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5 flex items-center gap-1.5">
+                  <FaIdBadge className="text-slate-400" /> Identity Proof Number / ID
                 </label>
                 <input 
                   type="text" 
                   value={profile.identity_proof_number || ''} 
                   onChange={e => setProfile({ ...profile, identity_proof_number: e.target.value })}
-                  className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
-                  placeholder="Document / Proof Number"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
+                  placeholder="e.g. ID / Document Number"
                 />
               </div>
             </div>

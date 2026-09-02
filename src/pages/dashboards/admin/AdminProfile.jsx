@@ -24,6 +24,12 @@ const AdminProfile = () => {
     account_status: 'active',
     avatar_doc_id: null,
     avatar_url: '',
+    gender: '',
+    citizenship: '',
+    affiliation: '',
+    identity_proof_type: 'Aadhaar Card',
+    identity_proof_number: '',
+    user_designation: 'Researcher',
     password: ''
   });
   const [file, setFile] = useState(null);
@@ -110,9 +116,15 @@ const AdminProfile = () => {
       }
 
       const payload = {
-        display_name: profile.display_name.trim(),
-        email: profile.email.trim(),
-        avatar_doc_id: currentDocId
+        display_name: (profile.display_name || '').trim(),
+        email: (profile.email || '').trim(),
+        avatar_doc_id: currentDocId,
+        gender: profile.gender || null,
+        citizenship: profile.citizenship || null,
+        affiliation: profile.affiliation || null,
+        identity_proof_type: profile.identity_proof_type || null,
+        identity_proof_number: profile.identity_proof_number || null,
+        user_designation: profile.user_designation || null
       };
 
       if (showPasswordSection && newPassword.trim()) {
@@ -302,6 +314,106 @@ const AdminProfile = () => {
                   onChange={e => setProfile({ ...profile, email: e.target.value })}
                   className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
                   placeholder="e.g. admin@journal.org"
+                />
+              </div>
+            </div>
+
+            {/* Gender & Citizenship */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                  Gender
+                </label>
+                <select 
+                  value={profile.gender || ''} 
+                  onChange={e => setProfile({ ...profile, gender: e.target.value })}
+                  className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
+                >
+                  <option value="">Select Gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Non-Binary">Non-Binary</option>
+                  <option value="Prefer not to say">Prefer not to say</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                  Citizenship / Country
+                </label>
+                <input 
+                  type="text" 
+                  value={profile.citizenship || ''} 
+                  onChange={e => setProfile({ ...profile, citizenship: e.target.value })}
+                  className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
+                  placeholder="e.g. India, United States"
+                />
+              </div>
+            </div>
+
+            {/* Academic Designation & Affiliation */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                  Designation / Role Status
+                </label>
+                <select 
+                  value={profile.user_designation || 'Research Scholar'} 
+                  onChange={e => setProfile({ ...profile, user_designation: e.target.value })}
+                  className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
+                >
+                  <option value="Research Scholar">Research Scholar</option>
+                  <option value="Researcher">Researcher / Scientist</option>
+                  <option value="Faculty">Faculty / Professor</option>
+                  <option value="Student">Student</option>
+                  <option value="Other">Other Professional</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                  Affiliation / Institute
+                </label>
+                <input 
+                  type="text" 
+                  value={profile.affiliation || ''} 
+                  onChange={e => setProfile({ ...profile, affiliation: e.target.value })}
+                  className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
+                  placeholder="e.g. University Name / Dept"
+                />
+              </div>
+            </div>
+
+            {/* Identity Proof Type & Number */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                  Identity Proof Type
+                </label>
+                <select 
+                  value={profile.identity_proof_type || 'Aadhaar Card'} 
+                  onChange={e => setProfile({ ...profile, identity_proof_type: e.target.value })}
+                  className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
+                >
+                  <option value="Aadhaar Card">Aadhaar Card</option>
+                  <option value="PAN Card">PAN Card</option>
+                  <option value="Driving License">Driving License</option>
+                  <option value="Passport">Passport</option>
+                  <option value="ABC ID">ABC ID (Academic Bank of Credits)</option>
+                  <option value="Other">Other Government / Institute ID</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                  Identity Proof Number
+                </label>
+                <input 
+                  type="text" 
+                  value={profile.identity_proof_number || ''} 
+                  onChange={e => setProfile({ ...profile, identity_proof_number: e.target.value })}
+                  className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
+                  placeholder="Document / Proof Number"
                 />
               </div>
             </div>

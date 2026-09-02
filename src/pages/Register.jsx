@@ -13,7 +13,12 @@ import {
   FaArrowRight,
   FaShieldAlt,
   FaBookReader,
-  FaGraduationCap
+  FaGraduationCap,
+  FaBuilding,
+  FaGlobe,
+  FaIdCard,
+  FaVenusMars,
+  FaUserTie
 } from 'react-icons/fa';
 
 const roles = [
@@ -40,6 +45,23 @@ const roles = [
   }
 ];
 
+const identityProofOptions = [
+  { value: 'Aadhaar Card', label: 'Aadhaar Card', placeholder: 'e.g. 12-digit Aadhaar Number (XXXX-XXXX-XXXX)' },
+  { value: 'PAN Card', label: 'PAN Card', placeholder: 'e.g. 10-character PAN (ABCDE1234F)' },
+  { value: 'Driving License', label: 'Driving License', placeholder: 'e.g. State DL Number' },
+  { value: 'Passport', label: 'Passport', placeholder: 'e.g. Passport Booklet Number' },
+  { value: 'ABC ID', label: 'ABC ID (Academic Bank of Credits)', placeholder: 'e.g. 12-digit Academic Bank of Credits ID' },
+  { value: 'Other', label: 'Other Government / Institutional ID', placeholder: 'e.g. Institutional ID / Govt Card Number' },
+];
+
+const userDesignationOptions = [
+  { value: 'Research Scholar', label: 'Research Scholar', desc: 'Ph.D. Scholar, JRF, SRF, Post-Doctoral Fellow' },
+  { value: 'Researcher', label: 'Researcher / Scientist', desc: 'Scientist, Independent Researcher, Research Fellow' },
+  { value: 'Faculty', label: 'Faculty / Professor', desc: 'Assistant Professor, Associate Professor, Dean, Lecturer' },
+  { value: 'Student', label: 'Student', desc: 'Undergraduate, Postgraduate, Master\'s Student' },
+  { value: 'Other', label: 'Other Professional', desc: 'Industry Expert, Academic Consultant, Other' }
+];
+
 const Register = () => {
   const [selectedRole, setSelectedRole] = useState('Author');
   const [title, setTitle] = useState('');
@@ -48,6 +70,15 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  
+  // New Requested Registration Fields
+  const [gender, setGender] = useState('');
+  const [citizenship, setCitizenship] = useState('India');
+  const [affiliation, setAffiliation] = useState('');
+  const [identityProofType, setIdentityProofType] = useState('Aadhaar Card');
+  const [identityProofNumber, setIdentityProofNumber] = useState('');
+  const [userDesignation, setUserDesignation] = useState('Researcher');
+
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -100,6 +131,26 @@ const Register = () => {
       }
     }
 
+    if (!affiliation.trim()) {
+      setError('Please provide your Affiliation / Institute / University name.');
+      return;
+    }
+
+    if (!gender) {
+      setError('Please select your Gender.');
+      return;
+    }
+
+    if (!citizenship.trim()) {
+      setError('Please specify your Citizenship / Country.');
+      return;
+    }
+
+    if (!identityProofNumber.trim()) {
+      setError('Please provide your Identity Proof Number / Document ID.');
+      return;
+    }
+
     if (password !== confirmPassword) {
       setError('Passwords do not match. Please verify your password.');
       return;
@@ -120,7 +171,13 @@ const Register = () => {
           display_name: fullDisplayName.trim(), 
           email: email.trim(), 
           password,
-          role_name: selectedRole 
+          role_name: selectedRole,
+          gender,
+          citizenship: citizenship.trim(),
+          affiliation: affiliation.trim(),
+          identity_proof_type: identityProofType,
+          identity_proof_number: identityProofNumber.trim(),
+          user_designation: userDesignation
         }
       });
 
@@ -156,7 +213,13 @@ const Register = () => {
           display_name: user.displayName,
           photo_url: user.photoURL,
           uid: user.uid,
-          role_name: selectedRole
+          role_name: selectedRole,
+          gender: gender || 'Prefer not to say',
+          citizenship: citizenship || 'India',
+          affiliation: affiliation || 'Independent Academic',
+          identity_proof_type: identityProofType,
+          identity_proof_number: identityProofNumber || '',
+          user_designation: userDesignation
         }
       });
 
@@ -174,17 +237,19 @@ const Register = () => {
     }
   };
 
+  const currentIdPlaceholder = identityProofOptions.find(opt => opt.value === identityProofType)?.placeholder || 'Enter ID number';
+
   return (
     <main className="flex-grow flex items-center justify-center p-4 py-12 bg-[#F9F6F0]">
-      <div className="w-full max-w-xl bg-white p-8 sm:p-10 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-[#E5E0D8] animate-fadeIn">
+      <div className="w-full max-w-2xl bg-white p-8 sm:p-10 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-[#E5E0D8] animate-fadeIn">
         
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center p-3 bg-[#1E2530] text-amber-300 rounded-2xl mb-3 shadow-xs">
-            <FaGraduationCap className="w-6 h-6" />
+          <div className="inline-flex items-center justify-center p-3.5 bg-[#1E2530] text-amber-300 rounded-2xl mb-3 shadow-xs">
+            <FaGraduationCap className="w-7 h-7" />
           </div>
           <h2 className="text-3xl font-bold text-[#1E2530] font-serif tracking-tight">Create an Account</h2>
-          <p className="text-[#8E7C68] text-sm mt-1 font-medium">Select your portal role and join the scholarly journal system</p>
+          <p className="text-[#8E7C68] text-sm mt-1 font-medium">Select your portal role and complete academic verification details</p>
         </div>
 
         {/* Role Toggle Tabs */}
@@ -241,105 +306,247 @@ const Register = () => {
         {/* Registration Form */}
         <form onSubmit={handleRegister} className="space-y-5">
           
-          {/* Title & Full Name */}
-          <div className="flex flex-col sm:flex-row gap-3">
-            <div className="w-full sm:w-1/3">
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#4A443D] mb-1.5" htmlFor="title">
-                Title
-              </label>
-              <select
-                id="title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-3.5 py-3 bg-[#FAF9F6] border border-[#E5E0D8] rounded-xl focus:outline-none focus:border-[#8E7C68] text-sm text-[#2C2C2C] font-medium"
-              >
-                <option value="">None</option>
-                <option value="Dr.">Dr.</option>
-                <option value="Prof.">Prof.</option>
-                <option value="Mr.">Mr.</option>
-                <option value="Ms.">Ms.</option>
-                <option value="Mrs.">Mrs.</option>
-              </select>
+          {/* Section 1: Personal & Name Info */}
+          <div className="space-y-4">
+            <div className="pb-1 border-b border-slate-100 flex items-center gap-2">
+              <span className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">1. Personal & Identity</span>
             </div>
 
-            <div className="w-full sm:w-2/3">
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#4A443D] mb-1.5" htmlFor="displayName">
-                Full Name *
+            {/* Title & Full Name */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="w-full sm:w-1/3">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#4A443D] mb-1.5" htmlFor="title">
+                  Title
+                </label>
+                <select
+                  id="title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="w-full px-3.5 py-3 bg-[#FAF9F6] border border-[#E5E0D8] rounded-xl focus:outline-none focus:border-[#8E7C68] text-sm text-[#2C2C2C] font-medium"
+                >
+                  <option value="">None</option>
+                  <option value="Dr.">Dr.</option>
+                  <option value="Prof.">Prof.</option>
+                  <option value="Mr.">Mr.</option>
+                  <option value="Ms.">Ms.</option>
+                  <option value="Mrs.">Mrs.</option>
+                </select>
+              </div>
+
+              <div className="w-full sm:w-2/3">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#4A443D] mb-1.5" htmlFor="displayName">
+                  Full Name *
+                </label>
+                <input
+                  id="displayName"
+                  type="text"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  className="w-full px-4 py-3 bg-[#FAF9F6] border border-[#E5E0D8] rounded-xl focus:outline-none focus:border-[#8E7C68] focus:bg-white text-sm text-[#2C2C2C] font-medium transition-all"
+                  placeholder="Jane Doe"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Gender & Citizenship */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#4A443D] mb-1.5 flex items-center gap-1.5" htmlFor="gender">
+                  <FaVenusMars className="text-slate-400" /> Gender *
+                </label>
+                <select
+                  id="gender"
+                  required
+                  value={gender}
+                  onChange={(e) => setGender(e.target.value)}
+                  className="w-full px-3.5 py-3 bg-[#FAF9F6] border border-[#E5E0D8] rounded-xl focus:outline-none focus:border-[#8E7C68] text-sm text-[#2C2C2C] font-medium"
+                >
+                  <option value="">Select Gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Non-Binary">Non-Binary</option>
+                  <option value="Prefer not to say">Prefer not to say</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#4A443D] mb-1.5 flex items-center gap-1.5" htmlFor="citizenship">
+                  <FaGlobe className="text-slate-400" /> Citizenship / Nationality *
+                </label>
+                <input
+                  id="citizenship"
+                  type="text"
+                  required
+                  value={citizenship}
+                  onChange={(e) => setCitizenship(e.target.value)}
+                  className="w-full px-4 py-3 bg-[#FAF9F6] border border-[#E5E0D8] rounded-xl focus:outline-none focus:border-[#8E7C68] focus:bg-white text-sm text-[#2C2C2C] font-medium transition-all"
+                  placeholder="e.g. India, United States, Germany..."
+                />
+              </div>
+            </div>
+
+          </div>
+
+          {/* Section 2: Academic Affiliation & Category */}
+          <div className="space-y-4 pt-2">
+            <div className="pb-1 border-b border-slate-100 flex items-center gap-2">
+              <span className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">2. Academic & Institutional Affiliation</span>
+            </div>
+
+            {/* Academic Category / Designation (Researcher, Faculty, Student) */}
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#4A443D] mb-2 flex items-center gap-1.5">
+                <FaUserTie className="text-slate-400" /> Academic Designation / Status *
+              </label>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+                {userDesignationOptions.map(opt => {
+                  const isChecked = userDesignation === opt.value;
+                  return (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setUserDesignation(opt.value)}
+                      className={`p-3 rounded-xl border text-left transition-all ${
+                        isChecked
+                          ? 'border-indigo-600 bg-indigo-50/70 text-indigo-950 font-bold shadow-xs'
+                          : 'border-slate-200 bg-[#FAF9F6] hover:bg-slate-100 text-slate-700'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold leading-tight">{opt.label}</span>
+                        {isChecked && <FaCheckCircle className="text-indigo-600 text-xs shrink-0 ml-1" />}
+                      </div>
+                      <p className="text-[10px] text-slate-500 font-normal mt-1 leading-tight">{opt.desc}</p>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Affiliation / Institute Name */}
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#4A443D] mb-1.5 flex items-center gap-1.5" htmlFor="affiliation">
+                <FaBuilding className="text-slate-400" /> Affiliation / Institute / University Name *
               </label>
               <input
-                id="displayName"
+                id="affiliation"
                 type="text"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
+                required
+                value={affiliation}
+                onChange={(e) => setAffiliation(e.target.value)}
                 className="w-full px-4 py-3 bg-[#FAF9F6] border border-[#E5E0D8] rounded-xl focus:outline-none focus:border-[#8E7C68] focus:bg-white text-sm text-[#2C2C2C] font-medium transition-all"
-                placeholder="Jane Doe"
+                placeholder="e.g. Department of English, University of Delhi"
+              />
+            </div>
+
+            {/* Identity Proof Selector & ID Number */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#4A443D] mb-1.5 flex items-center gap-1.5" htmlFor="identityProofType">
+                  <FaIdCard className="text-slate-400" /> Identity Proof Type *
+                </label>
+                <select
+                  id="identityProofType"
+                  required
+                  value={identityProofType}
+                  onChange={(e) => setIdentityProofType(e.target.value)}
+                  className="w-full px-3.5 py-3 bg-[#FAF9F6] border border-[#E5E0D8] rounded-xl focus:outline-none focus:border-[#8E7C68] text-sm text-[#2C2C2C] font-medium"
+                >
+                  {identityProofOptions.map(opt => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#4A443D] mb-1.5 flex items-center gap-1.5" htmlFor="identityProofNumber">
+                  Identity Proof Number / ID *
+                </label>
+                <input
+                  id="identityProofNumber"
+                  type="text"
+                  required
+                  value={identityProofNumber}
+                  onChange={(e) => setIdentityProofNumber(e.target.value)}
+                  className="w-full px-4 py-3 bg-[#FAF9F6] border border-[#E5E0D8] rounded-xl focus:outline-none focus:border-[#8E7C68] focus:bg-white text-sm text-[#2C2C2C] font-medium transition-all"
+                  placeholder={currentIdPlaceholder}
+                />
+              </div>
+            </div>
+
+          </div>
+
+          {/* Section 3: Credentials */}
+          <div className="space-y-4 pt-2">
+            <div className="pb-1 border-b border-slate-100 flex items-center gap-2">
+              <span className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">3. Portal Login Credentials</span>
+            </div>
+
+            {/* Email Address */}
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#4A443D] mb-1.5" htmlFor="email">
+                Institutional / Work Email Address *
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-3 bg-[#FAF9F6] border border-[#E5E0D8] rounded-xl focus:outline-none focus:border-[#8E7C68] focus:bg-white text-sm text-[#2C2C2C] font-medium transition-all"
+                placeholder="jane.doe@university.edu"
                 required
               />
             </div>
-          </div>
 
-          {/* Email Address */}
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-[#4A443D] mb-1.5" htmlFor="email">
-              Institutional / Work Email Address *
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 bg-[#FAF9F6] border border-[#E5E0D8] rounded-xl focus:outline-none focus:border-[#8E7C68] focus:bg-white text-sm text-[#2C2C2C] font-medium transition-all"
-              placeholder="jane.doe@university.edu"
-              required
-            />
-          </div>
-
-          {/* Password */}
-          <div>
-            <div className="flex justify-between items-center mb-1.5">
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#4A443D]" htmlFor="password">
-                Password *
-              </label>
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="text-xs text-[#8E7C68] hover:text-[#1E2530] font-semibold flex items-center gap-1"
-              >
-                {showPassword ? <><FaEyeSlash className="text-[10px]" /> Hide</> : <><FaEye className="text-[10px]" /> Show</>}
-              </button>
+            {/* Password */}
+            <div>
+              <div className="flex justify-between items-center mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#4A443D]" htmlFor="password">
+                  Password *
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="text-xs text-[#8E7C68] hover:text-[#1E2530] font-semibold flex items-center gap-1 cursor-pointer"
+                >
+                  {showPassword ? <><FaEyeSlash className="text-[10px]" /> Hide</> : <><FaEye className="text-[10px]" /> Show</>}
+                </button>
+              </div>
+              <input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 bg-[#FAF9F6] border border-[#E5E0D8] rounded-xl focus:outline-none focus:border-[#8E7C68] focus:bg-white text-sm text-[#2C2C2C] font-medium transition-all"
+                placeholder="Minimum 6 characters"
+                required
+              />
             </div>
-            <input
-              id="password"
-              type={showPassword ? 'text' : 'password'}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 bg-[#FAF9F6] border border-[#E5E0D8] rounded-xl focus:outline-none focus:border-[#8E7C68] focus:bg-white text-sm text-[#2C2C2C] font-medium transition-all"
-              placeholder="Minimum 6 characters"
-              required
-            />
-          </div>
 
-          {/* Confirm Password */}
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-[#4A443D] mb-1.5" htmlFor="confirmPassword">
-              Confirm Password *
-            </label>
-            <input
-              id="confirmPassword"
-              type={showPassword ? 'text' : 'password'}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-4 py-3 bg-[#FAF9F6] border border-[#E5E0D8] rounded-xl focus:outline-none focus:border-[#8E7C68] focus:bg-white text-sm text-[#2C2C2C] font-medium transition-all"
-              placeholder="Re-enter password"
-              required
-            />
+            {/* Confirm Password */}
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#4A443D] mb-1.5" htmlFor="confirmPassword">
+                Confirm Password *
+              </label>
+              <input
+                id="confirmPassword"
+                type={showPassword ? 'text' : 'password'}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full px-4 py-3 bg-[#FAF9F6] border border-[#E5E0D8] rounded-xl focus:outline-none focus:border-[#8E7C68] focus:bg-white text-sm text-[#2C2C2C] font-medium transition-all"
+                placeholder="Re-enter password"
+                required
+              />
+            </div>
           </div>
 
           {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full mt-4 py-3.5 px-6 bg-[#1E2530] hover:bg-[#2C384A] text-white font-bold rounded-xl shadow hover:shadow-md transition-all duration-300 disabled:opacity-50 flex justify-center items-center gap-2 text-sm tracking-wider uppercase"
+            className="w-full mt-4 py-3.5 px-6 bg-[#1E2530] hover:bg-[#2C384A] text-white font-bold rounded-xl shadow hover:shadow-md transition-all duration-300 disabled:opacity-50 flex justify-center items-center gap-2 text-sm tracking-wider uppercase cursor-pointer"
           >
             {loading ? (
               <span className="flex items-center gap-2">
@@ -364,7 +571,7 @@ const Register = () => {
           type="button"
           onClick={handleGoogleSignUp}
           disabled={googleLoading}
-          className="w-full mt-6 py-3.5 px-6 bg-white border-2 border-[#E5E0D8] text-[#1E2530] font-bold rounded-xl shadow-xs hover:bg-[#FAF9F6] hover:shadow transition-all duration-300 disabled:opacity-50 flex justify-center items-center gap-3 text-sm"
+          className="w-full mt-6 py-3.5 px-6 bg-white border-2 border-[#E5E0D8] text-[#1E2530] font-bold rounded-xl shadow-xs hover:bg-[#FAF9F6] hover:shadow transition-all duration-300 disabled:opacity-50 flex justify-center items-center gap-3 text-sm cursor-pointer"
         >
           {googleLoading ? (
             <svg className="animate-spin h-5 w-5 text-[#8E7C68]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>

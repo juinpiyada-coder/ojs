@@ -17,7 +17,18 @@ import {
   FaUserTie,
   FaFileUpload,
   FaBookOpen,
-  FaTasks
+  FaTasks,
+  FaEnvelopeOpenText,
+  FaListAlt,
+  FaCheckCircle,
+  FaEnvelope,
+  FaGraduationCap,
+  FaHistory,
+  FaBookReader,
+  FaCreditCard,
+  FaQuestionCircle,
+  FaExternalLinkAlt,
+  FaHeadset
 } from 'react-icons/fa';
 import { apiFetch, resolveFileUrl, resolveImageUrl } from '../../utils/api';
 import { useBrand } from '../../context/BrandingContext';
@@ -102,7 +113,7 @@ const DashboardLayout = ({ title }) => {
     return location.pathname === toPath || location.pathname.startsWith(`${toPath}/`);
   };
 
-  const accentColor = brand?.admin_dash_accent_hex || '#107C41';
+  const accentColor = brand?.admin_dash_accent_hex || '#4F46E5';
   const sidebarBg = brand?.admin_dash_bg_hex || '#FFFFFF';
 
   // Helper to compute optimal high-contrast text color (white or dark) for the accent background
@@ -117,24 +128,37 @@ const DashboardLayout = ({ title }) => {
 
   const activeTextColor = getContrastColor(accentColor);
 
-  const renderNavItem = (to, Icon, label) => {
+  const renderNavItem = (to, Icon, label, badgeCount = null, badgeColor = 'bg-indigo-600') => {
     const active = isLinkActive(to);
     return (
       <Link
         to={to}
         onClick={() => setIsMobileMenuOpen(false)}
         style={active ? { backgroundColor: accentColor, color: activeTextColor } : {}}
-        className={`flex items-center px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 ${
+        className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 ${
           active
             ? 'shadow-xs font-bold'
             : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
         }`}
       >
-        <Icon 
-          className="w-4 h-4 mr-3 transition-colors shrink-0" 
-          style={active ? { color: activeTextColor } : { color: '#94A3B8' }}
-        />
-        <span className="truncate">{label}</span>
+        <div className="flex items-center min-w-0">
+          <Icon 
+            className="w-4 h-4 mr-3 transition-colors shrink-0" 
+            style={active ? { color: activeTextColor } : { color: '#94A3B8' }}
+          />
+          <span className="truncate">{label}</span>
+        </div>
+        {badgeCount !== null && (
+          <span 
+            className={`ml-2 px-2 py-0.5 rounded-full text-[10px] font-bold shrink-0 ${
+              active 
+                ? 'bg-white/20 text-white' 
+                : `${badgeColor} text-white`
+            }`}
+          >
+            {badgeCount}
+          </span>
+        )}
       </Link>
     );
   };
@@ -199,11 +223,25 @@ const DashboardLayout = ({ title }) => {
             </>
           )}
 
-          {/* Reviewer Navigation */}
+          {/* Reviewer Side Panel Navigation (Scholarly OS Style) */}
           {userRole === 'reviewer' && (
             <>
               {renderNavItem(dashPrefix, FaHome, 'Reviewer Dashboard')}
+              {renderNavItem(`${dashPrefix}/invitations`, FaEnvelopeOpenText, 'Review Invitations', 4, 'bg-blue-600')}
+              {renderNavItem(`${dashPrefix}/my-reviews`, FaListAlt, 'My Reviews', 6, 'bg-amber-600')}
+              {renderNavItem(`${dashPrefix}/completed`, FaCheckCircle, 'Completed Reviews', 18, 'bg-emerald-600')}
+              {renderNavItem(`${dashPrefix}/messages`, FaEnvelope, 'Messages', 3, 'bg-indigo-600')}
               {renderNavItem(`${dashPrefix}/profile`, FaUser, 'Profile')}
+              
+              <div className="pt-4 pb-1.5 px-3">
+                <p className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">Resources & History</p>
+              </div>
+
+              {renderNavItem(`${dashPrefix}/expertise`, FaGraduationCap, 'Expertise & Interests')}
+              {renderNavItem(`${dashPrefix}/history`, FaHistory, 'Review History')}
+              {renderNavItem('/anonymous-review', FaBookReader, 'Reviewer Guidelines')}
+              {renderNavItem(`${dashPrefix}/payment-history`, FaCreditCard, 'Payment History')}
+              {renderNavItem('/contact', FaQuestionCircle, 'Support')}
             </>
           )}
           
@@ -246,6 +284,23 @@ const DashboardLayout = ({ title }) => {
             </>
           )}
         </nav>
+
+        {/* Need Help Card (Scholarly OS Style) */}
+        {userRole === 'reviewer' && (
+          <div className="p-3 mx-2 mb-2 rounded-2xl bg-slate-900 text-white shadow-xs">
+            <div className="flex items-center gap-2.5 mb-1.5">
+              <div className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center text-amber-300">
+                <FaHeadset className="w-3.5 h-3.5" />
+              </div>
+              <div>
+                <p className="text-xs font-bold leading-tight">Need Help?</p>
+                <Link to="/contact" className="text-[10px] text-slate-400 hover:text-white transition-colors flex items-center gap-1">
+                  View Help Center <FaExternalLinkAlt className="text-[8px]" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
         
         {/* Logout Footer */}
         <div className="p-3 border-t border-slate-100" style={{ backgroundColor: sidebarBg }}>

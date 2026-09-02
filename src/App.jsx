@@ -151,6 +151,13 @@ function App() {
             {/* 4. Reviewer Dashboard Routes */}
             <Route path="/reviewer/dashboard" element={<DashboardLayout title="Reviewer Dashboard" />}>
               <Route index element={<ReviewerDashboard />} />
+              <Route path="invitations" element={<ReviewerDashboard activeFilter="invitations" activeTab="invitations" />} />
+              <Route path="my-reviews" element={<ReviewerDashboard activeFilter="assigned" activeTab="my-reviews" />} />
+              <Route path="completed" element={<ReviewerDashboard activeFilter="completed" activeTab="completed" />} />
+              <Route path="messages" element={<ReviewerDashboard activeFilter="ALL" activeTab="messages" />} />
+              <Route path="expertise" element={<AdminProfile />} />
+              <Route path="history" element={<ReviewerDashboard activeFilter="completed" activeTab="history" />} />
+              <Route path="payment-history" element={<ReviewerDashboard activeFilter="ALL" activeTab="payment-history" />} />
               <Route path="profile" element={<AdminProfile />} />
             </Route>
             

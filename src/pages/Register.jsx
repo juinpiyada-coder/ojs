@@ -107,28 +107,16 @@ const Register = () => {
 
     const [userPart, domainPart] = emailParts;
 
+    // Standard email validation (RFC 5322 compatible regex)
+    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+    if (!emailRegex.test(cleanEmail) || cleanEmail.length < 5 || cleanEmail.length > 254) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+
     if (disposableDomains.includes(domainPart)) {
       setError('Temporary / disposable emails are not permitted. Please use a permanent email (e.g. Gmail, Outlook, or institutional email).');
       return;
-    }
-
-    // Check for fake repeating patterns (e.g. jjjj, aaaaa)
-    if (/^(.)\1{4,}$/.test(userPart) || userPart.length < 3) {
-      setError('Suspicious or invalid email address. Please use your real email.');
-      return;
-    }
-
-    // Specific Gmail validation
-    if (domainPart === 'gmail.com' || domainPart === 'googlemail.com') {
-      const cleanUser = userPart.replace(/\./g, '');
-      if (cleanUser.length < 6 || cleanUser.length > 30) {
-        setError('Gmail usernames must be between 6 and 30 characters.');
-        return;
-      }
-      if (!/^[a-z0-9.]+$/i.test(userPart)) {
-        setError('Gmail addresses can only contain letters, numbers, and periods.');
-        return;
-      }
     }
 
     if (!affiliation.trim()) {

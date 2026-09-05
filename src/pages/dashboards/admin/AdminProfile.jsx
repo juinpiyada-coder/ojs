@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { apiFetch, resolveImageUrl } from '../../../utils/api';
 import { toast } from 'react-toastify';
+import { COUNTRIES } from '../../../data/countries';
 import { 
   FaUser, 
   FaEnvelope, 
@@ -16,6 +17,7 @@ import {
   FaBuilding,
   FaGlobe,
   FaIdCard,
+  FaWhatsapp,
   FaVenusMars,
   FaUserTie
 } from 'react-icons/fa';
@@ -32,6 +34,8 @@ const AdminProfile = () => {
     gender: '',
     citizenship: '',
     affiliation: '',
+    whatsapp_number: '',
+    institute_id_number: '',
     identity_proof_type: '',
     identity_proof_number: '',
     user_designation: '',
@@ -127,6 +131,8 @@ const AdminProfile = () => {
         gender: profile.gender ? profile.gender.trim() : null,
         citizenship: profile.citizenship ? profile.citizenship.trim() : null,
         affiliation: profile.affiliation ? profile.affiliation.trim() : null,
+        whatsapp_number: profile.whatsapp_number ? profile.whatsapp_number.trim() : null,
+        institute_id_number: profile.institute_id_number ? profile.institute_id_number.trim() : null,
         identity_proof_type: profile.identity_proof_type ? profile.identity_proof_type.trim() : null,
         identity_proof_number: profile.identity_proof_number ? profile.identity_proof_number.trim() : null,
         user_designation: profile.user_designation ? profile.user_designation.trim() : null
@@ -340,7 +346,7 @@ const AdminProfile = () => {
                   value={profile.gender || ''} 
                   onChange={e => setProfile({ ...profile, gender: e.target.value })}
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
-                  placeholder="e.g. Male, Female, Non-Binary..."
+                  placeholder="e.g. Male, Female, Prefer not to say..."
                 />
               </div>
 
@@ -348,13 +354,18 @@ const AdminProfile = () => {
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5 flex items-center gap-1.5">
                   <FaGlobe className="text-slate-400" /> Citizenship / Nationality
                 </label>
-                <input 
-                  type="text" 
+                <select 
                   value={profile.citizenship || ''} 
                   onChange={e => setProfile({ ...profile, citizenship: e.target.value })}
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
-                  placeholder="e.g. India, United States, Germany..."
-                />
+                >
+                  <option value="">Select Country</option>
+                  {COUNTRIES.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
@@ -388,6 +399,35 @@ const AdminProfile = () => {
                   onChange={e => setProfile({ ...profile, affiliation: e.target.value })}
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
                   placeholder="e.g. Department of English, University of Delhi"
+                />
+              </div>
+            </div>
+
+            {/* WhatsApp Number & Institute ID Number */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5 flex items-center gap-1.5">
+                  <FaWhatsapp className="text-emerald-500" /> WhatsApp Number
+                </label>
+                <input 
+                  type="tel" 
+                  value={profile.whatsapp_number || ''} 
+                  onChange={e => setProfile({ ...profile, whatsapp_number: e.target.value })}
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
+                  placeholder="e.g. +91 9876543210"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5 flex items-center gap-1.5">
+                  <FaIdBadge className="text-slate-400" /> Institute ID / Roll Number
+                </label>
+                <input 
+                  type="text" 
+                  value={profile.institute_id_number || ''} 
+                  onChange={e => setProfile({ ...profile, institute_id_number: e.target.value })}
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
+                  placeholder="e.g. EMP10482 / ROLL2024"
                 />
               </div>
             </div>

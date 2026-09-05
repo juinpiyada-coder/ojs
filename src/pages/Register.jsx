@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
 import { apiFetch } from '../utils/api';
+import { COUNTRIES } from '../data/countries';
 import { 
   FaUserEdit, 
   FaUserCheck, 
@@ -17,6 +18,8 @@ import {
   FaBuilding,
   FaGlobe,
   FaIdCard,
+  FaIdBadge,
+  FaWhatsapp,
   FaVenusMars,
   FaUserTie
 } from 'react-icons/fa';
@@ -75,9 +78,12 @@ const Register = () => {
   const [gender, setGender] = useState('');
   const [citizenship, setCitizenship] = useState('India');
   const [affiliation, setAffiliation] = useState('');
+  const [whatsappNumber, setWhatsappNumber] = useState('');
+  const [instituteIdNumber, setInstituteIdNumber] = useState('');
   const [identityProofType, setIdentityProofType] = useState('Aadhaar Card');
   const [identityProofNumber, setIdentityProofNumber] = useState('');
   const [userDesignation, setUserDesignation] = useState('Researcher');
+  const [instituteIdFile, setInstituteIdFile] = useState(null);
 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -124,6 +130,11 @@ const Register = () => {
       return;
     }
 
+    if (!whatsappNumber.trim()) {
+      setError('Please provide your WhatsApp number for editorial notifications.');
+      return;
+    }
+
     if (!gender) {
       setError('Please select your Gender.');
       return;
@@ -136,6 +147,11 @@ const Register = () => {
 
     if (!identityProofNumber.trim()) {
       setError('Please provide your Identity Proof Number / Document ID.');
+      return;
+    }
+
+    if (!instituteIdFile) {
+      setError('Please upload your Identity Proof Document.');
       return;
     }
 
@@ -152,6 +168,25 @@ const Register = () => {
     setLoading(true);
 
     try {
+      let instituteIdDocId = null;
+      if (instituteIdFile) {
+        const formData = new FormData();
+        formData.append('file', instituteIdFile);
+        formData.append('folder', 'identity_proofs');
+        
+        const docRes = await fetch(`${import.meta.env.VITE_API_URL || '/api'}/docs`, {
+          method: 'POST',
+          body: formData
+        });
+        
+        const docData = await docRes.json();
+        if (docData.status === 'success' && docData.data?.doc_id) {
+          instituteIdDocId = docData.data.doc_id;
+        } else {
+          throw new Error(docData.message || 'Failed to upload identity proof document');
+        }
+      }
+
       const fullDisplayName = title ? `${title} ${displayName}` : displayName;
       const data = await apiFetch('/auth/signup', {
         method: 'POST',
@@ -163,9 +198,12 @@ const Register = () => {
           gender,
           citizenship: citizenship.trim(),
           affiliation: affiliation.trim(),
+          whatsapp_number: whatsappNumber.trim(),
+          institute_id_number: instituteIdNumber.trim(),
           identity_proof_type: identityProofType,
           identity_proof_number: identityProofNumber.trim(),
-          user_designation: userDesignation
+          user_designation: userDesignation,
+          institute_id_doc_id: instituteIdDocId
         }
       });
 
@@ -182,6 +220,17 @@ const Register = () => {
 
   const handleGoogleSignUp = async () => {
     setError('');
+    
+    if (!identityProofNumber.trim()) {
+      setError('Please provide your Identity Proof Number / Document ID before continuing with Google.');
+      return;
+    }
+
+    if (!instituteIdFile) {
+      setError('Please upload your Identity Proof Document before continuing with Google.');
+      return;
+    }
+
     setGoogleLoading(true);
 
     const { user, error: googleError } = await signInWithGoogle();
@@ -192,6 +241,25 @@ const Register = () => {
     }
 
     try {
+      let instituteIdDocId = null;
+      if (instituteIdFile) {
+        const formData = new FormData();
+        formData.append('file', instituteIdFile);
+        formData.append('folder', 'identity_proofs');
+        
+        const docRes = await fetch(`${import.meta.env.VITE_API_URL || '/api'}/docs`, {
+          method: 'POST',
+          body: formData
+        });
+        
+        const docData = await docRes.json();
+        if (docData.status === 'success' && docData.data?.doc_id) {
+          instituteIdDocId = docData.data.doc_id;
+        } else {
+          throw new Error(docData.message || 'Failed to upload identity proof document');
+        }
+      }
+
       const idToken = await user.getIdToken();
       const data = await apiFetch('/auth/google', {
         method: 'POST',
@@ -205,9 +273,12 @@ const Register = () => {
           gender: gender || 'Prefer not to say',
           citizenship: citizenship || 'India',
           affiliation: affiliation || 'Independent Academic',
+          whatsapp_number: whatsappNumber || '',
+          institute_id_number: instituteIdNumber || '',
           identity_proof_type: identityProofType,
           identity_proof_number: identityProofNumber || '',
-          user_designation: userDesignation
+          user_designation: userDesignation,
+          institute_id_doc_id: instituteIdDocId
         }
       });
 
@@ -353,7 +424,6 @@ const Register = () => {
                   <option value="">Select Gender</option>
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
-                  <option value="Non-Binary">Non-Binary</option>
                   <option value="Prefer not to say">Prefer not to say</option>
                 </select>
               </div>
@@ -362,15 +432,20 @@ const Register = () => {
                 <label className="block text-xs font-bold uppercase tracking-wider text-[#4A443D] mb-1.5 flex items-center gap-1.5" htmlFor="citizenship">
                   <FaGlobe className="text-slate-400" /> Citizenship / Nationality *
                 </label>
-                <input
+                <select
                   id="citizenship"
-                  type="text"
                   required
                   value={citizenship}
                   onChange={(e) => setCitizenship(e.target.value)}
-                  className="w-full px-4 py-3 bg-[#FAF9F6] border border-[#E5E0D8] rounded-xl focus:outline-none focus:border-[#8E7C68] focus:bg-white text-sm text-[#2C2C2C] font-medium transition-all"
-                  placeholder="e.g. India, United States, Germany..."
-                />
+                  className="w-full px-3.5 py-3 bg-[#FAF9F6] border border-[#E5E0D8] rounded-xl focus:outline-none focus:border-[#8E7C68] text-sm text-[#2C2C2C] font-medium"
+                >
+                  <option value="">Select Country</option>
+                  {COUNTRIES.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
@@ -429,6 +504,38 @@ const Register = () => {
               />
             </div>
 
+            {/* WhatsApp Number & Institute ID Number */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#4A443D] mb-1.5 flex items-center gap-1.5" htmlFor="whatsappNumber">
+                  <FaWhatsapp className="text-emerald-500" /> WhatsApp Number *
+                </label>
+                <input
+                  id="whatsappNumber"
+                  type="tel"
+                  required
+                  value={whatsappNumber}
+                  onChange={(e) => setWhatsappNumber(e.target.value)}
+                  className="w-full px-4 py-3 bg-[#FAF9F6] border border-[#E5E0D8] rounded-xl focus:outline-none focus:border-[#8E7C68] focus:bg-white text-sm text-[#2C2C2C] font-medium transition-all"
+                  placeholder="e.g. +91 9876543210"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#4A443D] mb-1.5 flex items-center gap-1.5" htmlFor="instituteIdNumber">
+                  <FaIdBadge className="text-slate-400" /> Institute ID / Roll Number
+                </label>
+                <input
+                  id="instituteIdNumber"
+                  type="text"
+                  value={instituteIdNumber}
+                  onChange={(e) => setInstituteIdNumber(e.target.value)}
+                  className="w-full px-4 py-3 bg-[#FAF9F6] border border-[#E5E0D8] rounded-xl focus:outline-none focus:border-[#8E7C68] focus:bg-white text-sm text-[#2C2C2C] font-medium transition-all"
+                  placeholder="e.g. EMP10482 / ROLL2024"
+                />
+              </div>
+            </div>
+
             {/* Identity Proof Selector & ID Number */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
@@ -462,6 +569,21 @@ const Register = () => {
                   placeholder={currentIdPlaceholder}
                 />
               </div>
+            </div>
+
+            <div className="mt-3">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#4A443D] mb-1.5 flex items-center gap-1.5" htmlFor="instituteIdFile">
+                <FaIdCard className="text-slate-400" /> Upload Identity Proof Document *
+              </label>
+              <input
+                id="instituteIdFile"
+                type="file"
+                accept=".pdf,.jpg,.jpeg,.png"
+                required
+                onChange={(e) => setInstituteIdFile(e.target.files[0])}
+                className="w-full px-4 py-2.5 bg-[#FAF9F6] border border-[#E5E0D8] rounded-xl focus:outline-none focus:border-[#8E7C68] focus:bg-white text-sm text-[#2C2C2C] font-medium transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-[#1E2530] file:text-white hover:file:bg-[#2C384A]"
+              />
+              <p className="text-[10px] text-slate-500 mt-1">Please upload a clear scanned copy of your selected identity proof (PDF, JPG, PNG). Max 5MB.</p>
             </div>
 
           </div>

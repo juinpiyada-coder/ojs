@@ -107,7 +107,7 @@ const CallForPapers = () => {
                     <FaClock /> Crucial Milestone
                   </div>
                   <p className="text-xs uppercase text-gray-400 font-semibold mb-1">Submission Deadline</p>
-                  <p className="text-xl sm:text-2xl font-bold text-white font-serif">25th April 2025</p>
+                  <p className="text-xl sm:text-2xl font-bold text-white font-serif">10th October 2026</p>
                 </div>
 
                 <div className="bg-white/10 border border-white/20 rounded-2xl p-5 backdrop-blur-sm">
@@ -115,7 +115,7 @@ const CallForPapers = () => {
                     <FaCheckDouble /> Decision Timeline
                   </div>
                   <p className="text-xs uppercase text-gray-400 font-semibold mb-1">Notification of Acceptance</p>
-                  <p className="text-xl sm:text-2xl font-bold text-white font-serif">30th April 2025</p>
+                  <p className="text-xl sm:text-2xl font-bold text-white font-serif">15th October 2026</p>
                 </div>
               </div>
 
@@ -129,7 +129,7 @@ const CallForPapers = () => {
                 </Link>
 
                 <a
-                  href="/annousments/Olive-Green-Doodle-Final-Project-Cover-A4-Document.pdf"
+                  href="/Volume%20II,%20Issue%202026%20%20Call%20For%20Papers%20.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-[#8E7C68] hover:bg-[#7D6B57] text-white rounded-lg font-bold text-sm sm:text-base transition-all shadow-md"
@@ -156,7 +156,7 @@ const CallForPapers = () => {
               >
                 <div className="rounded-xl overflow-hidden bg-neutral-100 flex items-center justify-center">
                   <img
-                    src="/annousments/image.png"
+                    src="/annousments/call_for_papers_2026.png"
                     alt="The Literary Scientist - Call for Contributions"
                     className="w-full h-auto max-h-[460px] object-contain block mx-auto"
                     loading="lazy"
@@ -176,7 +176,7 @@ const CallForPapers = () => {
                 </div>
 
                 <div className="absolute top-4 left-4 bg-[#1E2530]/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-[11px] font-bold border border-white/20 shadow">
-                  Vol. II Issue I
+                  Volume II, Issue I (2026)
                 </div>
               </div>
             </div>
@@ -276,7 +276,7 @@ const CallForPapers = () => {
             <div className="flex justify-between items-center px-5 py-3.5 bg-[#161B22] border-b border-gray-700 text-white">
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold uppercase tracking-wider px-2 py-0.5 bg-[#8E7C68] text-white rounded">
-                  Vol. II Issue I
+                  Volume II, Issue I (2026)
                 </span>
                 <span className="text-sm font-semibold text-gray-300 truncate">
                   Call for Contributions Official Flyer
@@ -296,7 +296,7 @@ const CallForPapers = () => {
             {/* Modal Body */}
             <div className="p-4 overflow-y-auto flex items-center justify-center bg-neutral-950/90">
               <img
-                src="/annousments/image.png"
+                src="/annousments/call_for_papers_2026.png"
                 alt="The Literary Scientist Call for Contributions Flyer"
                 className="max-h-[72vh] w-auto max-w-full object-contain rounded-lg shadow-xl border border-gray-700 mx-auto"
               />
@@ -305,8 +305,8 @@ const CallForPapers = () => {
             {/* Modal Footer */}
             <div className="flex flex-wrap justify-between items-center gap-3 px-5 py-3 bg-[#161B22] border-t border-gray-700">
               <a
-                href="/annousments/image.png"
-                download="The_Literary_Scientist_Call_For_Contributions.png"
+                href="/annousments/call_for_papers_2026.png"
+                download="The_Literary_Scientist_Call_For_Contributions_Vol2_Issue1_2026.png"
                 className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-medium rounded-lg transition-colors"
               >
                 <FaDownload className="text-xs" /> Save Poster Image
@@ -314,7 +314,7 @@ const CallForPapers = () => {
 
               <div className="flex items-center gap-2">
                 <a
-                  href="/annousments/Olive-Green-Doodle-Final-Project-Cover-A4-Document.pdf"
+                  href="/Volume%20II,%20Issue%202026%20%20Call%20For%20Papers%20.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#8E7C68] hover:bg-[#7D6B57] text-white text-xs sm:text-sm font-bold rounded-lg transition-colors"

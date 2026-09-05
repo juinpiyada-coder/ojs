@@ -708,7 +708,7 @@ const Home = () => {
               <FaBookOpen /> Browse Current Issue
             </a>
             <a
-              href="/annousments/Olive-Green-Doodle-Final-Project-Cover-A4-Document.pdf"
+              href="/Volume%20II,%20Issue%202026%20%20Call%20For%20Papers%20.pdf"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-7 py-3.5 bg-[#8E7C68] text-white rounded-xl font-bold text-sm sm:text-base shadow-md hover:bg-[#7D6B57] hover:shadow-lg hover:-translate-y-0.5 transition-all"
@@ -881,7 +881,7 @@ const Home = () => {
                 </div>
 
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-serif leading-tight mb-3 text-white">
-                  Vol. II Issue I (2025): Call for Contributions
+                  Volume II, Issue I (2026): Call for Contributions
                 </h2>
 
                 <p className="text-gray-300 text-sm sm:text-base leading-relaxed font-serif">
@@ -907,7 +907,7 @@ const Home = () => {
               {/* Action Buttons */}
               <div className="flex flex-wrap items-center gap-3 pt-2">
                 <a
-                  href="/annousments/Olive-Green-Doodle-Final-Project-Cover-A4-Document.pdf"
+                  href="/Volume%20II,%20Issue%202026%20%20Call%20For%20Papers%20.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-[#8E7C68] hover:bg-[#7D6B57] text-white rounded-xl font-bold text-xs sm:text-sm shadow-md transition-all cursor-pointer"
@@ -920,11 +920,11 @@ const Home = () => {
                 <button
                   type="button"
                   onClick={() => setActiveModalPoster({
-                    src: "/annousments/image.png",
-                    title: "Vol. II Issue I (2025) Call for Contributions",
+                    src: "/annousments/call_for_papers_2026.png",
+                    title: "Volume II, Issue I (2026) Call for Contributions",
                     subtitle: "Official Call for Papers Announcement & Submission Details",
-                    downloadName: "The_Literary_Scientist_Call_For_Contributions_Vol2_Issue1.png",
-                    pdfLink: "/annousments/Olive-Green-Doodle-Final-Project-Cover-A4-Document.pdf",
+                    downloadName: "The_Literary_Scientist_Call_For_Contributions_Vol2_Issue1_2026.png",
+                    pdfLink: "/Volume%20II,%20Issue%202026%20%20Call%20For%20Papers%20.pdf",
                     isCallForContribution: true
                   })}
                   className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-[#26303F] hover:bg-[#323F52] text-white border border-gray-600 rounded-xl font-bold text-xs sm:text-sm shadow-md transition-all cursor-pointer"
@@ -947,24 +947,24 @@ const Home = () => {
             <div className="lg:col-span-5 flex justify-center">
               <div
                 onClick={() => setActiveModalPoster({
-                  src: "/annousments/image.png",
-                  title: "Vol. II Issue I (2025) Call for Contributions",
+                  src: "/annousments/call_for_papers_2026.png",
+                  title: "Volume II, Issue I (2026) Call for Contributions",
                   subtitle: "Official Call for Papers Announcement & Submission Details",
-                  downloadName: "The_Literary_Scientist_Call_For_Contributions_Vol2_Issue1.png",
-                  pdfLink: "/annousments/Olive-Green-Doodle-Final-Project-Cover-A4-Document.pdf",
+                  downloadName: "The_Literary_Scientist_Call_For_Contributions_Vol2_Issue1_2026.png",
+                  pdfLink: "/Volume%20II,%20Issue%202026%20%20Call%20For%20Papers%20.pdf",
                   isCallForContribution: true
                 })}
                 className="relative group cursor-pointer max-w-[320px] sm:max-w-[340px] rounded-3xl overflow-hidden shadow-2xl border border-white/20 bg-white transform transition-all duration-300 hover:scale-[1.02] p-2"
               >
                 <div className="rounded-2xl overflow-hidden bg-white flex items-center justify-center relative">
                   <img
-                    src="/annousments/image.png"
+                    src="/annousments/call_for_papers_2026.png"
                     alt="The Literary Scientist - Call for Contributions"
                     className="w-full h-auto max-h-[460px] object-contain block"
                     loading="lazy"
                   />
                   <div className="absolute top-3 left-3 bg-[#1E2530]/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-[11px] font-bold border border-white/20 shadow">
-                    Vol. II Issue I (2025)
+                    Volume II, Issue I (2026)
                   </div>
                 </div>
               </div>
@@ -1431,6 +1431,16 @@ const Home = () => {
               </a>
 
               <div className="flex items-center gap-2">
+                {activeModalPoster.pdfLink && (
+                  <a
+                    href={activeModalPoster.pdfLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#8E7C68] hover:bg-[#7D6B57] text-white text-xs sm:text-sm font-bold rounded-lg transition-colors cursor-pointer"
+                  >
+                    <FaFilePdf className="text-xs" /> View PDF
+                  </a>
+                )}
                 {activeModalPoster.isCallForContribution ? (
                   <Link
                     to="/start-submission"

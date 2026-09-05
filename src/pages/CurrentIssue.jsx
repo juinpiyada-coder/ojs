@@ -27,7 +27,7 @@ const defaultIssueArticles = [
     volumeLabel: "Vol I, Issue III (July 2025)",
     pages: "pp. 26-30",
     doi: "10.5281/zenodo.1082326",
-    pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_26.pdf",
+    pdfUrl: "/Volume%20I%20Issue%20III/TLS20250103_26.pdf",
     abstract: "This paper examines the gripping cinematic structure of the Ram Chandra Series by Amish Tripathi and explores the building of gradually diversified and multi-dimensional narratives in contemporary mythical novels."
   },
   {
@@ -38,7 +38,7 @@ const defaultIssueArticles = [
     volumeLabel: "Vol I, Issue III (July 2025)",
     pages: "pp. 31-36",
     doi: "10.5281/zenodo.1082327",
-    pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_27.pdf",
+    pdfUrl: "/Volume%20I%20Issue%20III/TLS20250103_27.pdf",
     abstract: "Politics forms the backbone of the cinematic visions of Jorge Sanjines and Mrinal Sen, filmmakers from twentieth-century Bolivia and Bengal respectively."
   },
   {
@@ -49,7 +49,7 @@ const defaultIssueArticles = [
     volumeLabel: "Vol I, Issue III (July 2025)",
     pages: "pp. 37-41",
     doi: "10.5281/zenodo.1082328",
-    pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_28.pdf",
+    pdfUrl: "/Volume%20I%20Issue%20III/TLS20250103_28.pdf",
     abstract: "An old woman lingers in Sir Bertilak’s castle, silent and unnoticed. Only at the end of Sir Gawain and the Green Knight is her name revealed—Morgan le Fay."
   },
   {
@@ -60,7 +60,7 @@ const defaultIssueArticles = [
     volumeLabel: "Vol I, Issue III (July 2025)",
     pages: "pp. 42-47",
     doi: "10.5281/zenodo.1082330",
-    pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_30.pdf",
+    pdfUrl: "/Volume%20I%20Issue%20III/TLS20250103_30.pdf",
     abstract: "Kiran Rao’s Laapataa Ladies (2023) is a poignant and satirical exploration of women’s invisibility within the patriarchal fabric of rural India."
   },
   {
@@ -71,7 +71,7 @@ const defaultIssueArticles = [
     volumeLabel: "Vol I, Issue III (July 2025)",
     pages: "pp. 48-54",
     doi: "10.5281/zenodo.1082331",
-    pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/07/TLS20250103_31.pdf",
+    pdfUrl: "/Volume%20I%20Issue%20III/TLS20250103_31.pdf",
     abstract: "Explores the traditional Patachitra artistic motifs and their theoretical resonance in contemporary literary narratives."
   },
   {
@@ -82,7 +82,7 @@ const defaultIssueArticles = [
     volumeLabel: "Vol I, Issue III (July 2025)",
     pages: "pp. 55-60",
     doi: "10.5281/zenodo.1082332",
-    pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_32.pdf",
+    pdfUrl: "/Volume%20I%20Issue%20III/TLS20250103_32.pdf",
     abstract: "Ullozhukku is a 2024 Malayalam drama film exploring female agency and ecological symbolism amid Kerala floods."
   },
   {
@@ -93,7 +93,7 @@ const defaultIssueArticles = [
     volumeLabel: "Vol I, Issue III (July 2025)",
     pages: "pp. 61-68",
     doi: "10.5281/zenodo.1082333",
-    pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/07/TLS20250103_.33.pdf",
+    pdfUrl: "/Volume%20I%20Issue%20III/TLS20250103_.33.pdf",
     abstract: "An examination of ideological apparatuses directing agro-industrial consumption paradigms and ecological fallout."
   },
   {
@@ -104,7 +104,7 @@ const defaultIssueArticles = [
     volumeLabel: "Vol I, Issue III (July 2025)",
     pages: "pp. 69-75",
     doi: "10.5281/zenodo.1082334",
-    pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_34.pdf",
+    pdfUrl: "/Volume%20I%20Issue%20III/TLS20250103_34.pdf",
     abstract: "Investigating gothic tropes, nocturnal anxiety, and female rebellion in Victorian poetry."
   },
   {
@@ -115,7 +115,7 @@ const defaultIssueArticles = [
     volumeLabel: "Vol I, Issue III (July 2025)",
     pages: "pp. 76-82",
     doi: "10.5281/zenodo.1082337",
-    pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_37.pdf",
+    pdfUrl: "/Volume%20I%20Issue%20III/TLS20250103_37.pdf",
     abstract: "Analyzing the linguistic power structures and racialized masculine identities in Toni Morrison's seminal texts."
   },
   {
@@ -126,7 +126,7 @@ const defaultIssueArticles = [
     volumeLabel: "Vol I, Issue III (July 2025)",
     pages: "pp. 83-90",
     doi: "10.5281/zenodo.1082338",
-    pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_.38.pdf",
+    pdfUrl: "/Volume%20I%20Issue%20III/TLS20250103_.38.pdf",
     abstract: "Diasporic negotiations of identity, hybridity, and parental expectations in young adult transnational literature."
   }
 ];

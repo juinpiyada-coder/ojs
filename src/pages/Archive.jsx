@@ -33,7 +33,7 @@ const defaultArchiveVolumes = [
         id: 1,
         title: "Bridging Cinematic Narratives and Literary Depths: Fusions in Contemporary Mythological Novels Concerning Amish Tripathi’s Ram Chandra Series",
         author: "Garima Singh",
-        pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_26.pdf",
+        pdfUrl: "/Volume%20I%20Issue%20III/TLS20250103_26.pdf",
         category: "MYTHOLOGICAL FICTION & CINEMA",
         pages: "pp. 26-30",
         doi: "10.5281/zenodo.1082326"
@@ -42,7 +42,7 @@ const defaultArchiveVolumes = [
         id: 2,
         title: "Retelling the Past: Cinematic Narratives of Oppression and Resistance in Bolivia and Bengal",
         author: "Ahana Bhandari",
-        pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_27.pdf",
+        pdfUrl: "/Volume%20I%20Issue%20III/TLS20250103_27.pdf",
         category: "COMPARATIVE CULTURAL STUDIES",
         pages: "pp. 31-36",
         doi: "10.5281/zenodo.1082327"
@@ -51,7 +51,7 @@ const defaultArchiveVolumes = [
         id: 3,
         title: "What Did She Know About Transformation That We Don’t?",
         author: "Lina Mandal",
-        pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_28.pdf",
+        pdfUrl: "/Volume%20I%20Issue%20III/TLS20250103_28.pdf",
         category: "LITERARY THEORY & CRITICISM",
         pages: "pp. 37-41",
         doi: "10.5281/zenodo.1082328"
@@ -60,7 +60,7 @@ const defaultArchiveVolumes = [
         id: 4,
         title: "Laapataa Ladies: A Cinematic Satire on Gendered Invisibility and Rural Agency",
         author: "Satyam Kumar",
-        pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_30.pdf",
+        pdfUrl: "/Volume%20I%20Issue%20III/TLS20250103_30.pdf",
         category: "GENDER STUDIES & FILM",
         pages: "pp. 42-47",
         doi: "10.5281/zenodo.1082330"
@@ -69,7 +69,7 @@ const defaultArchiveVolumes = [
         id: 5,
         title: "Patachitra Tradition and Artist Kalam Pauta: A Theoretical Perspective on Art and Literature",
         author: "Dr. Rakesh Kaibartya",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/07/TLS20250103_31.pdf",
+        pdfUrl: "/Volume%20I%20Issue%20III/TLS20250103_31.pdf",
         category: "ART, FOLK TRADITION & LITERATURE",
         pages: "pp. 48-54",
         doi: "10.5281/zenodo.1082331"
@@ -78,7 +78,7 @@ const defaultArchiveVolumes = [
         id: 6,
         title: "Beyond the Characters: Nature Shapes the Story in “Ullozhukku”",
         author: "Dona Joseph",
-        pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_32.pdf",
+        pdfUrl: "/Volume%20I%20Issue%20III/TLS20250103_32.pdf",
         category: "ECO-CRITICISM & NARRATIVE",
         pages: "pp. 55-60",
         doi: "10.5281/zenodo.1082332"
@@ -87,7 +87,7 @@ const defaultArchiveVolumes = [
         id: 7,
         title: "How Ideology Shapes Consumption: The Case of Oil Palm Industry and Red Meat Production",
         author: "Souvik Karmakar",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/07/TLS20250103_.33.pdf",
+        pdfUrl: "/Volume%20I%20Issue%20III/TLS20250103_.33.pdf",
         category: "ENVIRONMENTAL SCIENCES & POLICY",
         pages: "pp. 61-68",
         doi: "10.5281/zenodo.1082333"
@@ -96,7 +96,7 @@ const defaultArchiveVolumes = [
         id: 8,
         title: "From ‘Little Maiden’ to ‘The Witch’: Exploring the Themes of Vampirism, Witchcraft and the Female Wanderer Through a Biographical Reading of Mary Coleridge’s “The Witch”",
         author: "Shibangi Ghose",
-        pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_34.pdf",
+        pdfUrl: "/Volume%20I%20Issue%20III/TLS20250103_34.pdf",
         category: "GOTHIC LITERATURE & GENDER",
         pages: "pp. 69-75",
         doi: "10.5281/zenodo.1082334"
@@ -105,7 +105,7 @@ const defaultArchiveVolumes = [
         id: 9,
         title: "The Word as Weapon: Language, Power, and Black Male Representation in Morrison’s Narratives",
         author: "Sakshi Virmani",
-        pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_37.pdf",
+        pdfUrl: "/Volume%20I%20Issue%20III/TLS20250103_37.pdf",
         category: "AFRICAN AMERICAN LITERATURE",
         pages: "pp. 76-82",
         doi: "10.5281/zenodo.1082337"
@@ -114,7 +114,7 @@ const defaultArchiveVolumes = [
         id: 10,
         title: "Between Nations and Narratives: Transnational Engagement and Flexible Citizenship in American Betiya",
         author: "Kakoli Debnath and Dr. Binda Sah",
-        pdfUrl: "https://image.theliteraryscientist.org/pdf/TLS20250103_.38.pdf",
+        pdfUrl: "/Volume%20I%20Issue%20III/TLS20250103_.38.pdf",
         category: "DIASPORA & TRANSNATIONALISM",
         pages: "pp. 83-90",
         doi: "10.5281/zenodo.1082338"
@@ -136,7 +136,7 @@ const defaultArchiveVolumes = [
         id: 101,
         title: "Praxis in Academic Gauging: A Critique to Scholastic Module of Neuroplasticity Dialogue on Mental Health",
         author: "Bidisha Chakraborty",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/02/Praxis_final.pdf",
+        pdfUrl: "/Volume%20I%20Issue%20II/Praxis_final.pdf",
         category: "MEDICAL HUMANITIES & NEURO-DIALOGUE",
         pages: "pp. 1-8",
         doi: "10.5281/zenodo.1082341"
@@ -145,7 +145,7 @@ const defaultArchiveVolumes = [
         id: 102,
         title: "Phallic Myth and Sexual Rapport Reprogrammed: Lacanian Analysis of Bryan Forbes' Film The Stepford Wives (1975)",
         author: "Biswadip Mal",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/02/Phallic_Final.pdf",
+        pdfUrl: "/Volume%20I%20Issue%20II/Phallic_Final.pdf",
         category: "FILM & PSYCHOANALYTIC THEORY",
         pages: "pp. 9-16",
         doi: "10.5281/zenodo.1082342"
@@ -154,7 +154,7 @@ const defaultArchiveVolumes = [
         id: 103,
         title: "Jung’s Archetypes and Baum’s Attempt at Ethical Neutrality in The Wizard of Oz",
         author: "Sounak Banerjee",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/02/Sounak_final.pdf",
+        pdfUrl: "/Volume%20I%20Issue%20II/Sounak_final.pdf",
         category: "LITERARY CRITICISM & ARCHETYPAL THEORY",
         pages: "pp. 17-24",
         doi: "10.5281/zenodo.1082343"
@@ -163,7 +163,7 @@ const defaultArchiveVolumes = [
         id: 104,
         title: "Remaining Literary Forms: Twitterature and Instapoetry as Microfiction",
         author: "Anuska Bag",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/02/Remaining-literacy_Final.pdf",
+        pdfUrl: "/Volume%20I%20Issue%20II/Remaining-literacy_Final.pdf",
         category: "DIGITAL HUMANITIES & MICROFICTION",
         pages: "pp. 25-32",
         doi: "10.5281/zenodo.1082344"
@@ -172,7 +172,7 @@ const defaultArchiveVolumes = [
         id: 105,
         title: "Critiquing the Eco-Narratives",
         author: "Debanjan Chakraborty",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/02/Critiquing_final.pdf",
+        pdfUrl: "/Volume%20I%20Issue%20II/Critiquing_final.pdf",
         category: "ENVIRONMENTAL HUMANITIES & ECO-CRITICISM",
         pages: "pp. 33-40",
         doi: "10.5281/zenodo.1082345"
@@ -181,7 +181,7 @@ const defaultArchiveVolumes = [
         id: 106,
         title: "Subverting the Patriarchal Trope by Challenging Toxic Masculinity in Feminist Revenge Fantasy: An Analysis of Anvita Dutt’s ‘Bulbbul’ and Prosit Roy’s ‘Pari’",
         author: "Quincy Tikadar",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/02/Subverting_final.pdf",
+        pdfUrl: "/Volume%20I%20Issue%20II/Subverting_final.pdf",
         category: "GENDER STUDIES & CINEMA",
         pages: "pp. 41-48",
         doi: "10.5281/zenodo.1082346"
@@ -190,7 +190,7 @@ const defaultArchiveVolumes = [
         id: 107,
         title: "Intersecting Inequalities: The Role of Caste and Socioeconomic Status in Maternal Healthcare Access",
         author: "Suchismita Mitra and Samriddha Biswas",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/02/The-Role_Final.pdf",
+        pdfUrl: "/Volume%20I%20Issue%20II/The-Role_Final.pdf",
         category: "PUBLIC HEALTH & SOCIAL JUSTICE",
         pages: "pp. 49-56",
         doi: "10.5281/zenodo.1082347"
@@ -199,7 +199,7 @@ const defaultArchiveVolumes = [
         id: 108,
         title: "Menstrual Education Through Indian Info Comic Menstrupedia",
         author: "Firthouse Tajuddin and Dr. K. Sindhu",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/02/Mentrual_Final.pdf",
+        pdfUrl: "/Volume%20I%20Issue%20II/Mentrual_Final.pdf",
         category: "COMICS STUDIES & HEALTH EDUCATION",
         pages: "pp. 57-64",
         doi: "10.5281/zenodo.1082348"
@@ -208,7 +208,7 @@ const defaultArchiveVolumes = [
         id: 109,
         title: "WOUNDS OF THE PAST: Feminine Histories and Silent Landscapes in Ice-Candy-Man and What the Body Remembers",
         author: "Kazmi Afrose",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/02/Wound-of-the-past_Final.pdf",
+        pdfUrl: "/Volume%20I%20Issue%20II/Wound-of-the-past_Final.pdf",
         category: "POST-COLONIAL & MEMORY STUDIES",
         pages: "pp. 65-72",
         doi: "10.5281/zenodo.1082349"
@@ -217,7 +217,7 @@ const defaultArchiveVolumes = [
         id: 110,
         title: "Film Review: Breaking Barriers with Laughter in “Badhaai Do”",
         author: "Pallabi Gharami",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2025/02/Badhaai-Do_Final.pdf",
+        pdfUrl: "/Volume%20I%20Issue%20II/Badhaai-Do_Final.pdf",
         category: "QUEER STUDIES & FILM REVIEW",
         pages: "pp. 73-78",
         doi: "10.5281/zenodo.1082350"
@@ -239,7 +239,7 @@ const defaultArchiveVolumes = [
         id: 201,
         title: "Gendering Wartime Sexual Violence Against Women in Bangladesh: The Liberation War and the Struggles of the War Heroines in the book “Birangona”",
         author: "Quince Tikadar",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2024/07/Gendering-1.pdf",
+        pdfUrl: "/Volume%20I%20Issue%20I/Gendering-1.pdf",
         category: "GENDER & HISTORICAL MEMORY",
         pages: "pp. 1-9",
         doi: "10.5281/zenodo.1082201"
@@ -248,7 +248,7 @@ const defaultArchiveVolumes = [
         id: 202,
         title: "ভারতীয় সাহিত্যঃ লোক সংস্কৃতি ও মিথের বহূকৌনিকের গোমোণ",
         author: "Samaresh Mondal",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2024/07/bharatiya-sahitya-1.pdf",
+        pdfUrl: "/Volume%20I%20Issue%20I/bharatiya-sahitya-1.pdf",
         category: "FOLKLORE & INDIAN LITERATURE",
         pages: "pp. 10-18",
         doi: "10.5281/zenodo.1082202"
@@ -257,7 +257,7 @@ const defaultArchiveVolumes = [
         id: 203,
         title: "শ্রীগদ্যশরীর : একটি বিশ্লেষণী পাঠ",
         author: "Debasree Pal",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2024/07/goddosorir-2-1.pdf",
+        pdfUrl: "/Volume%20I%20Issue%20I/goddosorir-2-1.pdf",
         category: "LITERARY CRITICISM & BENGALI PROSE",
         pages: "pp. 19-27",
         doi: "10.5281/zenodo.1082203"
@@ -266,7 +266,7 @@ const defaultArchiveVolumes = [
         id: 204,
         title: "আমাদের জল জীবন",
         author: "Aritree De",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2024/07/jol-1.pdf",
+        pdfUrl: "/Volume%20I%20Issue%20I/jol-1.pdf",
         category: "ECOLOGICAL WRITING & CULTURE",
         pages: "pp. 28-35",
         doi: "10.5281/zenodo.1082204"
@@ -275,7 +275,7 @@ const defaultArchiveVolumes = [
         id: 205,
         title: "Book Review: Heidegger and a Hippo Walk Through Those Pearly Gates",
         author: "Agomoni Chakraborty",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2024/07/The_BOOK.pdf",
+        pdfUrl: "/Volume%20I%20Issue%20I/The_BOOK.pdf",
         category: "PHILOSOPHY & BOOK REVIEW",
         pages: "pp. 36-41",
         doi: "10.5281/zenodo.1082205"
@@ -284,7 +284,7 @@ const defaultArchiveVolumes = [
         id: 206,
         title: "The Euclidean Mind and the Major Archetypes in Dostoevsky’s Novel, The Brothers Karamazov",
         author: "Al Minar Mahmudur Reza",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2024/07/The-euclident-mind.pdf",
+        pdfUrl: "/Volume%20I%20Issue%20I/The-euclident-mind.pdf",
         category: "RUSSIAN LITERATURE & PHILOSOPHY",
         pages: "pp. 42-50",
         doi: "10.5281/zenodo.1082206"
@@ -293,7 +293,7 @@ const defaultArchiveVolumes = [
         id: 207,
         title: "The Influence of Music Videos in Second Language Listening Development: A Study of the Undergraduate Students of Dhaka City",
         author: "Farah Ulfat Mohinee and Progga Saha",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2024/07/The-Influence.pdf",
+        pdfUrl: "/Volume%20I%20Issue%20I/The-Influence.pdf",
         category: "APPLIED LINGUISTICS & PEDAGOGY",
         pages: "pp. 51-60",
         doi: "10.5281/zenodo.1082207"
@@ -302,7 +302,7 @@ const defaultArchiveVolumes = [
         id: 208,
         title: "“Where words fail, music speaks”: The Role of Influential Music in Shaping Young Adults’ Identities and Perspectives",
         author: "Simanta Nandy and Sumedha Ghosh",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2024/07/The_role.pdf",
+        pdfUrl: "/Volume%20I%20Issue%20I/The_role.pdf",
         category: "CULTURAL STUDIES & MUSICOLOGY",
         pages: "pp. 61-70",
         doi: "10.5281/zenodo.1082208"
@@ -311,7 +311,7 @@ const defaultArchiveVolumes = [
         id: 209,
         title: "Delineating Eco-Epistemic Paradigms: A Multifaceted Exegesis of Environmental Morality and Hegemonic Dynamics in Mandaar and Macbeth",
         author: "Soumabha Chakraborty and Sounak Banerjee",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2024/07/Golem-Effect-Final.pdf",
+        pdfUrl: "/Volume%20I%20Issue%20I/Delineating.pdf",
         category: "ECO-CRITICISM & SHAKESPEARE STUDIES",
         pages: "pp. 71-80",
         doi: "10.5281/zenodo.1082209"
@@ -320,7 +320,7 @@ const defaultArchiveVolumes = [
         id: 210,
         title: "The Gollem Effect: Integration of Gollem-Class AIs during the Climate Change in Online Ecosystem",
         author: "Megha Bhattacharya and Arkannel Khan",
-        pdfUrl: "https://theliteraryscientist.org/wp-content/uploads/2024/07/Golem-Effect-Final.pdf",
+        pdfUrl: "/Volume%20I%20Issue%20I/Golem-Effect-Final.pdf",
         category: "AI, COMPUTATIONAL ECOLOGY & MEDIA",
         pages: "pp. 81-90",
         doi: "10.5281/zenodo.1082210"
